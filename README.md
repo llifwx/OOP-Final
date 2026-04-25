@@ -54,6 +54,28 @@ cd OOP-Final
 
 Open the project in IntelliJ IDEA and run the main class located in `University/src/`.
 
+## Git Branch Naming
+
+Always create a new branch before working on something. Never push directly to `main`.
+
+| Prefix | When to use | Example |
+|--------|-------------|---------|
+| `feat/` | Adding new functionality | `feat/course-registration` |
+| `fix/` | Fixing a bug | `fix/mark-calculation` |
+| `refactor/` | Restructuring code, no new features | `refactor/user-hierarchy` |
+| `docs/` | Documentation only | `docs/update-readme` |
+| `test/` | Adding or fixing tests | `test/research-paper` |
+
+```bash
+# Create and switch to a new branch
+git checkout -b feat/your-feature-name
+ 
+# Push the branch
+git push origin feat/your-feature-name
+```
+
+> Use lowercase and hyphens only — no spaces, no camelCase.
+
 ## Team
 
 **Li Nikita** - Captain \
