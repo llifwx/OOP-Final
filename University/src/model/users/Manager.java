@@ -1,0 +1,25 @@
+package model.users;
+
+import enums.Language;
+import enums.LessonType;
+import enums.ManagerType;
+import model.academic.Course;
+import social.News;
+
+import java.util.List;
+
+public class Manager extends Employee{
+    private ManagerType managerType;
+
+    public Manager(String username, String password, String fullName, String email, Language language) {
+        super(username, password, fullName, email, language);
+    }
+
+    public void assignCourseToTeacher(Course course, Teacher teacher, LessonType) {}
+    public boolean approveRegistration(Student student, Course Course) {return true}
+    public void addCourseForRegistration(Course course) {}
+    public Report createAcademicReport(List<Student> students) {}
+    public void manageNews(News news) {}
+    public List<Student> viewStudentsSortedByGpa(List<Student> students) {}
+    public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {}
+}
