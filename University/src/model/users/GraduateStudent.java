@@ -51,6 +51,7 @@ public class GraduateStudent extends Student implements Researcher {
 
     public Researcher getSupervisor() { return supervisor; }
 
+    //TODO:refactor lists getters and setters
     public List<ResearchPaper> getPapers() { return papers; }
     public void addPaper(ResearchPaper paper) {}
 
