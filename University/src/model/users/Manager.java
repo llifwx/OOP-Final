@@ -6,13 +6,15 @@ import enums.ManagerType;
 import model.academic.Course;
 import social.News;
 
+import java.util.Date;
 import java.util.List;
 
 public class Manager extends Employee{
     private ManagerType managerType;
 
-    public Manager(String username, String password, String fullName, String email, Language language) {
-        super(username, password, fullName, email, language);
+    public Manager(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, ManagerType managerType) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+        this.managerType = managerType;
     }
 
     public void assignCourseToTeacher(Course course, Teacher teacher, LessonType) {}
