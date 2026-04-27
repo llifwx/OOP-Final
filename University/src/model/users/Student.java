@@ -51,31 +51,24 @@ public class Student extends User {
     public void rateTeacher(Teacher teacher, int rate) {}
     public void joinOrganization(StudentOrganization org) {}
 
-    public String getStudentId() { return studentId; }
+    public String getStudentId() { return this.studentId; }
+    public String getSchool() { return this.school; }
+    public String getMajor() { return this.major; }
+    public int getYearOfStudy() { return this.yearOfStudy; }
+    public String getMinor() { return this.minor; }
+    public double getGpa() { return this.gpa; }
+    public int getCredits() { return this.credits; }
+    public int getFailedCoursesCount() { return this.failedCoursesCount; }
+    public List<StudentOrganization> getOrganizations() { return this.organizations; }
+
     public void setStudentId(String studentId) { this.studentId = studentId; }
-
-    public String getSchool() { return school; }
-    public void setSchool(String school) { this.school = school; }
-
-    public String getMajor() { return major; }
-    public void setMajor(String major) { this.major = major; }
-
-    public String getMinor() { return minor; }
-    public void setMinor(String minor) { this.minor = minor; }
-
-    public int getYearOfStudy() { return yearOfStudy; }
-    public void setYearOfStudy(int yearOfStudy) { this.yearOfStudy = yearOfStudy; }
-
-    public double getGpa() { return gpa; }
     public void setGpa(double gpa) { this.gpa = gpa; }
-
-    public int getCredits() { return credits; }
     public void setCredits(int credits) { this.credits = credits; }
-
-    public int getFailedCoursesCount() { return failedCoursesCount; }
+    public void setYearOfStudy(int yearOfStudy) { this.yearOfStudy = yearOfStudy; }
+    public void setMinor(String minor) { this.minor = minor; }
+    public void setMajor(String major) { this.major = major; }
+    public void setSchool(String school) { this.school = school; }
     public void setFailedCoursesCount(int count) { this.failedCoursesCount = count; }
-
-    public List<StudentOrganization> getOrganizations() { return organizations; }
 
     @Override
     public String toString() {

@@ -1,5 +1,6 @@
 package model.users;
 
+import academic.Report;
 import enums.Language;
 import enums.LessonType;
 import enums.ManagerType;
@@ -17,7 +18,7 @@ public class Manager extends Employee{
         this.managerType = managerType;
     }
 
-    public void assignCourseToTeacher(Course course, Teacher teacher, LessonType) {}
+    public void assignCourseToTeacher(Course course, Teacher teacher, LessonType lessonType) {}
     public boolean approveRegistration(Student student, Course Course) {return true}
     public void addCourseForRegistration(Course course) {}
     public Report createAcademicReport(List<Student> students) {}

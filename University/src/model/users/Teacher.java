@@ -3,8 +3,12 @@ package model.users;
 import enums.Language;
 import enums.TeacherType;
 import enums.UrgencyLevel;
+import model.academic.Complaint;
 import model.academic.Course;
+import model.academic.Mark;
+import research.Journal;
 import research.ResearchPaper;
+import research.ResearchProject;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -40,10 +44,10 @@ public class Teacher extends Employee{
         for(Course course : courses) {
             /*TODO: allocate this to toString Course method*/
             System.out.println(
-                    "Code: " + course.code + "\n" +
-                    "Name: " + course.name + "\n" +
-                    "Credits: " + course.credits + "\n" +
-                    "Course: " + course.courseType + "\n");
+                    "Code: " + course.getCourseCode() + "\n" +
+                    "Name: " + course.getName() + "\n" +
+                    "Credits: " + course.getCredits() + "\n" +
+                    "Course: " + course.getType() + "\n");
         }
         return courses;
     }

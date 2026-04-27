@@ -1,7 +1,7 @@
-package social;
+package research;
 
 import model.users.User;
-import research.ResearchPaper;
+
 import java.util.ArrayList;
 import java.util.List;
 

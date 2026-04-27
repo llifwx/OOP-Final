@@ -1,6 +1,7 @@
 package model.users;
 
 import enums.Language;
+import research.Journal;
 import social.News;
 
 import java.util.List;
