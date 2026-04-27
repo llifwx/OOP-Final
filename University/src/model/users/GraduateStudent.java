@@ -3,9 +3,10 @@ package model.users;
 import enums.DegreeType;
 import enums.Language;
 import interfaces.Researcher;
-import model.academic.ResearchPaper;
-import model.research.ResearchProject;
-import model.social.Journal;
+import research.Journal;
+import research.ResearchPaper;
+import research.ResearchProject;
+
 
 import java.util.ArrayList;
 import java.util.Comparator;

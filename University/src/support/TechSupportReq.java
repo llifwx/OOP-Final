@@ -11,7 +11,7 @@ public class TechSupportReq {
     private RequestStatus status;
     private Date createdDate;
 
-    public TechSupportRequest(int id, Employee sender, String description) {
+    public TechSupportReq(int id, Employee sender, String description) {
         this.id = id;
         this.sender = sender;
         this.description = description;

@@ -2,6 +2,9 @@ package model.users;
 
 
 import enums.Language;
+import utils.LogRecord;
+
+import java.util.List;
 
 public class Admin extends User{
     private List<LogRecord> logs;
