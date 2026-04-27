@@ -5,6 +5,7 @@ import enums.Language;
 import enums.LessonType;
 import enums.ManagerType;
 import model.academic.Course;
+import social.Message;
 import social.News;
 
 import java.util.Date;
