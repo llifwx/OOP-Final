@@ -1,12 +1,12 @@
 package model.users;
 
-import academic.Report;
+import model.academic.Report;
 import enums.Language;
 import enums.LessonType;
 import enums.ManagerType;
 import model.academic.Course;
-import social.Message;
-import social.News;
+import model.social.Message;
+import model.social.News;
 
 import java.util.Date;
 import java.util.List;

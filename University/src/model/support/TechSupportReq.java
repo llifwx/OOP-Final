@@ -1,4 +1,4 @@
-package support;
+package model.support;
 
 import model.users.Employee;
 import enums.RequestStatus;

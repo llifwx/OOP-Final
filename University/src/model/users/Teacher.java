@@ -6,9 +6,9 @@ import enums.UrgencyLevel;
 import model.academic.Complaint;
 import model.academic.Course;
 import model.academic.Mark;
-import research.Journal;
-import research.ResearchPaper;
-import research.ResearchProject;
+import model.social.Journal;
+import model.research.ResearchPaper;
+import model.research.ResearchProject;
 
 import java.util.Comparator;
 import java.util.Date;

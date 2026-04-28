@@ -1,4 +1,4 @@
-package social;
+package model.social;
 
 import model.users.Employee;
 import java.util.Date;

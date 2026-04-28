@@ -1,4 +1,4 @@
-package research;
+package model.research;
 
 import interfaces.Researcher;
 import java.util.ArrayList;

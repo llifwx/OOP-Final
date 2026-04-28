@@ -4,8 +4,7 @@ import enums.Language;
 import model.academic.Course;
 import model.academic.Mark;
 import model.academic.Transcript;
-import model.academic.Complaint;
-import model.social.StudentOrganization;
+import model.academic.StudentOrganization;
 
 import java.util.ArrayList;
 import java.util.List;

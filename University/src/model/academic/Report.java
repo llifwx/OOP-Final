@@ -1,4 +1,4 @@
-package academic;
+package model.academic;
 
 import model.users.Student;
 import java.util.List;
