@@ -1,4 +1,4 @@
-package social;
+package model.social;
 
 import enums.NewsTopic;
 import java.util.ArrayList;

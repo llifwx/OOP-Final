@@ -1,8 +1,8 @@
 package interfaces;
 
-import research.Journal;
-import research.ResearchPaper;
-import research.ResearchProject;
+import model.social.Journal;
+import model.research.ResearchPaper;
+import model.research.ResearchProject;
 
 import java.util.Comparator;
 

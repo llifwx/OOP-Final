@@ -1,4 +1,4 @@
-package model.social;
+package model.academic;
 
 import model.users.Student;
 import java.util.ArrayList;

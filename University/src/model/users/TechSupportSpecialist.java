@@ -1,7 +1,7 @@
 package model.users;
 
 import enums.Language;
-import support.TechSupportReq;
+import model.support.TechSupportReq;
 
 import java.util.Date;
 import java.util.List;

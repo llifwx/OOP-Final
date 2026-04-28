@@ -1,7 +1,7 @@
 package model.users;
 
 import enums.Language;
-import social.Message;
+import model.social.Message;
 
 import java.util.Date;
 import java.util.List;

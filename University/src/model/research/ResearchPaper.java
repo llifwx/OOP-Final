@@ -1,6 +1,7 @@
-package research;
+package model.research;
 
 import interfaces.Researcher;
+import model.social.Journal;
 
 import java.util.Date;
 import java.util.List;
