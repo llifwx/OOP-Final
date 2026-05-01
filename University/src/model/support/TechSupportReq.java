@@ -2,6 +2,7 @@ package model.support;
 
 import model.users.Employee;
 import enums.RequestStatus;
+
 import java.util.Date;
 
 public class TechSupportReq {
@@ -19,6 +20,23 @@ public class TechSupportReq {
         this.createdDate = new Date();
     }
 
-    public void setStatus(RequestStatus status) { this.status = status; }
-    public RequestStatus getStatus() { return this.status; }
+    public void setStatus(RequestStatus status) {this.status = status;}
+
+    public RequestStatus getStatus() {return this.status;}
+
+    public int getId() {
+        return id;
+    }
+
+    public Employee getSender() {
+        return sender;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
 }

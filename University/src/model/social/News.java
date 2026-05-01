@@ -1,6 +1,7 @@
 package model.social;
 
 import enums.NewsTopic;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,33 @@ public class News {
         this.pinned = false;
     }
 
-    public void addComment(Comment comment) { this.comments.add(comment); }
-    public void pin() { this.pinned = true; }
-    public void unpin() { this.pinned = false; }
+    public void addComment(Comment comment) {this.comments.add(comment);}
+
+    public void pin() {this.pinned = true;}
+
+    public void unpin() {this.pinned = false;}
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public NewsTopic getTopic() {
+        return topic;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
 }
