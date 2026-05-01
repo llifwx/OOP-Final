@@ -3,9 +3,11 @@ package model.support;
 import model.users.Employee;
 import enums.RequestStatus;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TechSupportReq {
+public class TechSupportReq implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private Employee sender;
     private String description;

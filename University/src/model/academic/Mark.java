@@ -1,9 +1,12 @@
 package model.academic;
 
 import model.users.Student;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Mark {
+public class Mark implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static int idCounter = 0;
     private final int id;
@@ -22,13 +25,19 @@ public class Mark {
         this.course = course;
     }
 
-    public int getId() { return id; }
-    public Student getStudent() { return student; }
-    public Course getCourse() { return course; }
-    public double getFirstAttestation() { return firstAttestation; }
-    public double getSecondAttestation() { return secondAttestation; }
-    public double getFinalExam() { return finalExam; }
-    public double getTotalScore() { return totalScore; }
+    public int getId() {return id;}
+
+    public Student getStudent() {return student;}
+
+    public Course getCourse() {return course;}
+
+    public double getFirstAttestation() {return firstAttestation;}
+
+    public double getSecondAttestation() {return secondAttestation;}
+
+    public double getFinalExam() {return finalExam;}
+
+    public double getTotalScore() {return totalScore;}
 
     public void setFirstAttestation(double score) {
         this.firstAttestation = score;
@@ -46,19 +55,12 @@ public class Mark {
     }
 
     private void calculateTotal() {
-        this.totalScore = (firstAttestation * 0.3) +
-                (secondAttestation * 0.3) +
-                (finalExam * 0.4);
+        this.totalScore = (firstAttestation * 0.3) + (secondAttestation * 0.3) + (finalExam * 0.4);
     }
 
     @Override
     public String toString() {
-        return "Mark{" +
-                "id=" + id +
-                ", student=" + (student != null ? student.getFullName() : "N/A") +
-                ", course=" + (course != null ? course.getCourseCode() : "N/A") +
-                ", totalScore=" + String.format("%.2f", totalScore) +
-                '}';
+        return "Mark{" + "id=" + id + ", student=" + (student != null ? student.getFullName() : "N/A") + ", course=" + (course != null ? course.getCourseCode() : "N/A") + ", totalScore=" + String.format("%.2f", totalScore) + '}';
     }
 
     @Override

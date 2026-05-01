@@ -2,9 +2,11 @@ package model.academic;
 
 import model.users.Student;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Report {
+public class Report implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String title;
     private List<Student> studentData;
     private String reportContent;

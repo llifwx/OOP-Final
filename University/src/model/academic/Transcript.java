@@ -2,11 +2,14 @@ package model.academic;
 
 import model.users.Student;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Transcript {
+public class Transcript implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Student student;
     private List<Mark> marks;
 
@@ -16,7 +19,9 @@ public class Transcript {
     }
 
     public void addMark(Mark mark) {}
-    public double calculateGpa() { return 0.0; }
+
+    public double calculateGpa() {return 0.0;}
+
     public void printTranscript() {}
 
     public Student getStudent() {return student;}
@@ -30,9 +35,7 @@ public class Transcript {
 
     @Override
     public String toString() {
-        return "Transcript of: " + getStudent().getFullName() + ". " +
-                "Total marks: " + marks.size() + ". " +
-                "GPA: " + calculateGpa() + ".";
+        return "Transcript of: " + getStudent().getFullName() + ". " + "Total marks: " + marks.size() + ". " + "GPA: " + calculateGpa() + ".";
     }
 
     @Override

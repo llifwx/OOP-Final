@@ -16,12 +16,15 @@ import model.users.Teacher;
 import model.users.User;
 import utils.LogRecord;
 
+import javax.xml.crypto.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Database implements Serializable {
     private static final long serializeUID = 1L;
+
+    private static Database instance;
 
     private List<User> users;
 
@@ -61,6 +64,18 @@ public class Database implements Serializable {
 
         this.logs = new ArrayList<>();
         this.reports = new ArrayList<>();
+    }
+
+    public static Database getInstance() {
+        if (instance == null) {
+            return new Database();
+        }
+
+        return instance;
+    }
+
+    public static void setInstance(Database instance) {
+        Database.instance = instance;
     }
 
     public List<User> getUsers() {return users;}

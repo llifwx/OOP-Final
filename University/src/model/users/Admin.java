@@ -6,7 +6,8 @@ import utils.LogRecord;
 
 import java.util.List;
 
-public class Admin extends User{
+public class Admin extends User {
+    private static final long serialVersionUID = 1L;
     private List<LogRecord> logs;
 
     public Admin(String username, String password, String fullName, String email, Language language, List<LogRecord> logs) {
@@ -17,8 +18,11 @@ public class Admin extends User{
     public List<LogRecord> getLogs() {return logs;}
 
     public void addUser(User user) {}
+
     public void removeUser(User user) {}
+
     public void updateUser(User user) {}
+
     public List<LogRecord> viewLogFiles() {}
 
     @Override

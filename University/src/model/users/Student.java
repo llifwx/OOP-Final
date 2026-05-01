@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Student extends User {
+    private static final long serialVersionUID = 1L;
 
     private String studentId;
     private String school;
@@ -24,9 +25,7 @@ public class Student extends User {
     private Transcript transcript;
     private List<StudentOrganization> organizations;
 
-    public Student(String username, String password, String fullName, String email,
-                   Language language, String studentId, String school,
-                   String major, int yearOfStudy) {
+    public Student(String username, String password, String fullName, String email, Language language, String studentId, String school, String major, int yearOfStudy) {
         super(username, password, fullName, email, language);
         this.studentId = studentId;
         this.school = school;
@@ -41,43 +40,60 @@ public class Student extends User {
     }
 
     public void registerForCourse(Course course) {}
+
     public void dropCourse(Course course) {}
-    public List<Course> viewCourses() { return registeredCourses; }
-    public List<Mark> viewMarks() { return transcript.getMarks(); }
-    public Transcript viewTranscript() { return transcript; }
-    public Transcript getTranscript() { return transcript; }
-    public Teacher viewTeacherInfo(Course course) { return null; }
+
+    public List<Course> viewCourses() {return registeredCourses;}
+
+    public List<Mark> viewMarks() {return transcript.getMarks();}
+
+    public Transcript viewTranscript() {return transcript;}
+
+    public Transcript getTranscript() {return transcript;}
+
+    public Teacher viewTeacherInfo(Course course) {return null;}
+
     public void rateTeacher(Teacher teacher, int rate) {}
+
     public void joinOrganization(StudentOrganization org) {}
 
-    public String getStudentId() { return this.studentId; }
-    public String getSchool() { return this.school; }
-    public String getMajor() { return this.major; }
-    public int getYearOfStudy() { return this.yearOfStudy; }
-    public String getMinor() { return this.minor; }
-    public double getGpa() { return this.gpa; }
-    public int getCredits() { return this.credits; }
-    public int getFailedCoursesCount() { return this.failedCoursesCount; }
-    public List<StudentOrganization> getOrganizations() { return this.organizations; }
+    public String getStudentId() {return this.studentId;}
 
-    public void setStudentId(String studentId) { this.studentId = studentId; }
-    public void setGpa(double gpa) { this.gpa = gpa; }
-    public void setCredits(int credits) { this.credits = credits; }
-    public void setYearOfStudy(int yearOfStudy) { this.yearOfStudy = yearOfStudy; }
-    public void setMinor(String minor) { this.minor = minor; }
-    public void setMajor(String major) { this.major = major; }
-    public void setSchool(String school) { this.school = school; }
-    public void setFailedCoursesCount(int count) { this.failedCoursesCount = count; }
+    public String getSchool() {return this.school;}
+
+    public String getMajor() {return this.major;}
+
+    public int getYearOfStudy() {return this.yearOfStudy;}
+
+    public String getMinor() {return this.minor;}
+
+    public double getGpa() {return this.gpa;}
+
+    public int getCredits() {return this.credits;}
+
+    public int getFailedCoursesCount() {return this.failedCoursesCount;}
+
+    public List<StudentOrganization> getOrganizations() {return this.organizations;}
+
+    public void setStudentId(String studentId) {this.studentId = studentId;}
+
+    public void setGpa(double gpa) {this.gpa = gpa;}
+
+    public void setCredits(int credits) {this.credits = credits;}
+
+    public void setYearOfStudy(int yearOfStudy) {this.yearOfStudy = yearOfStudy;}
+
+    public void setMinor(String minor) {this.minor = minor;}
+
+    public void setMajor(String major) {this.major = major;}
+
+    public void setSchool(String school) {this.school = school;}
+
+    public void setFailedCoursesCount(int count) {this.failedCoursesCount = count;}
 
     @Override
     public String toString() {
-        return "Student: " + getUsername() + ". " +
-                "Full name: " + getFullName() + ". " +
-                "ID: " + getId() + ". " +
-                "School: " + school + ". " +
-                "Major: " + major + ". " +
-                "GPA: " + gpa + ". " +
-                "Credits: " + credits + ".";
+        return "Student: " + getUsername() + ". " + "Full name: " + getFullName() + ". " + "ID: " + getId() + ". " + "School: " + school + ". " + "Major: " + major + ". " + "GPA: " + gpa + ". " + "Credits: " + credits + ".";
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class GraduateStudent extends Student implements Researcher {
+    private static final long serialVersionUID = 1L;
 
     private DegreeType degreeType;
     private Researcher supervisor;
@@ -21,9 +22,7 @@ public class GraduateStudent extends Student implements Researcher {
     private List<ResearchPaper> papers;
     private List<ResearchProject> projects;
 
-    public GraduateStudent(String username, String password, String fullName, String email,
-                           Language language, String studentId, String school,
-                           String major, int yearOfStudy, DegreeType degreeType) {
+    public GraduateStudent(String username, String password, String fullName, String email, Language language, String studentId, String school, String major, int yearOfStudy, DegreeType degreeType) {
         super(username, password, fullName, email, language, studentId, school, major, yearOfStudy);
         this.degreeType = degreeType;
         this.diplomaProjects = new ArrayList<>();
@@ -31,12 +30,14 @@ public class GraduateStudent extends Student implements Researcher {
         this.projects = new ArrayList<>();
     }
 
-    public void setSupervisor(Researcher supervisor) { this.supervisor = supervisor; }
-    public Researcher viewSupervisor() { return supervisor; }
+    public void setSupervisor(Researcher supervisor) {this.supervisor = supervisor;}
+
+    public Researcher viewSupervisor() {return supervisor;}
+
     public void addDiplomaProject(ResearchPaper paper) {}
 
     @Override
-    public int calculateHIndex() { return 0; }
+    public int calculateHIndex() {return 0;}
 
     @Override
     public void printPapers(Comparator<ResearchPaper> comparator) {}
@@ -47,25 +48,24 @@ public class GraduateStudent extends Student implements Researcher {
     @Override
     public void publishPaper(ResearchPaper paper, Journal journal) {}
 
-    public DegreeType getDegreeType() { return degreeType; }
-    public void setDegreeType(DegreeType degreeType) { this.degreeType = degreeType; }
+    public DegreeType getDegreeType() {return degreeType;}
 
-    public Researcher getSupervisor() { return supervisor; }
+    public void setDegreeType(DegreeType degreeType) {this.degreeType = degreeType;}
+
+    public Researcher getSupervisor() {return supervisor;}
 
     //TODO:refactor lists getters and setters
-    public List<ResearchPaper> getPapers() { return papers; }
+    public List<ResearchPaper> getPapers() {return papers;}
+
     public void addPaper(ResearchPaper paper) {}
 
-    public List<ResearchPaper> getDiplomaProjects() { return diplomaProjects; }
-    public List<ResearchProject> getProjects() { return projects; }
+    public List<ResearchPaper> getDiplomaProjects() {return diplomaProjects;}
+
+    public List<ResearchProject> getProjects() {return projects;}
 
     @Override
     public String toString() {
-        return "GraduateStudent: " + getUsername() + ". " +
-                "Full name: " + getFullName() + ". " +
-                "ID: " + getId() + ". " +
-                "Degree: " + degreeType + ". " +
-                "Supervisor: " + (supervisor != null ? supervisor.toString() : "none") + ".";
+        return "GraduateStudent: " + getUsername() + ". " + "Full name: " + getFullName() + ". " + "ID: " + getId() + ". " + "Degree: " + degreeType + ". " + "Supervisor: " + (supervisor != null ? supervisor.toString() : "none") + ".";
     }
 
     @Override
