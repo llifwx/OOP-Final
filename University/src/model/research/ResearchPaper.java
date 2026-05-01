@@ -3,10 +3,12 @@ package model.research;
 import interfaces.Researcher;
 import model.social.Journal;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ResearchPaper {
+public class ResearchPaper implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String title;
     private List<Researcher> authors;
     private Journal journal;
@@ -26,11 +28,17 @@ public class ResearchPaper {
     }
 
     public String getTitle() {return title;}
+
     public List<Researcher> getAuthors() {return authors;}
+
     public Journal getJournal() {return journal;}
+
     public int getCitations() {return citations;}
+
     public int getPages() {return pages;}
+
     public Date getPublishDate() {return publishDate;}
+
     public String getDoi() {return doi;}
 
     public void addCitation() {}

@@ -2,9 +2,12 @@ package model.academic;
 
 import enums.LessonType;
 import model.users.Teacher;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Lesson {
+public class Lesson implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static int idCounter = 0;
     private final int id;
@@ -25,23 +28,23 @@ public class Lesson {
         this.teacher = teacher;
     }
 
-    public int getId() { return id; }
-    public LessonType getType() { return type; }
-    public String getDayOfWeek() { return dayOfWeek; }
-    public String getTimeSlot() { return timeSlot; }
-    public String getRoom() { return room; }
-    public Course getCourse() { return course; }
-    public Teacher getTeacher() { return teacher; }
+    public int getId() {return id;}
+
+    public LessonType getType() {return type;}
+
+    public String getDayOfWeek() {return dayOfWeek;}
+
+    public String getTimeSlot() {return timeSlot;}
+
+    public String getRoom() {return room;}
+
+    public Course getCourse() {return course;}
+
+    public Teacher getTeacher() {return teacher;}
 
     @Override
     public String toString() {
-        return "Lesson{" +
-                "id=" + id +
-                ", type=" + type +
-                ", day=" + dayOfWeek +
-                ", time=" + timeSlot +
-                ", room='" + room + '\'' +
-                '}';
+        return "Lesson{" + "id=" + id + ", type=" + type + ", day=" + dayOfWeek + ", time=" + timeSlot + ", room='" + room + '\'' + '}';
     }
 
     @Override

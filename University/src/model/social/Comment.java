@@ -1,9 +1,12 @@
 package model.social;
 
 import model.users.User;
+
+import java.io.Serializable;
 import java.util.Date;
 
-public class Comment {
+public class Comment implements Serializable {
+    private static final long serialVersionUID = 1L;
     private User author;
     private String text;
     private Date date;
@@ -14,5 +17,5 @@ public class Comment {
         this.date = new Date();
     }
 
-    public void editText(String newText) { this.text = newText; }
+    public void editText(String newText) {this.text = newText;}
 }

@@ -1,11 +1,14 @@
 package model.academic;
 
 import model.users.Student;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class StudentOrganization {
+public class StudentOrganization implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static int idCounter = 0;
     private final int id;
@@ -21,10 +24,14 @@ public class StudentOrganization {
         this.description = description;
     }
 
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public Student getHead() { return head; }
+    public int getId() {return id;}
+
+    public String getName() {return name;}
+
+    public String getDescription() {return description;}
+
+    public Student getHead() {return head;}
+
     public List<Student> getMembers() {
         return new ArrayList<>(members);
     }
@@ -49,12 +56,7 @@ public class StudentOrganization {
 
     @Override
     public String toString() {
-        return "StudentOrganization{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", head=" + (head != null ? head.getFullName() : "No head yet") +
-                ", membersCount=" + members.size() +
-                '}';
+        return "StudentOrganization{" + "id=" + id + ", name='" + name + '\'' + ", head=" + (head != null ? head.getFullName() : "No head yet") + ", membersCount=" + members.size() + '}';
     }
 
     @Override

@@ -2,9 +2,11 @@ package model.social;
 
 import model.users.Employee;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Message {
+public class Message implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static int idCnt;
     private int id;
     private Employee sender;

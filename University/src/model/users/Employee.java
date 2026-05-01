@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Employee extends User {
+    private static final long serialVersionUID = 1L;
     private String employeeId;
     private String department;
     private double salary;
@@ -23,19 +24,19 @@ public class Employee extends User {
     }
 
     public String getEmployeeId() {return this.employeeId;}
+
     public String getDepartment() {return this.department;}
 
-    public Message sendMessage(Employee receiver, String text) {};
+    public Message sendMessage(Employee receiver, String text) {}
+
+    ;
+
     public List<Message> viewMessages() {}
+
     public String getRoleName() {}
 
     @Override
     public String toString() {
-        return "User: " + this.getUsername() + ". " +
-                "Full name: " + this.getFullName() + ". " +
-                "Email: " + this.getEmail() + ". " +
-                "ID: " + this.getId() + ". " +
-                "EmployeeID: " + this.getEmployeeId() +
-                "Department: " + this.getDepartment();
+        return "User: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId() + ". " + "EmployeeID: " + this.getEmployeeId() + "Department: " + this.getDepartment();
     }
 }
