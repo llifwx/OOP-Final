@@ -17,9 +17,24 @@ public class Journal {
         this.subscribers = new ArrayList<>();
     }
 
-    public void subscribe(User user) { this.subscribers.add(user); }
-    public void unsubscribe(User user) { this.subscribers.remove(user); }
-    public void addPaper(ResearchPaper paper) { this.papers.add(paper); }
+    public String getName() {
+        return name;
+    }
+
+    public List<ResearchPaper> getPapers() {
+        return papers;
+    }
+
+    public List<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void subscribe(User user) {this.subscribers.add(user);}
+
+    public void unsubscribe(User user) {this.subscribers.remove(user);}
+
+    public void addPaper(ResearchPaper paper) {this.papers.add(paper);}
+
     public void notifySubscribers() {
         for (User u : subscribers) u.receiveNotification("New paper in " + name);
     }
