@@ -18,7 +18,6 @@ import java.util.List;
 public class Teacher extends Employee {
     private static final long serialVersionUID = 1L;
 
-    /*TODO : import missing classes*/
     private TeacherType teacherType;
     private double rating;
     private List<Course> courses;
@@ -47,6 +46,10 @@ public class Teacher extends Employee {
 
     public List<ResearchProject> getProjects() {return this.projects;}
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
     public List<Course> viewCourses() {
         for (Course course : courses) {
             /*TODO: allocate this to toString Course method*/
@@ -70,6 +73,12 @@ public class Teacher extends Employee {
     public void joinProject(ResearchProject project) {}
 
     public void publishPaper(ResearchPaper paper, Journal journal) {}
+
+    public void addCourse(Course course) {
+        if (!courses.contains(course)) {
+            courses.add(course);
+        }
+    }
 
     @Override
     public String toString() {
