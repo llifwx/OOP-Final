@@ -17,19 +17,24 @@ The system simulates a real university environment where different types of user
 ## Project Structure
 
 ```
-OOP Final/
-└── University/
-    └── src/
-        ├── enums/          # Language, CourseType, UrgencyLevel, etc.
-        ├── exceptions/     # Custom exceptions
-        ├── interfaces/     # Researcher and other interfaces
-        ├── model/
-        │   ├── academic/   # Course, Lesson, Mark, Transcript
-        │   └── users/      # User, Employee, Student, Teacher, Manager, Admin...
-        ├── research/       # ResearchPaper, ResearchProject, Journal
-        ├── social/         # News, Comment, Message, StudentOrganization
-        ├── support/        # TechSupportRequest, Complaint, Report, LogRecord
-        └── utils/          # Helper classes
+University/
+│
+├── Main.java
+├── app/
+├── model/
+│   ├── academic/
+│   ├── research/
+│   ├── social/
+│   └── support/
+├── interfaces/
+├── service/
+├── ui/
+├── storage/
+├── factory/
+├── comparator/
+├── enums/
+├── exceptions/
+└── util/
 ```
 
 ## Getting Started
