@@ -75,6 +75,8 @@ public class Student extends User {
 
     public List<StudentOrganization> getOrganizations() {return this.organizations;}
 
+    public List<Course> getRegisteredCourses() {return registeredCourses;}
+
     public void setStudentId(String studentId) {this.studentId = studentId;}
 
     public void setGpa(double gpa) {this.gpa = gpa;}
