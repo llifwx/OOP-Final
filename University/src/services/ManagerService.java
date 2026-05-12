@@ -8,10 +8,7 @@ import model.academic.Mark;
 import model.academic.Report;
 import model.academic.Transcript;
 import model.social.News;
-import model.users.Manager;
-import model.users.Student;
-import model.users.Teacher;
-import model.users.User;
+import model.users.*;
 import storage.Database;
 import utils.LogRecord;
 
@@ -21,10 +18,12 @@ import java.util.List;
 public class ManagerService {
     private final Database database;
     private final AuthService authService;
+    private final ReportService reportService;
 
-    public ManagerService(Database database, AuthService authService) {
+    public ManagerService(Database database, AuthService authService, ReportService reportService) {
         this.database = database;
         this.authService = authService;
+        this.reportService = reportService;
     }
 
     // Helper for auth checking.
@@ -113,32 +112,7 @@ public class ManagerService {
 
     public Report createAcademicReport(List<Student> students) {
         requireManager();
-
-        if (students == null) {
-            students = new ArrayList<>();
-        }
-
-        int studentCnt = students.size();
-        double totalGpa = 0;
-
-        for (Student student : students) {
-            double gpa = calculateGpaFromTranscript(student.getTranscript());
-            student.setGpa(gpa);
-            totalGpa += gpa;
-        }
-
-        double averageGpa = studentCnt > 0 ? totalGpa / studentCnt : 0;
-
-        String content = "Academic Report\n" + "Students count: " + studentCnt + "\n" + "Average GPA: " + averageGpa;
-
-        Report report = new Report("Academic Performance Report", students, content);
-
-        database.addReport(report);
-        database.save();
-        log("Created academic report with " + studentCnt + " students, average GPA: " + averageGpa);
-        System.out.println("[Manager Service] : Academic report created with " + studentCnt + " students, average GPA: " + averageGpa);
-
-        return report;
+        return reportService.createAcademicReport(students);
     }
 
     public void addNews(News news) {
@@ -221,33 +195,6 @@ public class ManagerService {
 
 
     // Helpers for methods.
-    private double calculateGpaFromTranscript(Transcript transcript) {
-        if (transcript == null || transcript.getMarks().isEmpty()) return 0.0;
-
-        double totalGpa = 0;
-        for (Mark mark : transcript.getMarks()) {
-            totalGpa += scoreToGpa(mark.getTotalScore());
-        }
-
-        return totalGpa / transcript.getMarks().size();
-    }
-
-    private double scoreToGpa(double score) {
-        if (score >= 94.5) return 4.0;
-        if (score >= 89.5) return 3.67;
-        if (score >= 84.5) return 3.33;
-        if (score >= 79.5) return 3.0;
-        if (score >= 74.5) return 2.67;
-        if (score >= 69.5) return 2.33;
-        if (score >= 64.5) return 2.0;
-        if (score >= 59.5) return 1.67;
-        if (score >= 54.5) return 1.33;
-        if (score >= 49.5) return 1.0;
-        if (score >= 44.5) return 0.67;
-        if (score >= 39.5) return 0.33;
-        return 0.0;
-    }
-
     private void log(String action) {
         User actor = authService.getCurrentUser();
         if (actor != null) {
