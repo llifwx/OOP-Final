@@ -15,8 +15,8 @@ public class Manager extends Employee {
     private static final long serialVersionUID = 1L;
     private ManagerType managerType;
 
-    public Manager(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, ManagerType managerType) {
-        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+    public Manager(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, ManagerType managerType) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.managerType = managerType;
     }
 
