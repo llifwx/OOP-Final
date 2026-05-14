@@ -11,8 +11,8 @@ public class TechSupportSpecialist extends Employee {
 
     private List<TechSupportReq> requests;
 
-    public TechSupportSpecialist(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, List<TechSupportReq> requests) {
-        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+    public TechSupportSpecialist(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.requests = requests;
     }
 

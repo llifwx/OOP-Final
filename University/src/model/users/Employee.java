@@ -27,14 +27,6 @@ public class Employee extends User {
 
     public String getDepartment() {return this.department;}
 
-    public Message sendMessage(Employee receiver, String text) {}
-
-    ;
-
-    public List<Message> viewMessages() {}
-
-    public String getRoleName() {}
-
     @Override
     public String toString() {
         return "User: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId() + ". " + "EmployeeID: " + this.getEmployeeId() + "Department: " + this.getDepartment();

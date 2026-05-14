@@ -11,7 +11,7 @@ import model.social.News;
 import java.util.Date;
 import java.util.List;
 
-public class Manager extends Employee{
+public class Manager extends Employee {
     private static final long serialVersionUID = 1L;
     private ManagerType managerType;
 
@@ -20,11 +20,11 @@ public class Manager extends Employee{
         this.managerType = managerType;
     }
 
-    public void assignCourseToTeacher(Course course, Teacher teacher, LessonType lessonType) {}
-    public boolean approveRegistration(Student student, Course Course) {return true}
-    public void addCourseForRegistration(Course course) {}
-    public Report createAcademicReport(List<Student> students) {}
-    public void manageNews(News news) {}
-    public List<Student> viewStudentsSortedByGpa(List<Student> students) {}
-    public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {}
+    public ManagerType getManagerType() {
+        return managerType;
+    }
+
+    public void setManagerType(ManagerType managerType) {
+        this.managerType = managerType;
+    }
 }
