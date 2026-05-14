@@ -12,15 +12,14 @@ public class Employee extends User {
     private String department;
     private double salary;
     private Date hierDate;
-    private List<Message> inbox;
 
-    public Employee(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox) {
+
+    public Employee(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate) {
         super(username, password, fullName, email, language);
         this.employeeId = employeeId;
         this.department = department;
         this.salary = salary;
         this.hierDate = hierDate;
-        this.inbox = inbox;
     }
 
     public String getEmployeeId() {return this.employeeId;}

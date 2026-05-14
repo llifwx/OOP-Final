@@ -34,8 +34,6 @@ public class GraduateStudent extends Student implements Researcher {
 
     public Researcher viewSupervisor() {return supervisor;}
 
-    public void addDiplomaProject(ResearchPaper paper) {}
-
     @Override
     public int calculateHIndex() {return 0;}
 
@@ -56,8 +54,6 @@ public class GraduateStudent extends Student implements Researcher {
 
     //TODO:refactor lists getters and setters
     public List<ResearchPaper> getPapers() {return papers;}
-
-    public void addPaper(ResearchPaper paper) {}
 
     public List<ResearchPaper> getDiplomaProjects() {return diplomaProjects;}
 

@@ -34,7 +34,7 @@ public class TechSupportSpecialistMenu {
             System.out.println("║         " + padding.padRight("Welcome, " + specialist.getFullName(), 29) + "║");
             System.out.println("╠══════════════════════════════════════╣");
             System.out.println("╠══════════════════════════════════════╣");
-            System.out.printf("║  1. View new requests  (%s)       ║%n", padding.padRight(String.valueOf(newCount), 3));
+            System.out.printf("║  1. View new requests  (%s)          ║%n", padding.padRight(String.valueOf(newCount), 3));
             System.out.println("║  2. View all requests                ║");
             System.out.println("║  3. Filter by status                 ║");
             System.out.println("║  4. Open a request                   ║");

@@ -25,8 +25,8 @@ public class Teacher extends Employee {
     private List<ResearchPaper> papers;
     private List<ResearchProject> projects;
 
-    public Teacher(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, TeacherType teacherType, double rating, List<Course> courses, List<Complaint> complaints, List<ResearchPaper> papers, List<ResearchProject> projects) {
-        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+    public Teacher(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, TeacherType teacherType, double rating, List<Course> courses, List<Complaint> complaints, List<ResearchPaper> papers, List<ResearchProject> projects) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.teacherType = teacherType;
         this.rating = rating;
         this.courses = courses;
@@ -50,29 +50,9 @@ public class Teacher extends Employee {
         return courses;
     }
 
-    public List<Course> viewCourses() {
-        for (Course course : courses) {
-            /*TODO: allocate this to toString Course method*/
-            System.out.println("Code: " + course.getCourseCode() + "\n" + "Name: " + course.getName() + "\n" + "Credits: " + course.getCredits() + "\n" + "Course: " + course.getType() + "\n");
-        }
-        return courses;
-    }
-
     public void manageCourse(Course course) {}
 
     public void putMark(Student student, Course course, Mark mark) {}
-
-    public List<Student> viewStudents(Course course) {}
-
-    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {}
-
-    public int calculateHIndex() {}
-
-    public void printPapers(Comparator<ResearchPaper> cmp) {}
-
-    public void joinProject(ResearchProject project) {}
-
-    public void publishPaper(ResearchPaper paper, Journal journal) {}
 
     public void addCourse(Course course) {
         if (!courses.contains(course)) {
