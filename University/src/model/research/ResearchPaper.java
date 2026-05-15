@@ -1,11 +1,13 @@
 package model.research;
 
+import enums.Format;
 import interfaces.Researcher;
 import model.social.Journal;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResearchPaper implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -41,5 +43,19 @@ public class ResearchPaper implements Serializable {
 
     public String getDoi() {return doi;}
 
-    public void addCitation() {}
+    public void addCitation() {this.citations++;}
+
+    public String getCitation(Format format) {
+        String authorsStr = authors.stream()
+                .map(a -> a.toString())
+                .collect(Collectors.joining(", "));
+        String dateStr = new java.text.SimpleDateFormat("yyyy-MM-dd").format(publishDate);
+
+        if (format == Format.PLAIN_TEXT) {
+            return authorsStr + " (" + dateStr + "). " + title + ". " + journal.getName() + ", pp. " + pages + ". DOI: " + doi + ". Citations: " + citations;
+        } else {
+            String key = doi.hashCode() + "";
+            return "@article{" + key + ",\n  title={" + title + "},\n  author={" + authorsStr + "},\n  journal={" + journal.getName() + "},\n  year={" + (publishDate.getYear() + 1900) + "},\n  pages={" + pages + "},\n  doi={" + doi + "}\n}";
+        }
+    }
 }
