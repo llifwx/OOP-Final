@@ -1,17 +1,23 @@
 package model.users;
 
 import enums.DegreeType;
+import enums.Format;
 import enums.Language;
+import enums.NewsTopic;
+import exceptions.InvalidSupervisorEx;
+import exceptions.NotResearcherEx;
 import interfaces.Researcher;
 import model.social.Journal;
+import model.social.News;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-
+import storage.Database;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class GraduateStudent extends Student implements Researcher {
     private static final long serialVersionUID = 1L;
@@ -30,21 +36,58 @@ public class GraduateStudent extends Student implements Researcher {
         this.projects = new ArrayList<>();
     }
 
-    public void setSupervisor(Researcher supervisor) {this.supervisor = supervisor;}
+    public void setSupervisor(Researcher supervisor) throws InvalidSupervisorEx {
+        if (supervisor.calculateHIndex() < 3) {
+            throw new InvalidSupervisorEx();
+        }
+        this.supervisor = supervisor;
+    }
 
     public Researcher viewSupervisor() {return supervisor;}
 
     @Override
-    public int calculateHIndex() {return 0;}
+    public int calculateHIndex() {
+        if (papers.isEmpty()) return 0;
+        List<Integer> citations = papers.stream()
+                .map(ResearchPaper::getCitations)
+                .sorted((a, b) -> b - a)
+                .collect(Collectors.toList());
+        int h = 0;
+        for (int i = 0; i < citations.size(); i++) {
+            if (citations.get(i) >= i + 1) h = i + 1;
+            else break;
+        }
+        return h;
+    }
 
     @Override
-    public void printPapers(Comparator<ResearchPaper> comparator) {}
+    public void printPapers(Comparator<ResearchPaper> comparator) {
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        sorted.sort(comparator);
+        for (ResearchPaper p : sorted) {
+            System.out.println("- " + p.getTitle() + " | Citations: " + p.getCitations());
+        }
+    }
 
     @Override
-    public void joinProject(ResearchProject project) {}
+    public void joinProject(ResearchProject project) throws NotResearcherEx {
+        if (!(this instanceof Researcher)) {
+            throw new NotResearcherEx();
+        }
+        project.addParticipant(this);
+        this.projects.add(project);
+    }
 
     @Override
-    public void publishPaper(ResearchPaper paper, Journal journal) {}
+    public void publishPaper(ResearchPaper paper, Journal journal) {
+        this.papers.add(paper);
+        journal.addPaper(paper);
+        journal.notifySubscribers();
+        Database.getInstance().addResearchPaper(paper);
+        News news = new News("New Paper Published: " + paper.getTitle(), paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+        news.pin();
+        Database.getInstance().addNews(news);
+    }
 
     public DegreeType getDegreeType() {return degreeType;}
 

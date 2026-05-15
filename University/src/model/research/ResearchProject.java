@@ -1,6 +1,8 @@
 package model.research;
 
+import exceptions.NotResearcherEx;
 import interfaces.Researcher;
+import model.users.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,7 +32,12 @@ public class ResearchProject implements Serializable {
         return publishedPapers;
     }
 
-    public void addParticipant(Researcher researcher) {this.participants.add(researcher);}
+    public void addParticipant(Researcher researcher) throws NotResearcherEx {
+        if (!(researcher instanceof interfaces.Researcher)) {
+            throw new NotResearcherEx();
+        }
+        this.participants.add(researcher);
+    }
 
     public void removeParticipant(Researcher researcher) {this.participants.remove(researcher);}
 
