@@ -70,12 +70,13 @@ public class GraduateStudent extends Student implements Researcher {
     }
 
     @Override
-    public void joinProject(ResearchProject project) throws NotResearcherEx {
-        if (!(this instanceof Researcher)) {
-            throw new NotResearcherEx();
+    public void joinProject(ResearchProject project) {
+        try {
+            project.addParticipant(this);
+            this.projects.add(project);
+        } catch (NotResearcherEx e) {
+            System.out.println(e.getMessage());
         }
-        project.addParticipant(this);
-        this.projects.add(project);
     }
 
     @Override

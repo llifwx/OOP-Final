@@ -60,9 +60,7 @@ public class AdminService {
 
     public List<LogRecord> viewAllLogs() {
         requireAdmin();
-        List<LogRecord> logs = new ArrayList<>(database.getLogs());
-        System.out.println("[AdminService] Retrieved " + logs.size() + " log record(s).");
-        return logs;
+        return new ArrayList<>(database.getLogs());
     }
 
     public List<LogRecord> viewLogsForUser(User user) {
