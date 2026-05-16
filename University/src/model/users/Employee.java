@@ -3,6 +3,7 @@ package model.users;
 import enums.Language;
 import model.social.Message;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class Employee extends User {
 
     ;
 
-    public List<Message> viewMessages() {return inbox;}
+    public List<Message> viewMessages() {return new ArrayList<>();}
 
     public String getRoleName() {return getClass().getSimpleName();}
 

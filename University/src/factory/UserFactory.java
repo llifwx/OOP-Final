@@ -8,7 +8,6 @@ import model.academic.Complaint;
 import model.academic.Course;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import model.social.Message;
 import model.support.TechSupportReq;
 import model.users.Admin;
 import model.users.GraduateStudent;
@@ -54,7 +53,7 @@ public class UserFactory {
     }
 
     public static Admin createAdmin(String username, String password, String fullName, String email, Language language) {
-        return new Admin(username, password, fullName, email, language, new ArrayList<LogRecord>());
+        return new Admin(username, password, fullName, email, language);
     }
 
     public static Student createStudent(String username, String password, String fullName, String email,
@@ -75,7 +74,7 @@ public class UserFactory {
                                         Language language, String employeeId, String department, double salary,
                                         TeacherType teacherType) {
         return new Teacher(username, password, fullName, email, language, employeeId, department, salary, new Date(),
-                new ArrayList<Message>(), teacherType, 0.0, new ArrayList<Course>(), new ArrayList<Complaint>(),
+                teacherType, 0.0, new ArrayList<Course>(), new ArrayList<Complaint>(),
                 new ArrayList<ResearchPaper>(), new ArrayList<ResearchProject>());
     }
 
@@ -83,7 +82,7 @@ public class UserFactory {
                                         Language language, String employeeId, String department, double salary,
                                         ManagerType managerType) {
         return new Manager(username, password, fullName, email, language, employeeId, department, salary, new Date(),
-                new ArrayList<Message>(), managerType);
+                managerType);
     }
 
     public static TechSupportSpecialist createTechSupportSpecialist(String username, String password,
@@ -91,7 +90,7 @@ public class UserFactory {
                                                                     String employeeId, String department,
                                                                     double salary) {
         return new TechSupportSpecialist(username, password, fullName, email, language, employeeId, department,
-                salary, new Date(), new ArrayList<Message>(), new ArrayList<TechSupportReq>());
+                salary, new Date());
     }
 
     public static List<String> getSupportedRoles() {

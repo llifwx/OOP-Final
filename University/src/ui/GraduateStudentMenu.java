@@ -173,12 +173,8 @@ public class GraduateStudentMenu {
         }
 
         ResearchProject project = projects.get(num - 1);
-        try {
-            student.joinProject(project);
-            System.out.println("Successfully joined project: " + project.getTopic());
-        } catch (NotResearcherEx e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        student.joinProject(project);
+        System.out.println("Successfully joined project: " + project.getTopic());
     }
 
     private void viewSupervisor() {
