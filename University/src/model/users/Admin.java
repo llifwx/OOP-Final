@@ -13,8 +13,18 @@ public class Admin extends User {
         super(username, password, fullName, email, language);
     }
 
+    public List<LogRecord> getLogs() {return logs;}
+
+    public void addUser(User user) {}
+
+    public void removeUser(User user) {}
+
+    public void updateUser(User user) {}
+
+    public List<LogRecord> viewLogFiles() {return logs;}
+
     @Override
     public String toString() {
-        return "Admin: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId();
+        return "Admin: " + getUsername() + ". Full name: " + getFullName() + ". ID: " + getId() + ".";
     }
 }

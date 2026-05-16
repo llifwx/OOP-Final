@@ -54,6 +54,18 @@ public class Teacher extends Employee {
 
     public void putMark(Student student, Course course, Mark mark) {}
 
+    public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
+
+    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {return null;}
+
+    public int calculateHIndex() {return 0;}
+
+    public void printPapers(Comparator<ResearchPaper> cmp) {}
+
+    public void joinProject(ResearchProject project) {}
+
+    public void publishPaper(ResearchPaper paper, Journal journal) {}
+
     public void addCourse(Course course) {
         if (!courses.contains(course)) {
             courses.add(course);
