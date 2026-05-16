@@ -25,8 +25,8 @@ public class Teacher extends Employee {
     private List<ResearchPaper> papers;
     private List<ResearchProject> projects;
 
-    public Teacher(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, TeacherType teacherType, double rating, List<Course> courses, List<Complaint> complaints, List<ResearchPaper> papers, List<ResearchProject> projects) {
-        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+    public Teacher(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, TeacherType teacherType, double rating, List<Course> courses, List<Complaint> complaints, List<ResearchPaper> papers, List<ResearchProject> projects) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.teacherType = teacherType;
         this.rating = rating;
         this.courses = courses;
@@ -47,14 +47,6 @@ public class Teacher extends Employee {
     public List<ResearchProject> getProjects() {return this.projects;}
 
     public List<Course> getCourses() {
-        return courses;
-    }
-
-    public List<Course> viewCourses() {
-        for (Course course : courses) {
-            /*TODO: allocate this to toString Course method*/
-            System.out.println("Code: " + course.getCourseCode() + "\n" + "Name: " + course.getName() + "\n" + "Credits: " + course.getCredits() + "\n" + "Course: " + course.getType() + "\n");
-        }
         return courses;
     }
 

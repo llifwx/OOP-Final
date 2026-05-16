@@ -11,12 +11,12 @@ import model.social.News;
 import java.util.Date;
 import java.util.List;
 
-public class Manager extends Employee{
+public class Manager extends Employee {
     private static final long serialVersionUID = 1L;
     private ManagerType managerType;
 
-    public Manager(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, List<Message> inbox, ManagerType managerType) {
-        super(username, password, fullName, email, language, employeeId, department, salary, hierDate, inbox);
+    public Manager(String username, String password, String fullName, String email, Language language, String employeeId, String department, double salary, Date hierDate, ManagerType managerType) {
+        super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.managerType = managerType;
     }
 
@@ -27,4 +27,11 @@ public class Manager extends Employee{
     public void manageNews(News news) {}
     public List<Student> viewStudentsSortedByGpa(List<Student> students) {return students;}
     public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {return teachers;}
+    public ManagerType getManagerType() {
+        return managerType;
+    }
+
+    public void setManagerType(ManagerType managerType) {
+        this.managerType = managerType;
+    }
 }

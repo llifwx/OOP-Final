@@ -4,9 +4,9 @@ import model.research.ResearchPaper;
 
 import java.util.Comparator;
 
-public class ResearchPaperDateComparator implements Comparator<ResearchPaper> {
+public class ResearchPaperCitationComparator implements Comparator<ResearchPaper> {
     @Override
     public int compare(ResearchPaper p1, ResearchPaper p2) {
-        return p2.getPublishDate().compareTo(p1.getPublishDate());
+        return Integer.compare(p2.getCitations(), p1.getCitations());
     }
 }

@@ -39,10 +39,6 @@ public class Student extends User {
         this.transcript = new Transcript(this);
     }
 
-    public void registerForCourse(Course course) {}
-
-    public void dropCourse(Course course) {}
-
     public List<Course> viewCourses() {return registeredCourses;}
 
     public List<Mark> viewMarks() {return transcript.getMarks();}
@@ -52,10 +48,6 @@ public class Student extends User {
     public Transcript getTranscript() {return transcript;}
 
     public Teacher viewTeacherInfo(Course course) {return null;}
-
-    public void rateTeacher(Teacher teacher, int rate) {}
-
-    public void joinOrganization(StudentOrganization org) {}
 
     public String getStudentId() {return this.studentId;}
 
@@ -74,6 +66,8 @@ public class Student extends User {
     public int getFailedCoursesCount() {return this.failedCoursesCount;}
 
     public List<StudentOrganization> getOrganizations() {return this.organizations;}
+
+    public List<Course> getRegisteredCourses() {return registeredCourses;}
 
     public void setStudentId(String studentId) {this.studentId = studentId;}
 

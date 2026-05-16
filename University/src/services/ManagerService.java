@@ -6,129 +6,168 @@ import enums.LessonType;
 import model.academic.Course;
 import model.academic.Report;
 import model.social.News;
-import model.users.Student;
-import model.users.Teacher;
-import model.users.User;
+import model.users.*;
 import storage.Database;
+import utils.LogRecord;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ManagerService {
-    private final Database db;
+    private final Database database;
+    private final AuthService authService;
+    private final ReportService reportService;
 
-    public ManagerService(Database db) {this.db = db;}
+    public ManagerService(Database database, AuthService authService, ReportService reportService) {
+        this.database = database;
+        this.authService = authService;
+        this.reportService = reportService;
+    }
 
-    public void assignCourseToTeacher(String courseCode, int TeacherId, LessonType lessonType) {
-        Course course = db.findCourseByCode(courseCode);
-        User user = db.findUserById(TeacherId);
+    // Helper for auth checking.
+    private void requireManager() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof Manager)) {
+            throw new SecurityException("[Manager Service] : Access denied.");
+        }
+    }
 
+    // Academic management.
+    public void assignCourseToTeacher(String courseCode, int teacherId, LessonType lessonType) {
+        requireManager();
+
+        Course course = database.findCourseByCode(courseCode);
         if (course == null) {
-            System.out.println("Course not found!");
+            System.out.println("Course with code '" + courseCode + "' not found.");
             return;
         }
 
+        User user = database.findUserById(teacherId);
         if (!(user instanceof Teacher teacher)) {
-            System.out.println("Teacher not found!");
+            System.out.println("Teacher with ID '" + teacherId + "' not found.");
             return;
         }
 
         if (lessonType == LessonType.LECTURE) {
-            course.addInstructor((Teacher) user);
+            course.addInstructor(teacher);
         }
 
-        if (!teacher.getCourses().contains(course)) {
-            teacher.addCourse(course);
-        }
+        teacher.addCourse(course);
+        database.save();
 
-        db.save();
-        System.out.println("Teacher assigned to Course: " + course.getName());
+        log("Assigned teacher" + teacher.getFullName() + " to course " + course.getName() + " as " + lessonType);
+        System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " assigned to course " + course.getName() + " as " + lessonType + ".");
     }
 
     public boolean approveRegistration(Student student, Course course) {
+        requireManager();
+
         if (student == null || course == null) {
+            System.out.println("[Manager Service] : Approve failed. Student or course is null.");
             return false;
         }
 
         if (student.getCredits() + course.getCredits() > 21) {
-            System.out.println("Cannot approve registration. Credit limit exceeded.");
+            System.out.println("[Manager Service] : Cannot approve registration. Credit limit exceeded for student " + student.getFullName() + ". Limit: 21, Current: " + student.getCredits() + ", Course: " + course.getCredits());
             return false;
         }
-
         if (course.getEnrolledStudents().contains(student)) {
-            System.out.println("Student is already enrolled in this course.");
+            System.out.println("[Manager Service] : Student " + student.getFullName() + " is already enrolled in course " + course.getName() + ".");
             return false;
         }
 
+        student.getRegisteredCourses().add(course);
         course.enrollStudent(student);
-        student.registerForCourse(course);
 
-        db.save();
-        System.out.println("Registration approved for student: " + student.getFullName() + " in");
+        student.setCredits(student.getCredits() + course.getCredits());
+
+        database.save();
+        log("Approved registration for student " + student.getFullName() + " in course " + course.getName());
+        System.out.println("[Manager Service] : Registration approved for student " + student.getFullName() + " in course " + course.getName() + ".");
+
         return true;
     }
 
+
     public void addCourseForRegistration(Course course) {
+        requireManager();
+
         if (course == null) {
-            System.out.println("Course is not found.");
+            System.out.println("[Manager Service] : Course is null.");
             return;
         }
 
-        if (db.findCourseByCode(course.getCourseCode()) != null) {
-            System.out.println("Course with this code already exists.");
+        if (database.findCourseByCode(course.getCourseCode()) != null) {
+            System.out.println("[Manager Service] : Course with code '" + course.getCourseCode() + "' already exists.");
             return;
         }
 
-        db.addCourse(course);
-        db.save();
-
-        System.out.println("Course added for registration: " + course.getName());
+        database.addCourse(course);
+        database.save();
+        log("Added course for registration: " + course.getName());
+        System.out.println("[Manager Service] : Course '" + course.getName() + "' added for registration.");
     }
 
     public Report createAcademicReport(List<Student> students) {
-        if (students == null) {
-            students = new ArrayList<>();
-        }
-
-        int studentCnt = students.size();
-        double totalGpa = 0;
-        double averageGpa = 0;
-
-        for (Student student : students) {
-            totalGpa += student.getGpa();
-        }
-
-        if (studentCnt > 0) {
-            averageGpa = totalGpa / studentCnt;
-        }
-
-        String content = "Academic Report\n" + "Students count: " + studentCnt + "\n" + "Average GPA: " + averageGpa;
-
-        Report report = new Report("Academic Performance Report", students, content);
-
-        db.addReport(report);
-        db.save();
-
-        return report;
+        requireManager();
+        return reportService.createAcademicReport(students);
     }
 
-    public void manageNews(News news) {
+    public void addNews(News news) {
+        requireManager();
+
         if (news == null) {
-            System.out.println("News are not found.");
+            System.out.println("[Manager Service] : News is null.");
+            return;
+        }
+        if (database.findNewsByTitle(news.getTitle()) != null) {
+            System.out.println("[Manager Service] : News with title '" + news.getTitle() + "' already exists.");
             return;
         }
 
-        if (db.findNewsByTitle(news.getTitle()) == null) {
-            db.addNews(news);
-            System.out.println("News added: " + news.getTitle());
-        } else {
-            System.out.println("News with this title already exists.");
-        }
-
-        db.save();
+        database.addNews(news);
+        database.save();
+        log("Added news: " + news.getTitle());
+        System.out.println("[Manager Service] : News '" + news.getTitle() + " added");
     }
 
+    public boolean removeNews(String title) {
+        requireManager();
+
+        News news = database.findNewsByTitle(title);
+        if (news == null) {
+            System.out.println("[Manager Service] : News with title '" + title + "' not found.");
+            return false;
+        }
+
+        database.getNews().remove(news);
+        database.save();
+        log("Removed news: " + title);
+        System.out.println("[Manager Service] : News '" + title + "' removed.");
+        return true;
+    }
+
+    public void pinNews(String title) {
+        requireManager();
+
+        News news = database.findNewsByTitle(title);
+        if (news == null) {
+            System.out.println("[Manager Service] : News with title '" + title + "' not found.");
+            return;
+        }
+
+        news.pin();
+        database.save();
+        log("Pinned news: " + title);
+        System.out.println("[Manager Service] : News '" + title + "' pinned.");
+        return;
+    }
+
+
+    // Sorted views.
     public List<Student> viewStudentsSortedByGpa(List<Student> students) {
+        requireManager();
+
         if (students == null) {
             return new ArrayList<>();
         }
@@ -140,6 +179,8 @@ public class ManagerService {
     }
 
     public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {
+        requireManager();
+
         if (teachers == null) {
             return new ArrayList<>();
         }
@@ -148,5 +189,14 @@ public class ManagerService {
         sortedTeachers.sort(new TeacherNameComparator());
 
         return sortedTeachers;
+    }
+
+
+    // Helpers for methods.
+    private void log(String action) {
+        User actor = authService.getCurrentUser();
+        if (actor != null) {
+            database.addLog(new LogRecord(actor, action));
+        }
     }
 }
