@@ -5,7 +5,7 @@ import model.users.TechSupportSpecialist;
 import model.users.User;
 import services.*;
 import storage.Database;
-import ui.menu.TechSupportSpecialistMenu;
+import ui.TechSupportSpecialistMenu;
 
 import java.util.Scanner;
 

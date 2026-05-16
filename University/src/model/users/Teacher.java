@@ -34,8 +34,7 @@ public class Teacher extends Employee {
         this.papers = papers;
         this.projects = projects;
     }
-
-    /*TODO: make each list getter with for loop*/
+    
     public TeacherType getTeacherType() {return this.teacherType;}
 
     public double getRating() {return this.rating;}

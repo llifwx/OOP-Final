@@ -1,3 +1,3 @@
-package ui.menu;
+package ui;
 
 public class StudentMenu {}

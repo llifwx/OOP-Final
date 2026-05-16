@@ -1,4 +1,4 @@
-package ui.menu;
+package ui;
 
 import enums.RequestStatus;
 import model.support.TechSupportReq;
@@ -8,7 +8,6 @@ import services.TechSupportService;
 import utils.UserNamePadding;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class TechSupportSpecialistMenu {
