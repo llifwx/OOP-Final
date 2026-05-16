@@ -4,6 +4,7 @@ package model.users;
 import enums.Language;
 import utils.LogRecord;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Admin extends User {
@@ -13,7 +14,7 @@ public class Admin extends User {
         super(username, password, fullName, email, language);
     }
 
-    public List<LogRecord> getLogs() {return logs;}
+    public List<LogRecord> getLogs() {return new ArrayList<>();}
 
     public void addUser(User user) {}
 
@@ -21,7 +22,7 @@ public class Admin extends User {
 
     public void updateUser(User user) {}
 
-    public List<LogRecord> viewLogFiles() {return logs;}
+    public List<LogRecord> viewLogFiles() {return getLogs();}
 
     @Override
     public String toString() {

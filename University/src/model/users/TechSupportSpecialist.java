@@ -4,6 +4,7 @@ import enums.Language;
 import model.social.Message;
 import model.support.TechSupportReq;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,9 +15,9 @@ public class TechSupportSpecialist extends Employee {
         super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
     }
 
-    public List<TechSupportReq> getRequests() {return requests;}
+    public List<TechSupportReq> getRequests() {return new ArrayList<>();}
 
-    public List<TechSupportReq> viewNewRequests() {return requests;}
+    public List<TechSupportReq> viewNewRequests() {return getRequests();}
 
     public void acceptRequest(TechSupportReq req) {}
 
