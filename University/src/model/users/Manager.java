@@ -21,10 +21,10 @@ public class Manager extends Employee{
     }
 
     public void assignCourseToTeacher(Course course, Teacher teacher, LessonType lessonType) {}
-    public boolean approveRegistration(Student student, Course Course) {return true}
+    public boolean approveRegistration(Student student, Course Course) {return true;}
     public void addCourseForRegistration(Course course) {}
-    public Report createAcademicReport(List<Student> students) {}
+    public Report createAcademicReport(List<Student> students) {return null;}
     public void manageNews(News news) {}
-    public List<Student> viewStudentsSortedByGpa(List<Student> students) {}
-    public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {}
+    public List<Student> viewStudentsSortedByGpa(List<Student> students) {return students;}
+    public List<Teacher> viewTeachersAlphabetically(List<Teacher> teachers) {return teachers;}
 }

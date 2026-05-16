@@ -35,6 +35,7 @@ public class AdminService {
         boolean result = userService.registerUser(user);
         if (result) {
             log("Admin added user: " + user.getUsername());
+            database.save();
         }
         return result;
     }
@@ -44,6 +45,7 @@ public class AdminService {
         boolean result = userService.removeUser(username);
         if (result) {
             log("Admin removed user: " + username);
+            database.save();
         }
         return result;
     }
@@ -51,8 +53,8 @@ public class AdminService {
     public void updateUser(User user) {
         requireAdmin();
         if (user == null) return;
-        // The user object is mutated directly — this confirms the change and logs it.
         log("Admin updated user: " + user.getUsername());
+        database.save();
         System.out.println("[AdminService] User '" + user.getUsername() + "' updated.");
     }
 
@@ -75,11 +77,12 @@ public class AdminService {
             System.out.println("[AdminService] No logs found.");
             return;
         }
-        System.out.println("─── System Logs ───────────────────────────────");
+
+        System.out.println("----- System Logs -----");
         for (LogRecord log : logs) {
             System.out.println(log);
         }
-        System.out.println("───────────────────────────────────────────────");
+        System.out.println("-----------------------");
     }
 
     public List<User> listAllUsers() {
@@ -94,11 +97,12 @@ public class AdminService {
             System.out.println("[AdminService] No users in system.");
             return;
         }
-        System.out.println("─── All Users ──────────────────────────────────");
-        for (User u : users) {
-            System.out.println("[" + u.getClass().getSimpleName() + "] " + u);
+
+        System.out.println("----- All Users -----");
+        for (User user : users) {
+            System.out.println("[" + user.getClass().getSimpleName() + "] " + user);
         }
-        System.out.println("───────────────────────────────────────────────");
+        System.out.println("---------------------");
     }
 
     private void log(String action) {

@@ -23,10 +23,10 @@ public class Admin extends User {
 
     public void updateUser(User user) {}
 
-    public List<LogRecord> viewLogFiles() {}
+    public List<LogRecord> viewLogFiles() {return logs;}
 
     @Override
     public String toString() {
-        return "Logs: " + this.getLogs();
+        return "Admin: " + getUsername() + ". Full name: " + getFullName() + ". ID: " + getId() + ".";
     }
 }

@@ -1,6 +1,7 @@
 package model.users;
 
 import enums.Language;
+import model.social.Message;
 import model.support.TechSupportReq;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ public class TechSupportSpecialist extends Employee {
 
     public List<TechSupportReq> getRequests() {return requests;}
 
-    public List<TechSupportReq> viewNewRequests() {}
+    public List<TechSupportReq> viewNewRequests() {return requests;}
 
     public void acceptRequest(TechSupportReq req) {}
 

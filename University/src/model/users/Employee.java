@@ -27,13 +27,13 @@ public class Employee extends User {
 
     public String getDepartment() {return this.department;}
 
-    public Message sendMessage(Employee receiver, String text) {}
+    public Message sendMessage(Employee receiver, String text) {return null;}
 
     ;
 
-    public List<Message> viewMessages() {}
+    public List<Message> viewMessages() {return inbox;}
 
-    public String getRoleName() {}
+    public String getRoleName() {return getClass().getSimpleName();}
 
     @Override
     public String toString() {

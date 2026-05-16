@@ -62,11 +62,11 @@ public class Teacher extends Employee {
 
     public void putMark(Student student, Course course, Mark mark) {}
 
-    public List<Student> viewStudents(Course course) {}
+    public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
 
-    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {}
+    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {return null;}
 
-    public int calculateHIndex() {}
+    public int calculateHIndex() {return 0;}
 
     public void printPapers(Comparator<ResearchPaper> cmp) {}
 
