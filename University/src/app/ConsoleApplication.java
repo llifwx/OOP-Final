@@ -7,7 +7,7 @@ import model.users.User;
 import services.*;
 import storage.Database;
 import ui.menu.AdminMenu;
-import ui.menu.TechSupportSpecialistMenu;
+import ui.TechSupportSpecialistMenu;
 
 import java.util.Scanner;
 
