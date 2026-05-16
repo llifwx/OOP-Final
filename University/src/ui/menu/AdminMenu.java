@@ -31,17 +31,17 @@ public class AdminMenu {
             int usersCount = adminService.listAllUsers().size();
             int logsCount = adminService.viewAllLogs().size();
 
-            System.out.println("\n+--------------------------------------+");
-            System.out.println("|                ADMIN                 |");
-            System.out.println("|         " + padding.padRight("Welcome, " + admin.getFullName(), 28) + " |");
-            System.out.println("+--------------------------------------+");
-            System.out.printf("|  1. Add user              (%s)       |%n", padding.padRight(String.valueOf(usersCount), 3));
-            System.out.println("|  2. Remove user                     |");
-            System.out.println("|  3. View all users                  |");
-            System.out.printf("|  4. View all logs         (%s)       |%n", padding.padRight(String.valueOf(logsCount), 3));
-            System.out.println("|  5. View logs by username           |");
-            System.out.println("|  0. Logout                          |");
-            System.out.println("+--------------------------------------+");
+            System.out.println("\n╔══════════════════════════════════════╗");
+            System.out.println("║                ADMIN                 ║");
+            System.out.println("║         " + padding.padRight("Welcome, " + admin.getFullName(), 28) + " ║");
+            System.out.println("╠══════════════════════════════════════╣");
+            System.out.printf("║  1. Add user              (%s)       ║%n", padding.padRight(String.valueOf(usersCount), 3));
+            System.out.println("║  2. Remove user                     ║");
+            System.out.println("║  3. View all users                  ║");
+            System.out.printf("║  4. View all logs         (%s)       ║%n", padding.padRight(String.valueOf(logsCount), 3));
+            System.out.println("║  5. View logs by username           ║");
+            System.out.println("║  0. Logout                          ║");
+            System.out.println("╚══════════════════════════════════════╝");
 
             System.out.print("Your choice: ");
 
