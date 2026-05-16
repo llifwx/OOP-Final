@@ -1,10 +1,12 @@
 package app;
 
 import services.ReportService;
+import model.users.Admin;
 import model.users.TechSupportSpecialist;
 import model.users.User;
 import services.*;
 import storage.Database;
+import ui.menu.AdminMenu;
 import ui.menu.TechSupportSpecialistMenu;
 
 import java.util.Scanner;
@@ -23,6 +25,7 @@ public class ConsoleApplication {
     // todo add other services
 
     // Menus
+    private final AdminMenu adminMenu;
     private final TechSupportSpecialistMenu techSupportSpecialistMenu;
     // todo add other menus
 
@@ -41,6 +44,7 @@ public class ConsoleApplication {
         // todo add other service initializers
 
         // Init menus
+        this.adminMenu = new AdminMenu(adminService, authService, sc);
         this.techSupportSpecialistMenu = new TechSupportSpecialistMenu(techSupportService, authService, sc);
     }
 
@@ -100,6 +104,7 @@ public class ConsoleApplication {
         User user = authService.getCurrentUser();
 
         switch (user) {
+            case Admin i -> adminMenu.show();
             case TechSupportSpecialist i -> techSupportSpecialistMenu.show();
             // todo add other routes to roles
             default -> System.out.println("Menu for your role is not implemented yet.");
