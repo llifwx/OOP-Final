@@ -9,10 +9,8 @@ import java.util.Scanner;
 
 public class ResearchPaperService {
     private static ResearchPaperService instance;
-    private Database db;
 
     private ResearchPaperService() {
-        this.db = Database.getInstance();
     }
 
     public static ResearchPaperService getInstance() {
@@ -21,7 +19,7 @@ public class ResearchPaperService {
     }
 
     public List<ResearchPaper> getAllPapers() {
-        return db.getResearchPapers();
+        return db().getResearchPapers();
     }
 
     public void printPaperCitation(ResearchPaper paper, Format format) {
@@ -39,14 +37,19 @@ public class ResearchPaperService {
     }
 
     public void addPaperToDatabase(ResearchPaper paper) {
-        db.addResearchPaper(paper);
+        db().addResearchPaper(paper);
+        db().save();
     }
 
     public List<Journal> getAllJournals() {
-        return db.getJournals();
+        return db().getJournals();
     }
 
     public Journal findJournalByName(String name) {
-        return db.findJournalByName(name);
+        return db().findJournalByName(name);
+    }
+
+    private Database db() {
+        return Database.getInstance();
     }
 }

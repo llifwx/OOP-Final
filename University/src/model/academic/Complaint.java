@@ -28,6 +28,12 @@ public class Complaint implements Serializable {
         this.date = new Date();
     }
 
+    public static void synchronizeNextId(int nextId) {
+        if (nextId > idCnt) {
+            idCnt = nextId;
+        }
+    }
+
     public int getId() {return this.id;}
 
     public String getSummary() {return "";}

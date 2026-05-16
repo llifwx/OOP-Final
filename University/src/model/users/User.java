@@ -5,6 +5,9 @@ import model.social.Journal;
 import model.social.News;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,10 +25,16 @@ public abstract class User implements Serializable {
     public User(String username, String password, String fullName, String email, Language language) {
         this.id = ++idCounter;
         this.username = username;
-        this.password = password;
+        this.password = hashPassword(password);
         this.fullName = fullName;
         this.email = email;
         this.language = language;
+    }
+
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
     }
 
     public String getEmail() {return this.email;}
@@ -41,7 +50,22 @@ public abstract class User implements Serializable {
     public void setUsername(String newUsername) {this.username = newUsername;}
 
     public boolean login(String password) {
-        return this.password.equals(password);
+        return Objects.equals(this.password, hashPassword(password)) || Objects.equals(this.password, password);
+    }
+
+    private static String hashPassword(String password) {
+        if (password == null) return null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder result = new StringBuilder(hash.length * 2);
+            for (byte b : hash) {
+                result.append(String.format("%02x", b));
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is not available", e);
+        }
     }
 
     ;

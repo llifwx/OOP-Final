@@ -88,6 +88,7 @@ public class GraduateStudent extends Student implements Researcher {
         News news = new News("New Paper Published: " + paper.getTitle(), paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
         news.pin();
         Database.getInstance().addNews(news);
+        Database.getInstance().save();
     }
 
     public DegreeType getDegreeType() {return degreeType;}

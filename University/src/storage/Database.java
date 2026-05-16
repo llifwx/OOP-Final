@@ -43,6 +43,7 @@ public class Database implements Serializable {
 
     private List<LogRecord> logs;
     private List<Report> reports;
+    private int nextTechSupportReqId;
 
     private Database() {
         this.users = new ArrayList<>();
@@ -63,6 +64,7 @@ public class Database implements Serializable {
 
         this.logs = new ArrayList<>();
         this.reports = new ArrayList<>();
+        this.nextTechSupportReqId = 1;
     }
 
     public static Database getInstance() {
@@ -75,6 +77,9 @@ public class Database implements Serializable {
 
     public static void setInstance(Database instance) {
         Database.instance = instance;
+        if (Database.instance != null) {
+            Database.instance.normalizeAfterLoad();
+        }
     }
 
     public static void load() {
@@ -86,6 +91,82 @@ public class Database implements Serializable {
 
     public void save() {
         FileStorage.save(this);
+    }
+
+    public int nextTechSupportReqId() {
+        return nextTechSupportReqId++;
+    }
+
+    private void normalizeAfterLoad() {
+        ensureLists();
+        synchronizeGeneratedIds();
+    }
+
+    private void ensureLists() {
+        if (users == null) users = new ArrayList<>();
+        if (courses == null) courses = new ArrayList<>();
+        if (lessons == null) lessons = new ArrayList<>();
+        if (complaints == null) complaints = new ArrayList<>();
+        if (studentOrganizations == null) studentOrganizations = new ArrayList<>();
+        if (news == null) news = new ArrayList<>();
+        if (journals == null) journals = new ArrayList<>();
+        if (messages == null) messages = new ArrayList<>();
+        if (researchProjects == null) researchProjects = new ArrayList<>();
+        if (researchPapers == null) researchPapers = new ArrayList<>();
+        if (techSupportReqs == null) techSupportReqs = new ArrayList<>();
+        if (logs == null) logs = new ArrayList<>();
+        if (reports == null) reports = new ArrayList<>();
+        if (nextTechSupportReqId <= 0) nextTechSupportReqId = 1;
+    }
+
+    private void synchronizeGeneratedIds() {
+        int maxUserId = 0;
+        for (User user : users) {
+            if (user != null && user.getId() > maxUserId) maxUserId = user.getId();
+        }
+        User.synchronizeIdCounter(maxUserId);
+
+        int maxCourseId = 0;
+        for (Course course : courses) {
+            if (course != null && course.getId() > maxCourseId) maxCourseId = course.getId();
+        }
+        Course.synchronizeIdCounter(maxCourseId);
+
+        int maxLessonId = 0;
+        for (Lesson lesson : lessons) {
+            if (lesson != null && lesson.getId() > maxLessonId) maxLessonId = lesson.getId();
+        }
+        Lesson.synchronizeIdCounter(maxLessonId);
+
+        int maxComplaintId = 0;
+        for (Complaint complaint : complaints) {
+            if (complaint != null && complaint.getId() > maxComplaintId) maxComplaintId = complaint.getId();
+        }
+        Complaint.synchronizeNextId(maxComplaintId + 1);
+
+        int maxOrganizationId = 0;
+        for (StudentOrganization organization : studentOrganizations) {
+            if (organization != null && organization.getId() > maxOrganizationId) maxOrganizationId = organization.getId();
+        }
+        StudentOrganization.synchronizeIdCounter(maxOrganizationId);
+
+        int maxMessageId = -1;
+        for (Message message : messages) {
+            if (message != null && message.getId() > maxMessageId) maxMessageId = message.getId();
+        }
+        Message.synchronizeNextId(maxMessageId + 1);
+
+        int maxSupportReqId = 0;
+        for (TechSupportReq request : techSupportReqs) {
+            if (request != null && request.getId() > maxSupportReqId) maxSupportReqId = request.getId();
+        }
+        if (nextTechSupportReqId <= maxSupportReqId) nextTechSupportReqId = maxSupportReqId + 1;
+
+        int maxLogId = -1;
+        for (LogRecord log : logs) {
+            if (log != null && log.getId() > maxLogId) maxLogId = log.getId();
+        }
+        LogRecord.synchronizeNextId(maxLogId + 1);
     }
 
     public List<User> getUsers() {return users;}

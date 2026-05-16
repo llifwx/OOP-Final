@@ -25,6 +25,12 @@ public class Mark implements Serializable {
         this.course = course;
     }
 
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
     public int getId() {return id;}
 
     public Student getStudent() {return student;}

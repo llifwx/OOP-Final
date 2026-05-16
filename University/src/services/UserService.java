@@ -29,6 +29,7 @@ public class UserService {
 
         database.addUser(user);
         log("Registered new user: " + user.getUsername() + " [" + user.getClass().getSimpleName() + "]");
+        database.save();
         System.out.println("[UserService] User '" + user.getUsername() + "' registered successfully.");
         return true;
     }
@@ -86,6 +87,7 @@ public class UserService {
         String old = user.getUsername();
         user.setUsername(newUsername);
         log("Changed username from '" + old + "' to '" + newUsername + "'");
+        database.save();
         return true;
     }
 
@@ -107,6 +109,7 @@ public class UserService {
 
         database.getUsers().remove(user);
         log("Removed user: " + username);
+        database.save();
         System.out.println("[UserService] User '" + username + "' removed.");
         return true;
     }
@@ -115,6 +118,7 @@ public class UserService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
+            database.save();
         }
     }
 }

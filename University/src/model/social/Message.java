@@ -24,6 +24,12 @@ public class Message implements Serializable {
         this.isRead = false;
     }
 
+    public static void synchronizeNextId(int nextId) {
+        if (nextId > idCnt) {
+            idCnt = nextId;
+        }
+    }
+
     public static int getIdCnt() {
         return idCnt;
     }

@@ -28,6 +28,12 @@ public class Lesson implements Serializable {
         this.teacher = teacher;
     }
 
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
     public int getId() {return id;}
 
     public LessonType getType() {return type;}

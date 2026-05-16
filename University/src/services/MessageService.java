@@ -185,6 +185,7 @@ public class MessageService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
+            database.save();
         }
     }
 }

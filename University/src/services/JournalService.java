@@ -9,10 +9,8 @@ import java.util.List;
 
 public class JournalService {
     private static JournalService instance;
-    private Database db;
 
     private JournalService() {
-        this.db = Database.getInstance();
     }
 
     public static JournalService getInstance() {
@@ -21,33 +19,41 @@ public class JournalService {
     }
 
     public List<Journal> getAllJournals() {
-        return db.getJournals();
+        return db().getJournals();
     }
 
     public Journal findJournalByName(String name) {
-        return db.findJournalByName(name);
+        return db().findJournalByName(name);
     }
 
     public void addJournal(Journal journal) {
-        db.addJournal(journal);
+        db().addJournal(journal);
+        db().save();
     }
 
     public void subscribe(User user, Journal journal) {
         journal.subscribe(user);
+        db().save();
     }
 
     public void unsubscribe(User user, Journal journal) {
         journal.unsubscribe(user);
+        db().save();
     }
 
     public void publishPaper(Journal journal, ResearchPaper paper) {
         journal.addPaper(paper);
         journal.notifySubscribers();
+        db().save();
     }
 
     public void printJournalInfo(Journal journal) {
         System.out.println("Name: " + journal.getName());
         System.out.println("Papers: " + journal.getPapers().size());
         System.out.println("Subscribers: " + journal.getSubscribers().size());
+    }
+
+    private Database db() {
+        return Database.getInstance();
     }
 }
