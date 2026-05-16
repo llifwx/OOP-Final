@@ -34,6 +34,12 @@ public class Course implements Serializable {
         this.language = language;
     }
 
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
     // Геттеры
     public int getId() {return id;}
 

@@ -55,7 +55,7 @@ public class ResearchPaper implements Serializable {
             return authorsStr + " (" + dateStr + "). " + title + ". " + journal.getName() + ", pp. " + pages + ". DOI: " + doi + ". Citations: " + citations;
         } else {
             String key = doi.hashCode() + "";
-            return "@article{" + key + ",\n  title={" + title + "},\n  author={" + authorsStr + "},\n  journal={" + journal.getName() + "},\n  year={" + (publishDate.getYear() + 1900) + "},\n  pages={" + pages + "},\n  doi={" + doi + "}\n}";
+            return "@article{" + key + ",\n  title={" + title + "},\n  author={" + authorsStr + "},\n  journal={" + journal.getName() + "},\n  year={" + dateStr.substring(0, 4) + "},\n  pages={" + pages + "},\n  doi={" + doi + "}\n}";
         }
     }
 }

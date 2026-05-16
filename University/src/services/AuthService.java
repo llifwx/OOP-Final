@@ -35,6 +35,7 @@ public class AuthService {
         this.currentUser = user;
         LogRecord log = new LogRecord(user, "Logged in");
         database.addLog(log);
+        database.save();
         System.out.println("[AuthService] User '" + username + "' logged in successfully.");
         return user;
     }
@@ -47,6 +48,7 @@ public class AuthService {
 
         LogRecord log = new LogRecord(currentUser, "Logged out");
         database.addLog(log);
+        database.save();
         System.out.println("[AuthService] User '" + currentUser.getUsername() + "' logged out.");
         currentUser.logout();
         this.currentUser = null;

@@ -6,10 +6,8 @@ import java.util.List;
 
 public class ResearchService {
     private static ResearchService instance;
-    private Database db;
 
     private ResearchService() {
-        this.db = Database.getInstance();
     }
 
     public static ResearchService getInstance() {
@@ -18,18 +16,23 @@ public class ResearchService {
     }
 
     public List<ResearchPaper> getAllPapers() {
-        return db.getResearchPapers();
+        return db().getResearchPapers();
     }
 
     public ResearchPaper findPaperByTitle(String title) {
-        return db.findResearchPaperByTitle(title);
+        return db().findResearchPaperByTitle(title);
     }
 
     public ResearchPaper findPaperByDoi(String doi) {
-        return db.findResearchPaperByDoi(doi);
+        return db().findResearchPaperByDoi(doi);
     }
 
     public void addPaper(ResearchPaper paper) {
-        db.addResearchPaper(paper);
+        db().addResearchPaper(paper);
+        db().save();
+    }
+
+    private Database db() {
+        return Database.getInstance();
     }
 }

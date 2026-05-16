@@ -2,9 +2,11 @@ package utils;
 
 import model.users.User;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class LogRecord {
+public class LogRecord implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static int idCnt;
     private int id;
     private User user;
@@ -16,6 +18,12 @@ public class LogRecord {
         this.user = user;
         this.action = action;
         this.date = new Date();
+    }
+
+    public static void synchronizeNextId(int nextId) {
+        if (nextId > idCnt) {
+            idCnt = nextId;
+        }
     }
 
     public int getId() {

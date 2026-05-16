@@ -24,6 +24,12 @@ public class StudentOrganization implements Serializable {
         this.description = description;
     }
 
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
     public int getId() {return id;}
 
     public String getName() {return name;}

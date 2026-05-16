@@ -45,7 +45,7 @@ public class TechSupportService {
             return null;
         }
 
-        int id = database.getTechSupportReqs().size() + 1;
+        int id = database.nextTechSupportReqId();
         TechSupportReq req = new TechSupportReq(id, sender, description);
 
         database.addTechSupportReq(req);
@@ -145,6 +145,7 @@ public class TechSupportService {
 
         if (reason == null || reason.isBlank()) {
             System.out.println("[TechSupportService] : Rejection reason cannot be empty.");
+            return false;
         }
 
         req.setStatus(RequestStatus.REJECTED);
@@ -223,6 +224,7 @@ public class TechSupportService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
+            database.save();
         }
     }
 
