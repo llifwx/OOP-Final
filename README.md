@@ -27,20 +27,21 @@ University/
 │   ├── social/
 │   └── support/
 ├── interfaces/
-├── service/
+├── services/
 ├── ui/
+│   └── menu/
 ├── storage/
 ├── factory/
 ├── comparator/
 ├── enums/
 ├── exceptions/
-└── util/
+└── utils/
 ```
 
 ## Getting Started
 
 ### Requirements
-- Java 17+
+- Java 21+
 - IntelliJ IDEA (recommended)
 
 ### Clone the repository
