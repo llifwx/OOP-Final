@@ -3,19 +3,22 @@ package model.users;
 import enums.Language;
 import enums.TeacherType;
 import enums.UrgencyLevel;
+import interfaces.Researcher;
 import model.academic.Complaint;
 import model.academic.Course;
 import model.academic.Mark;
 import model.social.Journal;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import model.social.Message;
+import storage.Database;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Teacher extends Employee {
+public class Teacher extends Employee implements Researcher {
     private static final long serialVersionUID = 1L;
 
     private TeacherType teacherType;
@@ -49,24 +52,82 @@ public class Teacher extends Employee {
         return courses;
     }
 
-    public void manageCourse(Course course) {}
+    public void manageCourse(Course course) {
+        addCourse(course);
+    }
 
-    public void putMark(Student student, Course course, Mark mark) {}
+    public void putMark(Student student, Course course, Mark mark) {
+        if (student == null || course == null || mark == null) return;
+        if (!course.getEnrolledStudents().contains(student)) return;
+
+        student.getTranscript().addMark(mark);
+        student.setGpa(student.getTranscript().calculateGpa());
+        Database.getInstance().save();
+    }
 
     public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
 
-    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {return null;}
+    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {
+        if (student == null || urgency == null || text == null || text.isBlank()) return null;
 
-    public int calculateHIndex() {return 0;}
+        Complaint complaint = new Complaint(this, student, urgency, text);
+        complaints.add(complaint);
+        Database.getInstance().addComplaint(complaint);
+        Database.getInstance().save();
+        return complaint;
+    }
 
-    public void printPapers(Comparator<ResearchPaper> cmp) {}
+    @Override
+    public int calculateHIndex() {
+        if (papers == null || papers.isEmpty()) return 0;
 
-    public void joinProject(ResearchProject project) {}
+        List<Integer> citations = papers.stream()
+                .map(ResearchPaper::getCitations)
+                .sorted((a, b) -> b - a)
+                .collect(Collectors.toList());
+        int h = 0;
+        for (int i = 0; i < citations.size(); i++) {
+            if (citations.get(i) >= i + 1) h = i + 1;
+            else break;
+        }
+        return h;
+    }
 
-    public void publishPaper(ResearchPaper paper, Journal journal) {}
+    @Override
+    public void printPapers(Comparator<ResearchPaper> cmp) {
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        sorted.sort(cmp);
+        for (ResearchPaper paper : sorted) {
+            System.out.println("- " + paper.getTitle() + " | Citations: " + paper.getCitations());
+        }
+    }
+
+    @Override
+    public void joinProject(ResearchProject project) {
+        if (project == null || projects.contains(project)) return;
+        try {
+            project.addParticipant(this);
+            projects.add(project);
+            Database.getInstance().save();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void publishPaper(ResearchPaper paper, Journal journal) {
+        if (paper == null || journal == null) return;
+        if (!papers.contains(paper)) {
+            papers.add(paper);
+        }
+        journal.addPaper(paper);
+        journal.notifySubscribers();
+        Database.getInstance().addResearchPaper(paper);
+        Database.getInstance().save();
+    }
 
     public void addCourse(Course course) {
-        if (!courses.contains(course)) {
+        if (course != null && !courses.contains(course)) {
             courses.add(course);
         }
     }

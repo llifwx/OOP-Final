@@ -31,11 +31,19 @@ public class Journal implements Serializable {
         return subscribers;
     }
 
-    public void subscribe(User user) {this.subscribers.add(user);}
+    public void subscribe(User user) {
+        if (user != null && !this.subscribers.contains(user)) {
+            this.subscribers.add(user);
+        }
+    }
 
     public void unsubscribe(User user) {this.subscribers.remove(user);}
 
-    public void addPaper(ResearchPaper paper) {this.papers.add(paper);}
+    public void addPaper(ResearchPaper paper) {
+        if (paper != null && !this.papers.contains(paper)) {
+            this.papers.add(paper);
+        }
+    }
 
     public void notifySubscribers() {
         for (User u : subscribers) u.receiveNotification("New paper in " + name);

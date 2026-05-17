@@ -50,7 +50,7 @@ public abstract class User implements Serializable {
     public void setUsername(String newUsername) {this.username = newUsername;}
 
     public boolean login(String password) {
-        return Objects.equals(this.password, hashPassword(password)) || Objects.equals(this.password, password);
+        return Objects.equals(this.password, hashPassword(password));
     }
 
     private static String hashPassword(String password) {

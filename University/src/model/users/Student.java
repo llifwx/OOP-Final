@@ -92,13 +92,11 @@ public class Student extends User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Student student)) return false;
-        return Objects.equals(studentId, student.studentId);
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId);
+        return super.hashCode();
     }
 }

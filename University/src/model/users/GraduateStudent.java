@@ -16,7 +16,6 @@ import storage.Database;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GraduateStudent extends Student implements Researcher {
@@ -71,9 +70,11 @@ public class GraduateStudent extends Student implements Researcher {
 
     @Override
     public void joinProject(ResearchProject project) {
+        if (project == null || projects.contains(project)) return;
         try {
             project.addParticipant(this);
             this.projects.add(project);
+            Database.getInstance().save();
         } catch (NotResearcherEx e) {
             System.out.println(e.getMessage());
         }
@@ -109,15 +110,4 @@ public class GraduateStudent extends Student implements Researcher {
         return "GraduateStudent: " + getUsername() + ". " + "Full name: " + getFullName() + ". " + "ID: " + getId() + ". " + "Degree: " + degreeType + ". " + "Supervisor: " + (supervisor != null ? supervisor.toString() : "none") + ".";
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof GraduateStudent gs)) return false;
-        return Objects.equals(getStudentId(), gs.getStudentId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStudentId());
-    }
 }

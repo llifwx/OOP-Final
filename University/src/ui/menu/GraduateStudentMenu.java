@@ -57,7 +57,10 @@ public class GraduateStudentMenu {
                 case "3" -> viewProjects();
                 case "4" -> joinProject();
                 case "5" -> viewSupervisor();
-                case "0" -> running = false;
+                case "0" -> {
+                    authService.logout();
+                    running = false;
+                }
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
