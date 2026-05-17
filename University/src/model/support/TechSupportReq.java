@@ -5,6 +5,7 @@ import enums.RequestStatus;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class TechSupportReq implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -40,5 +41,24 @@ public class TechSupportReq implements Serializable {
 
     public Date getCreatedDate() {
         return createdDate == null ? null : new Date(createdDate.getTime());
+    }
+
+    @Override
+    public String toString() {
+        return "TechSupportReq{" + "id=" + id + ", sender="
+                + (sender != null ? sender.getUsername() : "N/A") + ", status="
+                + status + ", createdDate=" + createdDate + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof TechSupportReq request)) return false;
+        return id == request.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

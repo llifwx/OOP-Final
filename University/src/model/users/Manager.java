@@ -20,4 +20,11 @@ public class Manager extends Employee {
     public void setManagerType(ManagerType managerType) {
         this.managerType = managerType;
     }
+
+    @Override
+    public String toString() {
+        return "Manager: " + getUsername() + ". Full name: " + getFullName()
+                + ". ID: " + getId() + ". EmployeeID: " + getEmployeeId()
+                + ". Department: " + getDepartment() + ". Type: " + managerType + ".";
+    }
 }

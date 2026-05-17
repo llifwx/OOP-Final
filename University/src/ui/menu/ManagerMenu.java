@@ -5,6 +5,7 @@ import model.users.Teacher;
 import services.AuthService;
 import services.ManagerService;
 import services.UserService;
+import utils.UserNamePadding;
 
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +15,7 @@ public class ManagerMenu {
     private final UserService userService;
     private final AuthService authService;
     private final Scanner sc;
+    private final UserNamePadding padding = new UserNamePadding();
 
     public ManagerMenu(ManagerService managerService, UserService userService, AuthService authService, Scanner sc) {
         this.managerService = managerService;
@@ -26,11 +28,15 @@ public class ManagerMenu {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===== MANAGER =====");
-            System.out.println("1. View students sorted by GPA");
-            System.out.println("2. View teachers alphabetically");
-            System.out.println("3. Create academic report");
-            System.out.println("0. Logout");
+            System.out.println("\n╔══════════════════════════════════════╗");
+            System.out.println("║               MANAGER                ║");
+            System.out.println("║                 Welcome              ║");
+            System.out.println("╠══════════════════════════════════════╣");
+            System.out.println("║     1. View students sorted by GPA   ║");
+            System.out.println("║     2. View teachers alphabetically  ║");
+            System.out.println("║     3. Create academic report        ║");
+            System.out.println("║     0. Logout                        ║");
+            System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Your choice: ");
 
             switch (sc.nextLine().trim()) {

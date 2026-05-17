@@ -138,6 +138,16 @@ public class Database implements Serializable {
         }
         Lesson.synchronizeIdCounter(maxLessonId);
 
+        int maxMarkId = 0;
+        for (User user : users) {
+            if (user instanceof Student student && student.getTranscript() != null) {
+                for (Mark mark : student.getTranscript().getMarks()) {
+                    if (mark != null && mark.getId() > maxMarkId) maxMarkId = mark.getId();
+                }
+            }
+        }
+        Mark.synchronizeIdCounter(maxMarkId);
+
         int maxComplaintId = 0;
         for (Complaint complaint : complaints) {
             if (complaint != null && complaint.getId() > maxComplaintId) maxComplaintId = complaint.getId();
@@ -156,6 +166,42 @@ public class Database implements Serializable {
         }
         Message.synchronizeNextId(maxMessageId + 1);
 
+        int maxNewsId = 0;
+        for (News newsItem : news) {
+            if (newsItem != null && newsItem.getId() > maxNewsId) maxNewsId = newsItem.getId();
+        }
+        News.synchronizeIdCounter(maxNewsId);
+        for (News newsItem : news) {
+            if (newsItem != null) newsItem.ensureId();
+        }
+
+        int maxJournalId = 0;
+        for (Journal journal : journals) {
+            if (journal != null && journal.getId() > maxJournalId) maxJournalId = journal.getId();
+        }
+        Journal.synchronizeIdCounter(maxJournalId);
+        for (Journal journal : journals) {
+            if (journal != null) journal.ensureId();
+        }
+
+        int maxResearchProjectId = 0;
+        for (ResearchProject project : researchProjects) {
+            if (project != null && project.getId() > maxResearchProjectId) maxResearchProjectId = project.getId();
+        }
+        ResearchProject.synchronizeIdCounter(maxResearchProjectId);
+        for (ResearchProject project : researchProjects) {
+            if (project != null) project.ensureId();
+        }
+
+        int maxResearchPaperId = 0;
+        for (ResearchPaper paper : researchPapers) {
+            if (paper != null && paper.getId() > maxResearchPaperId) maxResearchPaperId = paper.getId();
+        }
+        ResearchPaper.synchronizeIdCounter(maxResearchPaperId);
+        for (ResearchPaper paper : researchPapers) {
+            if (paper != null) paper.ensureId();
+        }
+
         int maxSupportReqId = 0;
         for (TechSupportReq request : techSupportReqs) {
             if (request != null && request.getId() > maxSupportReqId) maxSupportReqId = request.getId();
@@ -167,6 +213,15 @@ public class Database implements Serializable {
             if (log != null && log.getId() > maxLogId) maxLogId = log.getId();
         }
         LogRecord.synchronizeNextId(maxLogId + 1);
+
+        int maxReportId = 0;
+        for (Report report : reports) {
+            if (report != null && report.getId() > maxReportId) maxReportId = report.getId();
+        }
+        Report.synchronizeIdCounter(maxReportId);
+        for (Report report : reports) {
+            if (report != null) report.ensureId();
+        }
     }
 
     public List<User> getUsers() {return users;}
@@ -220,6 +275,14 @@ public class Database implements Serializable {
     public void addLog(LogRecord log) {logs.add(log);}
 
     public void addReport(Report report) {reports.add(report);}
+
+    public boolean removeUser(User user) {return users.remove(user);}
+
+    public boolean removeNews(News newsItem) {return news.remove(newsItem);}
+
+    public boolean removeMessage(Message message) {return messages.remove(message);}
+
+    public boolean removeReport(Report report) {return reports.remove(report);}
 
     public User findUserByUsername(String username) {
         for (User user : users) {

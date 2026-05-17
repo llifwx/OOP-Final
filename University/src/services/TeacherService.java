@@ -10,7 +10,12 @@ import model.users.User;
 import storage.Database;
 import utils.LogRecord;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TeacherService {
+    private static final double FAILING_SCORE = 50.0;
+    private static final int MAX_FAILED_COURSES = 3;
     private final Database database;
     private final AuthService authService;
 
@@ -54,12 +59,28 @@ public class TeacherService {
             System.out.println("[TeacherService] Student is not enrolled in this course.");
             return false;
         }
+        if (mark.getTotalScore() < FAILING_SCORE && student.getFailedCoursesCount() >= MAX_FAILED_COURSES) {
+            System.out.println("[TeacherService] Cannot put failing mark. Student already has "
+                    + student.getFailedCoursesCount() + " failed courses.");
+            return false;
+        }
 
         student.getTranscript().addMark(mark);
         student.setGpa(student.getTranscript().calculateGpa());
+        if (mark.getTotalScore() < FAILING_SCORE) {
+            student.setFailedCoursesCount(student.getFailedCoursesCount() + 1);
+        }
         database.save();
         log("Put mark for student " + student.getUsername() + " in course " + course.getCourseCode());
         return true;
+    }
+
+    public List<Student> viewStudents(Course course) {
+        requireTeacher();
+        if (course == null) {
+            return new ArrayList<>();
+        }
+        return course.getEnrolledStudents();
     }
 
     public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {

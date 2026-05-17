@@ -129,6 +129,14 @@ public class MessageService {
         return all.stream().filter(message -> message.getText().toLowerCase().contains(lower)).collect(Collectors.toList());
     }
 
+    public String getPreview(Message message) {
+        if (message == null || message.getText() == null) {
+            return "";
+        }
+        String text = message.getText();
+        return text.substring(0, Math.min(text.length(), 20));
+    }
+
     public boolean deleteMessage(int messageId) {
         Employee current = requireEmployee();
         Message message = database.findMessageById(messageId);
@@ -142,7 +150,7 @@ public class MessageService {
             return false;
         }
 
-        boolean removed = database.getMessages().remove(message);
+        boolean removed = database.removeMessage(message);
         if (removed) {
             database.save();
             log("Deleted message with ID " + messageId);
@@ -159,10 +167,10 @@ public class MessageService {
             return;
         }
 
-        System.out.println("─── Inbox for " + authService.getCurrentUser().getUsername() + ". You have: " + inbox.size() + "unread messages. " + " ───────────────────────────────");
+        System.out.println("─── Inbox for " + authService.getCurrentUser().getUsername() + ". You have: " + getUnreadMessagesCount() + " unread messages. " + " ───────────────────────────────");
         for (Message m : inbox) {
             String status = m.isRead() ? " " : "*";
-            System.out.println("[" + m.getId() + "] " + status + " From);: " + m.getSender().getUsername() + " | " + m.getSentDate() + "\n    " + m.getText());
+            System.out.println("[" + m.getId() + "] " + status + " From: " + m.getSender().getUsername() + " | " + m.getSentDate() + "\n    " + m.getText());
             System.out.println("──────────────────────────────────────────────────────────────────────────────");
         }
     }
@@ -174,7 +182,7 @@ public class MessageService {
             return;
         }
 
-        System.out.println("─── Sent Messages for " + authService.getCurrentUser().getUsername() + ". You have: " + sent.size() + "sent messages. " + " ───────────────────────────────");
+        System.out.println("─── Sent Messages for " + authService.getCurrentUser().getUsername() + ". You have: " + sent.size() + " sent messages. " + " ───────────────────────────────");
         for (Message m : sent) {
             System.out.println("[" + m.getId() + "] To: " + m.getReceiver().getUsername() + " | " + m.getSentDate() + "\n    " + m.getText());
             System.out.println("──────────────────────────────────────────────────────────────────────────────");

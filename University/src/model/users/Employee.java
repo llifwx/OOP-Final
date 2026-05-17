@@ -3,7 +3,7 @@ package model.users;
 import enums.Language;
 import java.util.Date;
 
-public class Employee extends User {
+public abstract class Employee extends User {
     private static final long serialVersionUID = 1L;
     private String employeeId;
     private String department;

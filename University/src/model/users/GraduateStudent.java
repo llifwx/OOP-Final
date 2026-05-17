@@ -2,14 +2,13 @@ package model.users;
 
 import enums.DegreeType;
 import enums.Language;
-import exceptions.InvalidSupervisorEx;
 import interfaces.Researcher;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
+import utils.ResearchMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GraduateStudent extends Student implements Researcher {
     private static final long serialVersionUID = 1L;
@@ -32,21 +31,9 @@ public class GraduateStudent extends Student implements Researcher {
         this.supervisor = supervisor;
     }
 
-    public Researcher viewSupervisor() {return supervisor;}
-
     @Override
     public int calculateHIndex() {
-        if (papers.isEmpty()) return 0;
-        List<Integer> citations = papers.stream()
-                .map(ResearchPaper::getCitations)
-                .sorted((a, b) -> b - a)
-                .collect(Collectors.toList());
-        int h = 0;
-        for (int i = 0; i < citations.size(); i++) {
-            if (citations.get(i) >= i + 1) h = i + 1;
-            else break;
-        }
-        return h;
+        return ResearchMetrics.calculateHIndex(papers);
     }
 
     public DegreeType getDegreeType() {return degreeType;}
