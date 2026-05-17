@@ -134,16 +134,28 @@ public class ManagerService {
                         && Objects.equals(existing.getRoom(), lesson.getRoom()));
     }
 
-    public void registerStudentToCourse(Student student, Course course) {
+    private void registerStudentToCourse(Student student, Course course) {
         if (student == null || course == null) return;
         student.addRegisteredCourse(course);
         course.enrollStudent(student);
     }
 
-    public void unregisterStudentFromCourse(Student student, Course course) {
-        if (student == null || course == null) return;
+    public boolean unregisterStudentFromCourse(Student student, Course course) {
+        requireManager();
+        if (student == null || course == null) {
+            System.out.println("[Manager Service] : Student or course is null.");
+            return false;
+        }
+        if (!student.getRegisteredCourses().contains(course)) {
+            System.out.println("[Manager Service] : Student is not registered for this course.");
+            return false;
+        }
         student.removeRegisteredCourse(course);
         course.removeStudent(student);
+        student.setCredits(Math.max(0, student.getCredits() - course.getCredits()));
+        database.save();
+        log("Unregistered student " + student.getFullName() + " from course " + course.getName());
+        return true;
     }
 
     public Report createAcademicReport(List<Student> students) {
@@ -178,7 +190,7 @@ public class ManagerService {
             return false;
         }
 
-        database.getNews().remove(news);
+        database.removeNews(news);
         database.save();
         log("Removed news: " + title);
         System.out.println("[Manager Service] : News '" + title + "' removed.");

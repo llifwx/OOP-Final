@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class User implements Serializable {
@@ -18,6 +20,7 @@ public abstract class User implements Serializable {
     private String fullName;
     private String email;
     private Language language;
+    private List<String> notifications;
 
     public User(String username, String password, String fullName, String email, Language language) {
         this.id = ++idCounter;
@@ -26,6 +29,7 @@ public abstract class User implements Serializable {
         this.fullName = fullName;
         this.email = email;
         this.language = language;
+        this.notifications = new ArrayList<>();
     }
 
     public static void synchronizeIdCounter(int maxId) {
@@ -37,6 +41,11 @@ public abstract class User implements Serializable {
     public String getEmail() {return this.email;}
 
     public Language getLanguage() {return this.language;}
+
+    public List<String> getNotifications() {
+        if (notifications == null) notifications = new ArrayList<>();
+        return new ArrayList<>(notifications);
+    }
 
     public String getFullName() {return this.fullName;}
 
@@ -51,6 +60,13 @@ public abstract class User implements Serializable {
     public void setEmail(String email) {this.email = email;}
 
     public void setLanguage(Language language) {this.language = language;}
+
+    public void receiveNotification(String notification) {
+        if (notification != null && !notification.isBlank()) {
+            if (notifications == null) notifications = new ArrayList<>();
+            notifications.add(notification);
+        }
+    }
 
     public boolean login(String password) {
         return Objects.equals(this.password, hashPassword(password));

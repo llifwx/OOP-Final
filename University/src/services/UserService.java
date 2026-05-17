@@ -2,6 +2,7 @@ package services;
 
 import enums.Language;
 import model.academic.Course;
+import model.users.Admin;
 import model.users.*;
 import storage.Database;
 import utils.LogRecord;
@@ -20,6 +21,7 @@ public class UserService {
     }
 
     public boolean registerUser(User user) {
+        requireAdmin();
         if (user == null) return false;
 
         if (database.findUserByUsername(user.getUsername()) != null) {
@@ -88,6 +90,7 @@ public class UserService {
     }
 
     public boolean changeUsername(User user, String newUsername) {
+        requireAdminOrSelf(user);
         if (user == null || newUsername == null || newUsername.isBlank()) return false;
 
         if (database.findUserByUsername(newUsername) != null) {
@@ -103,6 +106,7 @@ public class UserService {
     }
 
     public void changeLanguage(User user, Language language) {
+        requireAdminOrSelf(user);
         if (user == null || language == null) return;
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
@@ -111,13 +115,14 @@ public class UserService {
     }
 
     public boolean removeUser(String username) {
+        requireAdmin();
         User user = database.findUserByUsername(username);
         if (user == null) {
             System.out.println("[UserService] Remove failed: user '" + username + "' not found.");
             return false;
         }
 
-        database.getUsers().remove(user);
+        database.removeUser(user);
         log("Removed user: " + username);
         database.save();
         System.out.println("[UserService] User '" + username + "' removed.");
@@ -129,6 +134,19 @@ public class UserService {
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
             database.save();
+        }
+    }
+
+    private void requireAdmin() {
+        if (!authService.hasRole(Admin.class)) {
+            throw new SecurityException("[UserService] Access denied: current user is not an Admin.");
+        }
+    }
+
+    private void requireAdminOrSelf(User user) {
+        User current = authService.getCurrentUser();
+        if (current == null || (user != null && !current.equals(user) && !(current instanceof Admin))) {
+            throw new SecurityException("[UserService] Access denied.");
         }
     }
 }

@@ -23,11 +23,15 @@ public class GraduateStudentMenu {
     private final Scanner sc;
     private final UserNamePadding padding = new UserNamePadding();
 
-    public GraduateStudentMenu(AuthService authService, Scanner sc) {
+    private final JournalService journalService;
+
+    public GraduateStudentMenu(AuthService authService, ResearchService researchService, ResearchPaperService paperService,
+                               ResearchProjectService projectService, JournalService journalService, Scanner sc) {
         this.authService = authService;
-        this.researchService = ResearchService.getInstance();
-        this.paperService = ResearchPaperService.getInstance();
-        this.projectService = ResearchProjectService.getInstance();
+        this.researchService = researchService;
+        this.paperService = paperService;
+        this.projectService = projectService;
+        this.journalService = journalService;
         this.sc = sc;
     }
 
@@ -123,7 +127,7 @@ public class GraduateStudentMenu {
         Journal journal = paperService.findJournalByName(journalName);
         if (journal == null) {
             journal = new Journal(journalName);
-            JournalService.getInstance().addJournal(journal);
+            journalService.addJournal(journal);
         }
 
         List<Researcher> authors = new ArrayList<>();

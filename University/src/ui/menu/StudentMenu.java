@@ -14,9 +14,9 @@ public class StudentMenu {
     private final TranscriptService transcriptService;
     private final Scanner sc;
 
-    public StudentMenu(AuthService authService, Scanner sc) {
+    public StudentMenu(AuthService authService, TranscriptService transcriptService, Scanner sc) {
         this.authService = authService;
-        this.transcriptService = TranscriptService.getInstance();
+        this.transcriptService = transcriptService;
         this.sc = sc;
     }
 

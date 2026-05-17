@@ -30,7 +30,12 @@ public class ConsoleApplication {
     private final ReportService reportService;
     private final UserService userService;
     private final TeacherService teacherService;
-    // todo add other services
+    private final NewsService newsService;
+    private final JournalService journalService;
+    private final ResearchService researchService;
+    private final ResearchPaperService researchPaperService;
+    private final ResearchProjectService researchProjectService;
+    private final TranscriptService transcriptService;
 
     // Menus
     private final AdminMenu adminMenu;
@@ -52,15 +57,20 @@ public class ConsoleApplication {
         this.messageService = new MessageService(db, authService);
         this.techSupportService = new TechSupportService(db, authService);
         this.teacherService = new TeacherService(db, authService);
+        this.newsService = new NewsService(db, authService);
+        this.journalService = new JournalService(db, authService);
+        this.researchService = new ResearchService(db, authService);
+        this.researchPaperService = new ResearchPaperService(db, authService, journalService);
+        this.researchProjectService = new ResearchProjectService(db, authService);
+        this.transcriptService = new TranscriptService(authService);
         this.adminService = new AdminService(db, authService, userService);
         this.managerService = new ManagerService(db, authService, reportService);
-        // todo add other service initializers
 
         // Init menus
         this.adminMenu = new AdminMenu(adminService, authService, sc);
-        this.studentMenu = new StudentMenu(authService, sc);
-        this.graduateStudentMenu = new GraduateStudentMenu(authService, sc);
-        this.teacherMenu = new TeacherMenu(authService, sc);
+        this.studentMenu = new StudentMenu(authService, transcriptService, sc);
+        this.graduateStudentMenu = new GraduateStudentMenu(authService, researchService, researchPaperService, researchProjectService, journalService, sc);
+        this.teacherMenu = new TeacherMenu(authService, researchPaperService, sc);
         this.managerMenu = new ManagerMenu(managerService, userService, authService, sc);
         this.techSupportSpecialistMenu = new TechSupportSpecialistMenu(techSupportService, authService, sc);
     }

@@ -276,6 +276,14 @@ public class Database implements Serializable {
 
     public void addReport(Report report) {reports.add(report);}
 
+    public boolean removeUser(User user) {return users.remove(user);}
+
+    public boolean removeNews(News newsItem) {return news.remove(newsItem);}
+
+    public boolean removeMessage(Message message) {return messages.remove(message);}
+
+    public boolean removeReport(Report report) {return reports.remove(report);}
+
     public User findUserByUsername(String username) {
         for (User user : users) {
             if (user.getUsername().equalsIgnoreCase(username)) {

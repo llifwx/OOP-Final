@@ -12,9 +12,9 @@ public class TeacherMenu {
     private final ResearchPaperService paperService;
     private final Scanner sc;
 
-    public TeacherMenu(AuthService authService, Scanner sc) {
+    public TeacherMenu(AuthService authService, ResearchPaperService paperService, Scanner sc) {
         this.authService = authService;
-        this.paperService = ResearchPaperService.getInstance();
+        this.paperService = paperService;
         this.sc = sc;
     }
 

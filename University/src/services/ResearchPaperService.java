@@ -8,7 +8,10 @@ import model.social.Journal;
 import model.social.News;
 import model.users.GraduateStudent;
 import model.users.Teacher;
+import model.users.User;
 import storage.Database;
+import utils.LogRecord;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,17 +22,23 @@ import java.util.stream.Collectors;
 
 public class ResearchPaperService {
     private static ResearchPaperService instance;
+    private final Database database;
+    private final AuthService authService;
+    private final JournalService journalService;
 
-    private ResearchPaperService() {
+    public ResearchPaperService(Database database, AuthService authService, JournalService journalService) {
+        this.database = database;
+        this.authService = authService;
+        this.journalService = journalService;
     }
 
     public static ResearchPaperService getInstance() {
-        if (instance == null) instance = new ResearchPaperService();
+        if (instance == null) instance = new ResearchPaperService(Database.getInstance(), null, JournalService.getInstance());
         return instance;
     }
 
     public List<ResearchPaper> getAllPapers() {
-        return db().getResearchPapers();
+        return new ArrayList<>(db().getResearchPapers());
     }
 
     public void printPaperCitation(ResearchPaper paper, Format format) {
@@ -37,9 +46,13 @@ public class ResearchPaperService {
     }
 
     public void printPaperInfo(ResearchPaper paper) {
+        if (paper == null) {
+            System.out.println("[ResearchPaperService] Paper is not available.");
+            return;
+        }
         System.out.println("Title: " + paper.getTitle());
         System.out.println("DOI: " + paper.getDoi());
-        System.out.println("Journal: " + paper.getJournal().getName());
+        System.out.println("Journal: " + (paper.getJournal() == null ? "N/A" : paper.getJournal().getName()));
         System.out.println("Pages: " + paper.getPages());
         System.out.println("Citations: " + paper.getCitations());
         System.out.println("Date: " + paper.getPublishDate());
@@ -47,6 +60,10 @@ public class ResearchPaperService {
     }
 
     public void printPapers(Researcher researcher, Comparator<ResearchPaper> comparator) {
+        if (researcher == null) {
+            System.out.println("[ResearchPaperService] Researcher is not available.");
+            return;
+        }
         List<ResearchPaper> papers = getPapersByResearcher(researcher);
         if (papers.isEmpty()) {
             System.out.println("No research papers yet.");
@@ -99,13 +116,28 @@ public class ResearchPaperService {
     }
 
     public void addPaperToDatabase(ResearchPaper paper) {
+        requireResearcher();
+        if (paper == null) {
+            System.out.println("[ResearchPaperService] Paper cannot be null.");
+            return;
+        }
+        if (isPaperInDatabase(paper)) {
+            System.out.println("[ResearchPaperService] Paper already exists in database.");
+            return;
+        }
         db().addResearchPaper(paper);
         db().save();
+        log("Added research paper to database: " + paper.getTitle());
     }
 
     public void publishPaper(Researcher researcher, ResearchPaper paper, Journal journal) {
+        User current = requireResearcher();
         if (researcher == null || paper == null || journal == null) {
             System.out.println("[ResearchPaperService] Cannot publish paper with empty researcher, paper, or journal.");
+            return;
+        }
+        if (researcher != current) {
+            System.out.println("[ResearchPaperService] Cannot publish paper for another researcher.");
             return;
         }
 
@@ -116,28 +148,96 @@ public class ResearchPaperService {
         }
 
         journal.addPaper(paper);
-        JournalService.getInstance().notifySubscribers(journal);
+        journalService.notifySubscribers(journal);
 
-        if (!db().getResearchPapers().contains(paper)) {
+        if (!isPaperInDatabase(paper)) {
             db().addResearchPaper(paper);
         }
 
-        News news = new News("New Paper Published: " + paper.getTitle(),
-                getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
-        news.pin();
-        db().addNews(news);
+        String newsTitle = "New Paper Published: " + paper.getTitle();
+        if (db().findNewsByTitle(newsTitle) == null) {
+            News news = new News(newsTitle, getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+            news.pin();
+            db().addNews(news);
+        }
+        createTopCitedResearcherNews();
+
         db().save();
+        log("Published research paper: " + paper.getTitle());
+        System.out.println("[ResearchPaperService] Research paper '" + paper.getTitle() + "' published.");
     }
 
     public List<Journal> getAllJournals() {
-        return db().getJournals();
+        return new ArrayList<>(db().getJournals());
     }
 
     public Journal findJournalByName(String name) {
+        if (name == null || name.isBlank()) return null;
         return db().findJournalByName(name);
     }
 
     private Database db() {
-        return Database.getInstance();
+        return database;
+    }
+
+    private User requireResearcher() {
+        User current = authService == null ? null : authService.getCurrentUser();
+        if (!(current instanceof Researcher)) {
+            throw new SecurityException("[ResearchPaperService] Access denied: current user is not a researcher.");
+        }
+        return current;
+    }
+
+    private boolean isPaperInDatabase(ResearchPaper paper) {
+        if (paper == null) return false;
+        if (db().getResearchPapers().contains(paper)) return true;
+        for (ResearchPaper existing : db().getResearchPapers()) {
+            if (existing == null) continue;
+            if (paper.getDoi() != null && existing.getDoi() != null
+                    && existing.getDoi().equalsIgnoreCase(paper.getDoi())) {
+                return true;
+            }
+            if (paper.getTitle() != null && existing.getTitle() != null
+                    && existing.getTitle().equalsIgnoreCase(paper.getTitle())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void createTopCitedResearcherNews() {
+        Researcher topResearcher = null;
+        int maxCitations = 0;
+
+        for (User user : db().getUsers()) {
+            if (!(user instanceof Researcher researcher)) continue;
+            int citations = getPapersByResearcher(researcher).stream()
+                    .mapToInt(ResearchPaper::getCitations)
+                    .sum();
+            if (citations > maxCitations) {
+                maxCitations = citations;
+                topResearcher = researcher;
+            }
+        }
+
+        if (topResearcher == null || maxCitations <= 0) return;
+
+        String researcherName = topResearcher instanceof User user ? user.getFullName() : topResearcher.toString();
+        String title = "Top Cited Researcher: " + researcherName;
+        if (db().findNewsByTitle(title) != null) return;
+
+        News news = new News(title,
+                researcherName + " leads research citations with " + maxCitations + " total citation(s).",
+                NewsTopic.RESEARCH);
+        news.pin();
+        db().addNews(news);
+    }
+
+    private void log(String action) {
+        User actor = authService == null ? null : authService.getCurrentUser();
+        if (actor != null) {
+            db().addLog(new LogRecord(actor, action));
+            db().save();
+        }
     }
 }

@@ -12,10 +12,10 @@ import model.users.User;
 import storage.Database;
 import utils.GradeScale;
 import utils.LogRecord;
+import utils.ResearchMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ReportService {
     private final Database database;
@@ -45,7 +45,6 @@ public class ReportService {
 
         for (Student student : students) {
             double gpa = calculateGpaFromTranscript(student.getTranscript());
-            student.setGpa(gpa);
             totalGpa += gpa;
         }
 
@@ -61,7 +60,7 @@ public class ReportService {
             content.append("  -")
                     .append(s.getFullName())
                     .append(" | GPA: ")
-                    .append(String.format("%.2f", s.getGpa()))
+                    .append(String.format("%.2f", calculateGpaFromTranscript(s.getTranscript())))
                     .append("\n")
                     .append(" | Credits: ")
                     .append(s.getCredits())
@@ -95,7 +94,7 @@ public class ReportService {
         for (Teacher t : teachers) {
             List<ResearchPaper> papers = t.getPapers();
             int citations = papers.stream().mapToInt(ResearchPaper::getCitations).sum();
-            int hIndex = calculateHIndex(papers);
+            int hIndex = ResearchMetrics.calculateHIndex(papers);
 
             totalPapers += papers.size();
             totalCitations += citations;
@@ -171,7 +170,7 @@ public class ReportService {
             return false;
         }
 
-        database.getReports().remove(report);
+        database.removeReport(report);
         database.save();
         log("Deleted report: " + title);
         System.out.println("[Report Service] : Report '" + title + "' deleted.");
@@ -189,26 +188,6 @@ public class ReportService {
         }
 
         return totalGpa / transcript.getMarks().size();
-    }
-
-    private int calculateHIndex(List<ResearchPaper> papers) {
-        if (papers == null || papers.isEmpty()) return 0;
-
-        List<Integer> citations = papers.stream()
-                .map(ResearchPaper::getCitations)
-                .sorted((a, b) -> b - a)
-                .collect(Collectors.toList());
-
-        int h = 0;
-        for (int i = 0; i < citations.size(); i++) {
-            if (citations.get(i) >= i + 1) {
-                h = i + 1;
-            } else {
-                break;
-            }
-        }
-
-        return h;
     }
 
     private void printPlainText(Report report) {
