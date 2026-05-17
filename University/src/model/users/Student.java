@@ -59,6 +59,16 @@ public class Student extends User {
 
     public List<Course> getRegisteredCourses() {return new ArrayList<>(registeredCourses);}
 
+    public void joinOrganization(StudentOrganization organization) {
+        if (organization != null && !organizations.contains(organization)) {
+            organizations.add(organization);
+        }
+    }
+
+    public void leaveOrganization(StudentOrganization organization) {
+        organizations.remove(organization);
+    }
+
     public void addRegisteredCourse(Course course) {
         if (course != null && !registeredCourses.contains(course)) {
             registeredCourses.add(course);

@@ -47,6 +47,12 @@ public abstract class User implements Serializable {
         return new ArrayList<>(notifications);
     }
 
+    public void addNotification(String notification) {
+        if (notification == null || notification.isBlank()) return;
+        if (notifications == null) notifications = new ArrayList<>();
+        notifications.add(notification);
+    }
+
     public String getFullName() {return this.fullName;}
 
     public String getUsername() {return this.username;}
@@ -60,13 +66,6 @@ public abstract class User implements Serializable {
     public void setEmail(String email) {this.email = email;}
 
     public void setLanguage(Language language) {this.language = language;}
-
-    public void receiveNotification(String notification) {
-        if (notification != null && !notification.isBlank()) {
-            if (notifications == null) notifications = new ArrayList<>();
-            notifications.add(notification);
-        }
-    }
 
     public boolean login(String password) {
         return Objects.equals(this.password, hashPassword(password));

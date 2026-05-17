@@ -72,8 +72,8 @@ public class ReportService {
         Report report = new Report("Academic Performance Report", students, content.toString());
 
         database.addReport(report);
-        database.save();
         log("Created academic report with " + studentCnt + " students, average GPA: " + averageGpa);
+        database.save();
         System.out.println("[Report Service] : Academic report created with " + studentCnt + " students, average GPA: " + averageGpa);
 
         return report;
@@ -119,8 +119,8 @@ public class ReportService {
         Report report = new Report("Research Performance Report", new ArrayList<>(), content.toString());
 
         database.addReport(report);
-        database.save();
         log("Created research report with " + teachers.size() + " teachers, total papers: " + totalPapers + ", total citations: " + totalCitations);
+        database.save();
         System.out.println("[Report Service] : Research report created with " + teachers.size() + " teachers, total papers: " + totalPapers + ", total citations: " + totalCitations);
         return report;
     }
@@ -170,9 +170,9 @@ public class ReportService {
             return false;
         }
 
-        database.removeReport(report);
-        database.save();
+        database.getReports().remove(report);
         log("Deleted report: " + title);
+        database.save();
         System.out.println("[Report Service] : Report '" + title + "' deleted.");
 
         return true;
@@ -206,7 +206,6 @@ public class ReportService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 }

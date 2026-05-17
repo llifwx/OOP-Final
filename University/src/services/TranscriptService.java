@@ -7,18 +7,15 @@ import model.users.Manager;
 import model.users.Student;
 import model.users.Teacher;
 import model.users.User;
+import storage.Database;
 
 public class TranscriptService {
-    private static TranscriptService instance;
+    private final Database database;
     private final AuthService authService;
 
-    public TranscriptService(AuthService authService) {
+    public TranscriptService(Database database, AuthService authService) {
+        this.database = database;
         this.authService = authService;
-    }
-
-    public static TranscriptService getInstance() {
-        if (instance == null) instance = new TranscriptService(null);
-        return instance;
     }
 
     public void printTranscript(Transcript transcript) {

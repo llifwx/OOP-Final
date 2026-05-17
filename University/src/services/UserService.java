@@ -69,6 +69,10 @@ public class UserService {
         return teachers;
     }
 
+    public List<Course> getAllCourses() {
+        return new ArrayList<>(database.getCourses());
+    }
+
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         for (User user : database.getUsers()) {
@@ -111,7 +115,13 @@ public class UserService {
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
         database.save();
-        System.out.println("[UserService] Language updated for '" + user.getUsername() + "' to " + language + ".");
+    }
+
+    public void saveCurrentUserNotification(String notification) {
+        User current = authService.getCurrentUser();
+        if (current == null || notification == null || notification.isBlank()) return;
+        current.addNotification(notification);
+        database.save();
     }
 
     public boolean removeUser(String username) {
@@ -133,7 +143,6 @@ public class UserService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 

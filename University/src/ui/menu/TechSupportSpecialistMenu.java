@@ -1,11 +1,15 @@
 package ui.menu;
 
+import enums.Language;
 import enums.RequestStatus;
 import model.support.TechSupportReq;
+import model.users.Employee;
 import model.users.TechSupportSpecialist;
+import model.users.User;
 import services.AuthService;
+import services.MessageService;
 import services.TechSupportService;
-import utils.UserNamePadding;
+import services.UserService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -13,145 +17,184 @@ import java.util.Scanner;
 public class TechSupportSpecialistMenu {
     private final TechSupportService techSupportService;
     private final AuthService authService;
+    private final MessageService messageService;
+    private final UserService userService;
     private final Scanner sc;
-    private final UserNamePadding padding = new UserNamePadding();
 
-    public TechSupportSpecialistMenu(TechSupportService techSupportService, AuthService authService, Scanner sc) {
+    public TechSupportSpecialistMenu(TechSupportService techSupportService, AuthService authService,
+                                     MessageService messageService, UserService userService, Scanner sc) {
         this.techSupportService = techSupportService;
         this.authService = authService;
+        this.messageService = messageService;
+        this.userService = userService;
         this.sc = sc;
     }
 
     public void show() {
-        TechSupportSpecialist specialist = (TechSupportSpecialist) authService.getCurrentUser();
         boolean running = true;
-
         while (running) {
-            int newCount = techSupportService.viewNewRequests().size();
-            System.out.println("\n╔══════════════════════════════════════╗");
-            System.out.println("║         TECH SUPPORT SPECIALIST      ║");
-            System.out.println("║         " + padding.padRight("Welcome, " + specialist.getFullName(), 29) + "║");
-            System.out.println("╠══════════════════════════════════════╣");
-            System.out.println("╠══════════════════════════════════════╣");
-            System.out.printf("║  1. View new requests  (%s)         ║%n", padding.padRight(String.valueOf(newCount), 3));
-            System.out.println("║  2. View all requests                ║");
-            System.out.println("║  3. Filter by status                 ║");
-            System.out.println("║  4. Open a request                   ║");
-            System.out.println("║  5. Accept request                   ║");
-            System.out.println("║  6. Reject request                   ║");
-            System.out.println("║  7. Mark as done                     ║");
-            System.out.println("║  0. Logout                           ║");
-            System.out.println("╚══════════════════════════════════════╝");
-
-            System.out.print("Your choice: ");
+            TechSupportSpecialist specialist = (TechSupportSpecialist) authService.getCurrentUser();
+            MenuPrinter.print("TECH SUPPORT", "Welcome, " + specialist.getFullName(), List.of(
+                    "1. View new requests",
+                    "2. View request by ID",
+                    "3. Accept request",
+                    "4. Reject request",
+                    "5. Mark request as done",
+                    "6. View by status",
+                    "7. View all requests",
+                    "8. My requests",
+                    "9. Submit my request",
+                    "10. Messages",
+                    "11. Switch language",
+                    "0. Logout"
+            ));
 
             switch (sc.nextLine().trim()) {
-                case "1" -> viewNewRequest();
-                case "2" -> techSupportService.printAllRequests();
-                case "3" -> filteredByStatus();
-                case "4" -> openRequest();
-                case "5" -> acceptRequest();
-                case "6" -> rejectRequest();
-                case "7" -> markAsDone();
+                case "1" -> printRequests(techSupportService.viewNewRequests(), "New requests");
+                case "2" -> openRequest();
+                case "3" -> acceptRequest();
+                case "4" -> rejectRequest();
+                case "5" -> markAsDone();
+                case "6" -> filterByStatus();
+                case "7" -> techSupportService.printAllRequests();
+                case "8" -> techSupportService.printMyRequests();
+                case "9" -> submitRequest();
+                case "10" -> messagesMenu();
+                case "11" -> switchLanguage(specialist);
                 case "0" -> {
                     authService.logout();
                     running = false;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println("Invalid choice.");
             }
         }
     }
 
-    // Menu actions
-    private void viewNewRequest() {
-        List<TechSupportReq> reqs = techSupportService.viewNewRequests();
-
-        if (reqs.isEmpty()) return;
-        printRequestList(reqs, "New requests");
-    }
-
-    private void filteredByStatus() {
-        System.out.println("Available statuses: NEW, VIEWED, ACCEPTED, REJECTED, DONE");
-        System.out.print("Enter status: ");
-        String input = sc.nextLine().trim().toUpperCase();
-
-        RequestStatus status;
-        try {
-            status = RequestStatus.valueOf(input);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid status. Please try again.");
-            return;
-        }
-
-        List<TechSupportReq> reqs = techSupportService.getRequestsByStatus(status);
-        if (!reqs.isEmpty()) {
-            printRequestList(reqs, "Requests with status: " + status);
-        }
-    }
-
     private void openRequest() {
-        System.out.println("Enter request ID to open: ");
-        int id = readInt();
-
+        int id = readInt("Request ID");
         if (id < 0) return;
         TechSupportReq req = techSupportService.viewRequest(id);
-        if (req != null) {
-            printRequestDetails(req);
-        }
+        if (req != null) printRequestDetails(req);
     }
 
     private void acceptRequest() {
-        System.out.println("Enter request ID to accept: ");
-        int id = readInt();
-
-        if (id < 0) return;
-        techSupportService.acceptRequest(id);
+        int id = readInt("Request ID");
+        if (id >= 0) techSupportService.acceptRequest(id);
     }
 
     private void rejectRequest() {
-        System.out.println("Enter request ID to reject: ");
-        int id = readInt();
-
-        if (id < 0) return;
-        System.out.println("Enter reason for rejection: ");
-        String reason = sc.nextLine().trim();
-        techSupportService.rejectRequest(id, reason);
+        int id = readInt("Request ID");
+        String reason = promptRequired("Reason");
+        if (id >= 0 && reason != null) techSupportService.rejectRequest(id, reason);
     }
 
     private void markAsDone() {
-        System.out.println("Enter request ID to mark as done: ");
-        int id = readInt();
-
-        if (id < 0) return;
-        techSupportService.markAsDone(id);
+        int id = readInt("Request ID");
+        if (id >= 0) techSupportService.markAsDone(id);
     }
 
-    // Utils
-    private void printRequestList(List<TechSupportReq> reqs, String title) {
-        System.out.println("\n─── " + title + " (" + reqs.size() + ") ─────────────────────────");
-        for (TechSupportReq req : reqs) {
-            System.out.printf("[#%-3d] %-10s | From: %-20s | %s%n", req.getId(), req.getStatus(), req.getSender()
-                    .getUsername(), req.getDescription());
+    private void filterByStatus() {
+        RequestStatus status = readStatus();
+        if (status != null) printRequests(techSupportService.getRequestsByStatus(status), "Requests: " + status);
+    }
+
+    private void submitRequest() {
+        String description = promptRequired("Description");
+        if (description != null) techSupportService.submitRequest(description);
+    }
+
+    private void messagesMenu() {
+        MenuPrinter.print("MESSAGES", null, List.of(
+                "1. Send message",
+                "2. View inbox",
+                "3. View sent messages",
+                "4. Open message",
+                "5. Mark all read",
+                "0. Back"
+        ));
+        switch (sc.nextLine().trim()) {
+            case "1" -> sendMessage();
+            case "2" -> messageService.printInbox();
+            case "3" -> messageService.printSentMessages();
+            case "4" -> {
+                int id = readInt("Message ID");
+                if (id >= 0) System.out.println(messageService.openMessage(id));
+            }
+            case "5" -> messageService.markAllRead();
+            case "0" -> { }
+            default -> System.out.println("Invalid choice.");
         }
-        System.out.println("──────────────────────────────────────────────────");
+    }
+
+    private void sendMessage() {
+        User user = userService.findById(readInt("Receiver employee ID"));
+        if (!(user instanceof Employee employee)) {
+            System.out.println("Employee not found.");
+            return;
+        }
+        String text = promptRequired("Message");
+        if (text != null) messageService.sendMessage(employee, text);
+    }
+
+    private void printRequests(List<TechSupportReq> requests, String title) {
+        if (requests.isEmpty()) {
+            System.out.println("No requests found.");
+            return;
+        }
+        System.out.println("--- " + title + " ---");
+        requests.forEach(req -> System.out.println("#" + req.getId() + " | " + req.getStatus() + " | " + req.getSender().getUsername() + " | " + req.getDescription()));
     }
 
     private void printRequestDetails(TechSupportReq req) {
-        System.out.println("\n─── Request Details ─────────────────────────");
-        System.out.printf("ID: %d%n", req.getId());
-        System.out.printf("Status: %s%n", req.getStatus());
-        System.out.printf("From: %s%n", req.getSender().getUsername());
-        System.out.printf("Description: %s%n", req.getDescription());
-        System.out.printf("Created: %s%n", req.getCreatedDate());
-        System.out.println("──────────────────────────────────────────────");
+        System.out.println("ID: " + req.getId());
+        System.out.println("Status: " + req.getStatus());
+        System.out.println("From: " + req.getSender().getUsername());
+        System.out.println("Description: " + req.getDescription());
+        System.out.println("Created: " + req.getCreatedDate());
     }
 
-    private int readInt() {
+    private void switchLanguage(User user) {
+        Language language = readLanguage();
+        if (language != null) userService.changeLanguage(user, language);
+    }
+
+    private RequestStatus readStatus() {
+        System.out.print("Status (NEW, VIEWED, ACCEPTED, REJECTED, DONE): ");
+        try {
+            return RequestStatus.valueOf(sc.nextLine().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid status.");
+            return null;
+        }
+    }
+
+    private Language readLanguage() {
+        System.out.print("Language (KZ, EN, RU): ");
+        try {
+            return Language.valueOf(sc.nextLine().trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid language.");
+            return null;
+        }
+    }
+
+    private int readInt(String label) {
+        System.out.print(label + ": ");
         try {
             return Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a number.");
+            System.out.println("Invalid number.");
             return -1;
         }
+    }
+
+    private String promptRequired(String label) {
+        System.out.print(label + ": ");
+        String value = sc.nextLine().trim();
+        if (value.isEmpty()) {
+            System.out.println(label + " cannot be empty.");
+            return null;
+        }
+        return value;
     }
 }

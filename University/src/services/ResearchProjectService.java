@@ -12,11 +12,9 @@ import model.users.User;
 import storage.Database;
 import utils.LogRecord;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ResearchProjectService {
-    private static ResearchProjectService instance;
     private final Database database;
     private final AuthService authService;
 
@@ -25,37 +23,19 @@ public class ResearchProjectService {
         this.authService = authService;
     }
 
-    public static ResearchProjectService getInstance() {
-        if (instance == null) instance = new ResearchProjectService(Database.getInstance(), null);
-        return instance;
-    }
-
     public List<ResearchProject> getAllProjects() {
-        return new ArrayList<>(db().getResearchProjects());
+        return database.getResearchProjects();
     }
 
     public ResearchProject findProjectByTopic(String topic) {
-        if (topic == null || topic.isBlank()) return null;
-        return db().findResearchProjectByTopic(topic);
+        return database.findResearchProjectByTopic(topic);
     }
 
     public void addProject(ResearchProject project) {
-        requireManager();
-        if (project == null) {
-            System.out.println("[ResearchProjectService] Project cannot be null.");
-            return;
-        }
-        if (project.getTopic() == null || project.getTopic().isBlank()) {
-            System.out.println("[ResearchProjectService] Project topic cannot be empty.");
-            return;
-        }
-        if (db().findResearchProjectByTopic(project.getTopic()) != null) {
-            System.out.println("[ResearchProjectService] Project with topic '" + project.getTopic() + "' already exists.");
-            return;
-        }
-        db().addResearchProject(project);
-        db().save();
+        if (project == null) return;
+        database.addResearchProject(project);
         log("Added research project: " + project.getTopic());
+        database.save();
     }
 
     public void joinProject(ResearchProject project, Researcher researcher) throws NotResearcherEx {
@@ -74,19 +54,15 @@ public class ResearchProjectService {
             teacher.addProject(project);
         }
 
-        db().save();
-        log("Joined research project: " + project.getTopic());
+        log("Researcher joined project: " + project.getTopic());
+        database.save();
     }
 
     public void addPaperToProject(ResearchProject project, ResearchPaper paper) {
-        requireResearcher();
-        if (project == null || paper == null) {
-            System.out.println("[ResearchProjectService] Project or paper is null.");
-            return;
-        }
+        if (project == null || paper == null) return;
         project.addPublishedPaper(paper);
-        db().save();
-        log("Added paper to project: " + project.getTopic());
+        log("Added paper to research project: " + project.getTopic());
+        database.save();
     }
 
     public void assignSupervisor(GraduateStudent student, Researcher supervisor) throws InvalidSupervisorEx {
@@ -98,8 +74,8 @@ public class ResearchProjectService {
             throw new InvalidSupervisorEx();
         }
         student.setSupervisor(supervisor);
-        db().save();
-        log("Assigned supervisor for graduate student: " + student.getUsername());
+        log("Assigned supervisor to graduate student: " + student.getUsername());
+        database.save();
     }
 
     public void printProjectInfo(ResearchProject project) {
@@ -112,30 +88,26 @@ public class ResearchProjectService {
         System.out.println("Published Papers: " + project.getPublishedPapers().size());
     }
 
-    private Database db() {
-        return database;
-    }
-
     private User requireResearcher() {
-        User current = authService == null ? null : authService.getCurrentUser();
+        User current = authService.getCurrentUser();
         if (!(current instanceof Researcher)) {
-            throw new SecurityException("[ResearchProjectService] Access denied: current user is not a researcher.");
+            throw new SecurityException("[ResearchProjectService] Access denied: current user is not a Researcher.");
         }
         return current;
     }
 
-    private void requireManager() {
-        User current = authService == null ? null : authService.getCurrentUser();
-        if (!(current instanceof Manager)) {
+    private Manager requireManager() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof Manager manager)) {
             throw new SecurityException("[ResearchProjectService] Access denied: current user is not a Manager.");
         }
+        return manager;
     }
 
     private void log(String action) {
-        User actor = authService == null ? null : authService.getCurrentUser();
+        User actor = authService.getCurrentUser();
         if (actor != null) {
-            db().addLog(new LogRecord(actor, action));
-            db().save();
+            database.addLog(new LogRecord(actor, action));
         }
     }
 }

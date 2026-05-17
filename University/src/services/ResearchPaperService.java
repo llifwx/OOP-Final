@@ -21,24 +21,22 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ResearchPaperService {
-    private static ResearchPaperService instance;
     private final Database database;
     private final AuthService authService;
     private final JournalService journalService;
 
-    public ResearchPaperService(Database database, AuthService authService, JournalService journalService) {
+    public ResearchPaperService(
+        Database database,
+        AuthService authService,
+        JournalService journalService
+    ) {
         this.database = database;
         this.authService = authService;
         this.journalService = journalService;
     }
 
-    public static ResearchPaperService getInstance() {
-        if (instance == null) instance = new ResearchPaperService(Database.getInstance(), null, JournalService.getInstance());
-        return instance;
-    }
-
     public List<ResearchPaper> getAllPapers() {
-        return new ArrayList<>(db().getResearchPapers());
+        return database.getResearchPapers();
     }
 
     public void printPaperCitation(ResearchPaper paper, Format format) {
@@ -116,18 +114,10 @@ public class ResearchPaperService {
     }
 
     public void addPaperToDatabase(ResearchPaper paper) {
-        requireResearcher();
-        if (paper == null) {
-            System.out.println("[ResearchPaperService] Paper cannot be null.");
-            return;
-        }
-        if (isPaperInDatabase(paper)) {
-            System.out.println("[ResearchPaperService] Paper already exists in database.");
-            return;
-        }
-        db().addResearchPaper(paper);
-        db().save();
+        if (paper == null || database.getResearchPapers().contains(paper)) return;
+        database.addResearchPaper(paper);
         log("Added research paper to database: " + paper.getTitle());
+        database.save();
     }
 
     public void publishPaper(Researcher researcher, ResearchPaper paper, Journal journal) {
@@ -147,97 +137,63 @@ public class ResearchPaperService {
             teacher.addPaper(paper);
         }
 
-        journal.addPaper(paper);
-        journalService.notifySubscribers(journal);
-
-        if (!isPaperInDatabase(paper)) {
-            db().addResearchPaper(paper);
+        boolean newJournalPaper = !journal.getPapers().contains(paper);
+        if (newJournalPaper) {
+            journal.addPaper(paper);
+            journalService.notifySubscribers(journal);
         }
 
-        String newsTitle = "New Paper Published: " + paper.getTitle();
-        if (db().findNewsByTitle(newsTitle) == null) {
-            News news = new News(newsTitle, getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
-            news.pin();
-            db().addNews(news);
+        if (!database.getResearchPapers().contains(paper)) {
+            database.addResearchPaper(paper);
         }
-        createTopCitedResearcherNews();
 
-        db().save();
+        News news = new News("New Paper Published: " + paper.getTitle(),
+                getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+        news.pin();
+        database.addNews(news);
         log("Published research paper: " + paper.getTitle());
-        System.out.println("[ResearchPaperService] Research paper '" + paper.getTitle() + "' published.");
+        database.save();
+    }
+
+    public boolean addDiplomaPaper(GraduateStudent student, ResearchPaper paper) {
+        User current = requireResearcher();
+        if (student == null || paper == null) {
+            System.out.println("[ResearchPaperService] Student and paper are required.");
+            return false;
+        }
+        if (student != current) {
+            System.out.println("[ResearchPaperService] Cannot add diploma paper for another student.");
+            return false;
+        }
+        student.addDiplomaProject(paper);
+        if (!database.getResearchPapers().contains(paper)) {
+            database.addResearchPaper(paper);
+        }
+        log("Added diploma paper: " + paper.getTitle());
+        database.save();
+        return true;
     }
 
     public List<Journal> getAllJournals() {
-        return new ArrayList<>(db().getJournals());
+        return database.getJournals();
     }
 
     public Journal findJournalByName(String name) {
-        if (name == null || name.isBlank()) return null;
-        return db().findJournalByName(name);
-    }
-
-    private Database db() {
-        return database;
+        return database.findJournalByName(name);
     }
 
     private User requireResearcher() {
-        User current = authService == null ? null : authService.getCurrentUser();
+        User current = authService.getCurrentUser();
         if (!(current instanceof Researcher)) {
-            throw new SecurityException("[ResearchPaperService] Access denied: current user is not a researcher.");
+            throw new SecurityException("[ResearchPaperService] Access denied: current user is not a Researcher.");
         }
         return current;
     }
 
-    private boolean isPaperInDatabase(ResearchPaper paper) {
-        if (paper == null) return false;
-        if (db().getResearchPapers().contains(paper)) return true;
-        for (ResearchPaper existing : db().getResearchPapers()) {
-            if (existing == null) continue;
-            if (paper.getDoi() != null && existing.getDoi() != null
-                    && existing.getDoi().equalsIgnoreCase(paper.getDoi())) {
-                return true;
-            }
-            if (paper.getTitle() != null && existing.getTitle() != null
-                    && existing.getTitle().equalsIgnoreCase(paper.getTitle())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void createTopCitedResearcherNews() {
-        Researcher topResearcher = null;
-        int maxCitations = 0;
-
-        for (User user : db().getUsers()) {
-            if (!(user instanceof Researcher researcher)) continue;
-            int citations = getPapersByResearcher(researcher).stream()
-                    .mapToInt(ResearchPaper::getCitations)
-                    .sum();
-            if (citations > maxCitations) {
-                maxCitations = citations;
-                topResearcher = researcher;
-            }
-        }
-
-        if (topResearcher == null || maxCitations <= 0) return;
-
-        String researcherName = topResearcher instanceof User user ? user.getFullName() : topResearcher.toString();
-        String title = "Top Cited Researcher: " + researcherName;
-        if (db().findNewsByTitle(title) != null) return;
-
-        News news = new News(title,
-                researcherName + " leads research citations with " + maxCitations + " total citation(s).",
-                NewsTopic.RESEARCH);
-        news.pin();
-        db().addNews(news);
-    }
-
     private void log(String action) {
-        User actor = authService == null ? null : authService.getCurrentUser();
+        User actor = authService.getCurrentUser();
         if (actor != null) {
-            db().addLog(new LogRecord(actor, action));
-            db().save();
+            database.addLog(new LogRecord(actor, action));
         }
     }
 }

@@ -3,6 +3,7 @@ package services;
 import enums.RequestStatus;
 import model.support.TechSupportReq;
 import model.users.Employee;
+import model.users.Manager;
 import model.users.TechSupportSpecialist;
 import model.users.User;
 import storage.Database;
@@ -37,6 +38,13 @@ public class TechSupportService {
         return techSupportSpecialist;
     }
 
+    private void requireSupportViewer() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof TechSupportSpecialist) && !(current instanceof Manager)) {
+            throw new SecurityException("[TechSupportService] : Access denied. Current user cannot view employee requests.");
+        }
+    }
+
     public TechSupportReq submitRequest(String description) {
         Employee sender = requireEmployee();
 
@@ -49,9 +57,8 @@ public class TechSupportService {
         TechSupportReq req = new TechSupportReq(id, sender, description);
 
         database.addTechSupportReq(req);
-        database.save();
-
         log("Submitted tech support request: " + description);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request submitted.");
         return req;
     }
@@ -97,16 +104,17 @@ public class TechSupportService {
 
         boolean isSender = req.getSender().equals(current);
         boolean isSpecialist = current instanceof TechSupportSpecialist;
+        boolean isManager = current instanceof Manager;
 
-        if (!isSender && !isSpecialist) {
-            System.out.println("[TechSupportService] : Access denied. You can only view your own requests or, if you are a specialist, any request.");
+        if (!isSender && !isSpecialist && !isManager) {
+            System.out.println("[TechSupportService] : Access denied. You can only view your own requests or, if you are a specialist or manager, any request.");
             return null;
         }
 
         if (isSpecialist && req.getStatus() == RequestStatus.NEW) {
             req.setStatus(RequestStatus.VIEWED);
-            database.save();
             log("Viewed tech support request ID " + id);
+            database.save();
         }
 
         return req;
@@ -124,9 +132,8 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.ACCEPTED);
-        database.save();
-
         log("Accepted tech support request ID " + id);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
 
         return true;
@@ -149,9 +156,8 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.REJECTED);
-        database.save();
-
         log("Rejected tech support request ID " + id + " with reason: " + reason);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
         return true;
     }
@@ -168,15 +174,14 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.DONE);
-        database.save();
-
         log("Marked tech support request ID " + id + " as done");
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
         return true;
     }
 
     public List<TechSupportReq> getRequestsByStatus(RequestStatus status) {
-        requireSpecialist();
+        requireSupportViewer();
 
         if (status == null) {
             System.out.println("[TechSupportService] : Status cannot be null.");
@@ -190,7 +195,7 @@ public class TechSupportService {
     }
 
     public void printAllRequests() {
-        requireSpecialist();
+        requireSupportViewer();
 
         List<TechSupportReq> all = database.getTechSupportReqs();
         if (all.isEmpty()) {
@@ -224,7 +229,6 @@ public class TechSupportService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 

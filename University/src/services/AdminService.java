@@ -1,5 +1,6 @@
 package services;
 
+import enums.Language;
 import model.users.Admin;
 import model.users.User;
 import storage.Database;
@@ -32,30 +33,42 @@ public class AdminService {
 
     public boolean addUser(User user) {
         requireAdmin();
-        boolean result = userService.registerUser(user);
-        if (result) {
-            log("Admin added user: " + user.getUsername());
-            database.save();
-        }
-        return result;
+        return userService.registerUser(user);
     }
 
     public boolean removeUser(String username) {
         requireAdmin();
-        boolean result = userService.removeUser(username);
-        if (result) {
-            log("Admin removed user: " + username);
-            database.save();
-        }
-        return result;
+        return userService.removeUser(username);
     }
 
-    public void updateUser(User user) {
+    public boolean updateUserEmail(String username, String newEmail) {
         requireAdmin();
-        if (user == null) return;
-        log("Admin updated user: " + user.getUsername());
+        User user = userService.findByUsername(username);
+        if (user == null || newEmail == null || newEmail.isBlank()) return false;
+        user.setEmail(newEmail);
+        log("Admin updated email for user: " + username);
         database.save();
-        System.out.println("[AdminService] User '" + user.getUsername() + "' updated.");
+        return true;
+    }
+
+    public boolean updateUserFullName(String username, String newFullName) {
+        requireAdmin();
+        User user = userService.findByUsername(username);
+        if (user == null || newFullName == null || newFullName.isBlank()) return false;
+        user.setFullName(newFullName);
+        log("Admin updated full name for user: " + username);
+        database.save();
+        return true;
+    }
+
+    public boolean updateUserLanguage(String username, Language language) {
+        requireAdmin();
+        User user = userService.findByUsername(username);
+        if (user == null || language == null) return false;
+        user.setLanguage(language);
+        log("Admin updated language for user: " + username);
+        database.save();
+        return true;
     }
 
     public List<LogRecord> viewAllLogs() {
@@ -107,7 +120,6 @@ public class AdminService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 }
