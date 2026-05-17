@@ -30,7 +30,7 @@ public class Student extends User {
         this.studentId = studentId;
         this.school = school;
         this.major = major;
-        this.yearOfStudy = yearOfStudy;
+        setYearOfStudy(yearOfStudy);
         this.gpa = 0.0;
         this.credits = 0;
         this.failedCoursesCount = 0;
@@ -86,11 +86,26 @@ public class Student extends User {
 
     public void setStudentId(String studentId) {this.studentId = studentId;}
 
-    public void setGpa(double gpa) {this.gpa = gpa;}
+    public void setGpa(double gpa) {
+        if (gpa < 0 || gpa > 4.0) {
+            throw new IllegalArgumentException("GPA must be between 0 and 4.0");
+        }
+        this.gpa = gpa;
+    }
 
-    public void setCredits(int credits) {this.credits = credits;}
+    public void setCredits(int credits) {
+        if (credits < 0) {
+            throw new IllegalArgumentException("Credits cannot be negative");
+        }
+        this.credits = credits;
+    }
 
-    public void setYearOfStudy(int yearOfStudy) {this.yearOfStudy = yearOfStudy;}
+    public void setYearOfStudy(int yearOfStudy) {
+        if (yearOfStudy < 1) {
+            throw new IllegalArgumentException("Year of study must be positive");
+        }
+        this.yearOfStudy = yearOfStudy;
+    }
 
     public void setMinor(String minor) {this.minor = minor;}
 
@@ -98,7 +113,12 @@ public class Student extends User {
 
     public void setSchool(String school) {this.school = school;}
 
-    public void setFailedCoursesCount(int count) {this.failedCoursesCount = count;}
+    public void setFailedCoursesCount(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Failed courses count cannot be negative");
+        }
+        this.failedCoursesCount = count;
+    }
 
     @Override
     public String toString() {

@@ -24,7 +24,7 @@ public class Course implements Serializable {
     private List<Teacher> instructors = new ArrayList<>();
     private List<Student> enrolledStudents = new ArrayList<>();
 
-    // Основной конструктор
+    // Main constructor
     public Course(String courseCode, String name, int credits, CourseType type, Language language) {
         this.id = ++idCounter;
         this.courseCode = courseCode;
@@ -40,7 +40,7 @@ public class Course implements Serializable {
         }
     }
 
-    // Геттеры
+    // Getters
     public int getId() {return id;}
 
     public String getCourseCode() {return courseCode;}
@@ -59,7 +59,7 @@ public class Course implements Serializable {
 
     public List<Student> getEnrolledStudents() {return new ArrayList<>(enrolledStudents);}
 
-    // Методы
+    // Methods
     public void addLesson(Lesson lesson) {
         if (lesson == null) return;
         boolean alreadyExists = lessons.stream().anyMatch(existing -> Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek()) && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot()) && Objects.equals(existing.getRoom(), lesson.getRoom()));

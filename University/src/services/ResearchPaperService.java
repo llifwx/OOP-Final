@@ -9,9 +9,13 @@ import model.social.News;
 import model.users.GraduateStudent;
 import model.users.Teacher;
 import storage.Database;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ResearchPaperService {
     private static ResearchPaperService instance;
@@ -29,7 +33,7 @@ public class ResearchPaperService {
     }
 
     public void printPaperCitation(ResearchPaper paper, Format format) {
-        System.out.println(paper.getCitation(format));
+        System.out.println(getCitation(paper, format));
     }
 
     public void printPaperInfo(ResearchPaper paper) {
@@ -54,6 +58,34 @@ public class ResearchPaperService {
         for (ResearchPaper paper : papers) {
             System.out.println("- " + paper.getTitle() + " | Citations: " + paper.getCitations());
         }
+    }
+
+    public String getCitation(ResearchPaper paper, Format format) {
+        if (paper == null) {
+            return "Unknown paper";
+        }
+
+        String authorsStr = paper.getAuthors().stream()
+                .filter(Objects::nonNull)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        if (authorsStr.isBlank()) authorsStr = "Unknown author";
+
+        String safeTitle = paper.getTitle() == null || paper.getTitle().isBlank() ? "Untitled" : paper.getTitle();
+        String journalName = paper.getJournal() == null ? "Unknown journal" : paper.getJournal().getName();
+        String safeDoi = paper.getDoi() == null || paper.getDoi().isBlank() ? "N/A" : paper.getDoi();
+        Date publishDate = paper.getPublishDate();
+        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(publishDate == null ? new Date() : publishDate);
+
+        if (format == Format.PLAIN_TEXT) {
+            return authorsStr + " (" + dateStr + "). " + safeTitle + ". " + journalName
+                    + ", pp. " + paper.getPages() + ". DOI: " + safeDoi + ". Citations: " + paper.getCitations();
+        }
+
+        String key = Integer.toString((safeDoi + safeTitle).hashCode());
+        return "@article{" + key + ",\n  title={" + safeTitle + "},\n  author={" + authorsStr
+                + "},\n  journal={" + journalName + "},\n  year={" + dateStr.substring(0, 4)
+                + "},\n  pages={" + paper.getPages() + "},\n  doi={" + safeDoi + "}\n}";
     }
 
     private List<ResearchPaper> getPapersByResearcher(Researcher researcher) {
@@ -91,7 +123,7 @@ public class ResearchPaperService {
         }
 
         News news = new News("New Paper Published: " + paper.getTitle(),
-                paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+                getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
         news.pin();
         db().addNews(news);
         db().save();
