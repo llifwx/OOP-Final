@@ -8,14 +8,33 @@ import java.util.Objects;
 
 public class ResearchProject implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static int idCounter = 0;
+    private int id;
     private String topic;
     private List<Researcher> participants;
     private List<ResearchPaper> publishedPapers;
 
     public ResearchProject(String topic) {
+        this.id = ++idCounter;
         this.topic = topic;
         this.participants = new ArrayList<>();
         this.publishedPapers = new ArrayList<>();
+    }
+
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
+    public void ensureId() {
+        if (id <= 0) {
+            id = ++idCounter;
+        }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTopic() {
@@ -31,17 +50,14 @@ public class ResearchProject implements Serializable {
     }
 
     public void addParticipant(Researcher researcher) {
-        if (researcher == null) {
-            throw new IllegalArgumentException("Researcher cannot be null");
-        }
-        if (!this.participants.contains(researcher)) {
+        if (researcher != null && !this.participants.contains(researcher)) {
             this.participants.add(researcher);
         }
     }
 
     public void removeParticipant(Researcher researcher) {this.participants.remove(researcher);}
 
-    public void publishPaper(ResearchPaper paper) {
+    public void addPublishedPaper(ResearchPaper paper) {
         if (paper != null && !this.publishedPapers.contains(paper)) {
             this.publishedPapers.add(paper);
         }
@@ -49,7 +65,7 @@ public class ResearchProject implements Serializable {
 
     @Override
     public String toString() {
-        return "ResearchProject{" + "topic='" + topic + '\'' + ", participantsCount="
+        return "ResearchProject{" + "id=" + id + ", topic='" + topic + '\'' + ", participantsCount="
                 + participants.size() + ", papersCount=" + publishedPapers.size() + '}';
     }
 
@@ -57,11 +73,11 @@ public class ResearchProject implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof ResearchProject project)) return false;
-        return Objects.equals(topic, project.topic);
+        return id == project.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(topic);
+        return Objects.hash(id);
     }
 }

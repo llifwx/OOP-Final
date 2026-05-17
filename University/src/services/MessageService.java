@@ -129,6 +129,14 @@ public class MessageService {
         return all.stream().filter(message -> message.getText().toLowerCase().contains(lower)).collect(Collectors.toList());
     }
 
+    public String getPreview(Message message) {
+        if (message == null || message.getText() == null) {
+            return "";
+        }
+        String text = message.getText();
+        return text.substring(0, Math.min(text.length(), 20));
+    }
+
     public boolean deleteMessage(int messageId) {
         Employee current = requireEmployee();
         Message message = database.findMessageById(messageId);

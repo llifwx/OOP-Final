@@ -50,7 +50,11 @@ public class ResearchProjectService {
     }
 
     public void addPaperToProject(ResearchProject project, ResearchPaper paper) {
-        project.publishPaper(paper);
+        if (project == null || paper == null) {
+            System.out.println("[ResearchProjectService] Project or paper is null.");
+            return;
+        }
+        project.addPublishedPaper(paper);
         db().save();
     }
 

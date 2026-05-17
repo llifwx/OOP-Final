@@ -1,6 +1,7 @@
 package services;
 
 import enums.Language;
+import model.academic.Course;
 import model.users.*;
 import storage.Database;
 import utils.LogRecord;
@@ -74,6 +75,16 @@ public class UserService {
             }
         }
         return employees;
+    }
+
+    public Teacher getTeacherInfoForStudent(Student student, Course course) {
+        if (student == null || course == null) {
+            return null;
+        }
+        if (!student.getRegisteredCourses().contains(course) || course.getInstructors().isEmpty()) {
+            return null;
+        }
+        return course.getInstructors().get(0);
     }
 
     public boolean changeUsername(User user, String newUsername) {

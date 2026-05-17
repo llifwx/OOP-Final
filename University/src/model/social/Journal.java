@@ -10,14 +10,33 @@ import java.util.Objects;
 
 public class Journal implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static int idCounter = 0;
+    private int id;
     private String name;
     private List<ResearchPaper> papers;
     private List<User> subscribers;
 
     public Journal(String name) {
+        this.id = ++idCounter;
         this.name = name;
         this.papers = new ArrayList<>();
         this.subscribers = new ArrayList<>();
+    }
+
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
+    public void ensureId() {
+        if (id <= 0) {
+            id = ++idCounter;
+        }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -48,7 +67,7 @@ public class Journal implements Serializable {
 
     @Override
     public String toString() {
-        return "Journal{" + "name='" + name + '\'' + ", papersCount=" + papers.size()
+        return "Journal{" + "id=" + id + ", name='" + name + '\'' + ", papersCount=" + papers.size()
                 + ", subscribersCount=" + subscribers.size() + '}';
     }
 
@@ -56,12 +75,12 @@ public class Journal implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Journal journal)) return false;
-        return Objects.equals(name, journal.name);
+        return id == journal.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
 
 }

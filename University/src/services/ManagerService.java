@@ -4,6 +4,7 @@ import comparator.StudentGpaComparator;
 import comparator.TeacherNameComparator;
 import enums.LessonType;
 import model.academic.Course;
+import model.academic.Lesson;
 import model.academic.Report;
 import model.social.News;
 import model.users.*;
@@ -12,6 +13,7 @@ import utils.LogRecord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ManagerService {
     private final Database database;
@@ -105,6 +107,31 @@ public class ManagerService {
         database.save();
         log("Added course for registration: " + course.getName());
         System.out.println("[Manager Service] : Course '" + course.getName() + "' added for registration.");
+    }
+
+    public boolean addLessonToCourse(Course course, Lesson lesson) {
+        requireManager();
+        if (course == null || lesson == null) {
+            System.out.println("[Manager Service] : Course or lesson is null.");
+            return false;
+        }
+        if (hasLessonConflict(course, lesson)) {
+            System.out.println("[Manager Service] : Lesson conflicts with existing course schedule.");
+            return false;
+        }
+
+        course.addLesson(lesson);
+        database.addLesson(lesson);
+        database.save();
+        log("Added lesson to course " + course.getCourseCode());
+        return true;
+    }
+
+    private boolean hasLessonConflict(Course course, Lesson lesson) {
+        return course.getLessons().stream().anyMatch(existing ->
+                Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek())
+                        && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot())
+                        && Objects.equals(existing.getRoom(), lesson.getRoom()));
     }
 
     public void registerStudentToCourse(Student student, Course course) {

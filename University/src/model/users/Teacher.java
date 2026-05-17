@@ -47,8 +47,6 @@ public class Teacher extends Employee implements Researcher {
         return new ArrayList<>(courses);
     }
 
-    public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
-
     @Override
     public int calculateHIndex() {
         if (papers == null || papers.isEmpty()) return 0;

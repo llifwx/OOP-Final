@@ -34,9 +34,9 @@ public class StudentMenu {
             System.out.print("Your choice: ");
 
             switch (sc.nextLine().trim()) {
-                case "1" -> printCourses(student.viewCourses());
-                case "2" -> printMarks(student.viewMarks());
-                case "3" -> transcriptService.printTranscript(student.viewTranscript());
+                case "1" -> printCourses(student.getRegisteredCourses());
+                case "2" -> printMarks(student.getTranscript().getMarks());
+                case "3" -> transcriptService.printTranscript(student.getTranscript());
                 case "0" -> {
                     authService.logout();
                     running = false;

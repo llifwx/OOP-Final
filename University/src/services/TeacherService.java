@@ -10,6 +10,9 @@ import model.users.User;
 import storage.Database;
 import utils.LogRecord;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TeacherService {
     private final Database database;
     private final AuthService authService;
@@ -60,6 +63,14 @@ public class TeacherService {
         database.save();
         log("Put mark for student " + student.getUsername() + " in course " + course.getCourseCode());
         return true;
+    }
+
+    public List<Student> viewStudents(Course course) {
+        requireTeacher();
+        if (course == null) {
+            return new ArrayList<>();
+        }
+        return course.getEnrolledStudents();
     }
 
     public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {

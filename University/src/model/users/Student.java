@@ -2,13 +2,11 @@ package model.users;
 
 import enums.Language;
 import model.academic.Course;
-import model.academic.Mark;
 import model.academic.Transcript;
 import model.academic.StudentOrganization;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Student extends User {
     private static final long serialVersionUID = 1L;
@@ -39,20 +37,7 @@ public class Student extends User {
         this.transcript = new Transcript(this);
     }
 
-    public List<Course> viewCourses() {return new ArrayList<>(registeredCourses);}
-
-    public List<Mark> viewMarks() {return transcript.getMarks();}
-
-    public Transcript viewTranscript() {return transcript;}
-
     public Transcript getTranscript() {return transcript;}
-
-    public Teacher viewTeacherInfo(Course course) {
-        if (course == null || !registeredCourses.contains(course) || course.getInstructors().isEmpty()) {
-            return null;
-        }
-        return course.getInstructors().get(0);
-    }
 
     public String getStudentId() {return this.studentId;}
 

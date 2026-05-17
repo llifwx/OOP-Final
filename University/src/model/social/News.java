@@ -10,6 +10,8 @@ import java.util.Objects;
 
 public class News implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static int idCounter = 0;
+    private int id;
     private String title;
     private String content;
     private NewsTopic topic;
@@ -18,12 +20,29 @@ public class News implements Serializable {
     private boolean pinned;
 
     public News(String title, String content, NewsTopic topic) {
+        this.id = ++idCounter;
         this.title = title;
         this.content = content;
         this.topic = topic;
         this.date = new Date();
         this.comments = new ArrayList<>();
         this.pinned = false;
+    }
+
+    public static void synchronizeIdCounter(int maxId) {
+        if (maxId > idCounter) {
+            idCounter = maxId;
+        }
+    }
+
+    public void ensureId() {
+        if (id <= 0) {
+            id = ++idCounter;
+        }
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void addComment(Comment comment) {
@@ -62,7 +81,7 @@ public class News implements Serializable {
 
     @Override
     public String toString() {
-        return "News{" + "title='" + title + '\'' + ", topic=" + topic
+        return "News{" + "id=" + id + ", title='" + title + '\'' + ", topic=" + topic
                 + ", date=" + date + ", pinned=" + pinned + '}';
     }
 
@@ -70,11 +89,11 @@ public class News implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof News news)) return false;
-        return Objects.equals(title, news.title) && Objects.equals(date, news.date);
+        return id == news.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, date);
+        return Objects.hash(id);
     }
 }

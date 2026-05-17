@@ -61,10 +61,7 @@ public class Course implements Serializable {
 
     // Methods
     public void addLesson(Lesson lesson) {
-        if (lesson == null) return;
-        boolean alreadyExists = lessons.stream().anyMatch(existing -> Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek()) && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot()) && Objects.equals(existing.getRoom(), lesson.getRoom()));
-
-        if (!alreadyExists) {
+        if (lesson != null && !lessons.contains(lesson)) {
             lessons.add(lesson);
         }
     }
