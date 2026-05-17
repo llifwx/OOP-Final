@@ -3,6 +3,7 @@ package services;
 import enums.RequestStatus;
 import model.support.TechSupportReq;
 import model.users.Employee;
+import model.users.Manager;
 import model.users.TechSupportSpecialist;
 import model.users.User;
 import storage.Database;
@@ -35,6 +36,13 @@ public class TechSupportService {
             throw new SecurityException("[TechSupportService] : Access denied. Current user is not a Tech Support Specialist.");
         }
         return techSupportSpecialist;
+    }
+
+    private void requireSupportViewer() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof TechSupportSpecialist) && !(current instanceof Manager)) {
+            throw new SecurityException("[TechSupportService] : Access denied. Current user cannot view employee requests.");
+        }
     }
 
     public TechSupportReq submitRequest(String description) {
@@ -96,9 +104,10 @@ public class TechSupportService {
 
         boolean isSender = req.getSender().equals(current);
         boolean isSpecialist = current instanceof TechSupportSpecialist;
+        boolean isManager = current instanceof Manager;
 
-        if (!isSender && !isSpecialist) {
-            System.out.println("[TechSupportService] : Access denied. You can only view your own requests or, if you are a specialist, any request.");
+        if (!isSender && !isSpecialist && !isManager) {
+            System.out.println("[TechSupportService] : Access denied. You can only view your own requests or, if you are a specialist or manager, any request.");
             return null;
         }
 
@@ -172,7 +181,7 @@ public class TechSupportService {
     }
 
     public List<TechSupportReq> getRequestsByStatus(RequestStatus status) {
-        requireSpecialist();
+        requireSupportViewer();
 
         if (status == null) {
             System.out.println("[TechSupportService] : Status cannot be null.");
@@ -186,7 +195,7 @@ public class TechSupportService {
     }
 
     public void printAllRequests() {
-        requireSpecialist();
+        requireSupportViewer();
 
         List<TechSupportReq> all = database.getTechSupportReqs();
         if (all.isEmpty()) {

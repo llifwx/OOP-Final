@@ -69,6 +69,10 @@ public class UserService {
         return teachers;
     }
 
+    public List<Course> getAllCourses() {
+        return new ArrayList<>(database.getCourses());
+    }
+
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         for (User user : database.getUsers()) {
@@ -110,6 +114,13 @@ public class UserService {
         if (user == null || language == null) return;
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
+        database.save();
+    }
+
+    public void saveCurrentUserNotification(String notification) {
+        User current = authService.getCurrentUser();
+        if (current == null || notification == null || notification.isBlank()) return;
+        current.addNotification(notification);
         database.save();
     }
 

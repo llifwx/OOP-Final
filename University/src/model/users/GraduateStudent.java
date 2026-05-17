@@ -6,6 +6,7 @@ import interfaces.Researcher;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
 import utils.ResearchMetrics;
+import exceptions.InvalidSupervisorEx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,12 @@ public class GraduateStudent extends Student implements Researcher {
     public void addPaper(ResearchPaper paper) {
         if (paper != null && !papers.contains(paper)) {
             papers.add(paper);
+        }
+    }
+
+    public void addDiplomaProject(ResearchPaper paper) {
+        if (paper != null && !diplomaProjects.contains(paper)) {
+            diplomaProjects.add(paper);
         }
     }
 

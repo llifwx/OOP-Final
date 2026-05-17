@@ -155,12 +155,39 @@ public class ResearchPaperService {
         database.save();
     }
 
+    public boolean addDiplomaPaper(GraduateStudent student, ResearchPaper paper) {
+        User current = requireResearcher();
+        if (student == null || paper == null) {
+            System.out.println("[ResearchPaperService] Student and paper are required.");
+            return false;
+        }
+        if (student != current) {
+            System.out.println("[ResearchPaperService] Cannot add diploma paper for another student.");
+            return false;
+        }
+        student.addDiplomaProject(paper);
+        if (!database.getResearchPapers().contains(paper)) {
+            database.addResearchPaper(paper);
+        }
+        log("Added diploma paper: " + paper.getTitle());
+        database.save();
+        return true;
+    }
+
     public List<Journal> getAllJournals() {
         return database.getJournals();
     }
 
     public Journal findJournalByName(String name) {
         return database.findJournalByName(name);
+    }
+
+    private User requireResearcher() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof Researcher)) {
+            throw new SecurityException("[ResearchPaperService] Access denied: current user is not a Researcher.");
+        }
+        return current;
     }
 
     private void log(String action) {

@@ -2,6 +2,11 @@ package services;
 
 import model.academic.Mark;
 import model.academic.Transcript;
+import model.users.Admin;
+import model.users.Manager;
+import model.users.Student;
+import model.users.Teacher;
+import model.users.User;
 import storage.Database;
 
 public class TranscriptService {

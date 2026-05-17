@@ -60,7 +60,7 @@ public class ResearchProjectService {
 
     public void addPaperToProject(ResearchProject project, ResearchPaper paper) {
         if (project == null || paper == null) return;
-        project.publishPaper(paper);
+        project.addPublishedPaper(paper);
         log("Added paper to research project: " + project.getTopic());
         database.save();
     }
@@ -86,6 +86,22 @@ public class ResearchProjectService {
         System.out.println("Topic: " + project.getTopic());
         System.out.println("Participants: " + project.getParticipants().size());
         System.out.println("Published Papers: " + project.getPublishedPapers().size());
+    }
+
+    private User requireResearcher() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof Researcher)) {
+            throw new SecurityException("[ResearchProjectService] Access denied: current user is not a Researcher.");
+        }
+        return current;
+    }
+
+    private Manager requireManager() {
+        User current = authService.getCurrentUser();
+        if (!(current instanceof Manager manager)) {
+            throw new SecurityException("[ResearchProjectService] Access denied: current user is not a Manager.");
+        }
+        return manager;
     }
 
     private void log(String action) {

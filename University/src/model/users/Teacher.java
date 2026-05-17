@@ -18,6 +18,7 @@ public class Teacher extends Employee implements Researcher {
 
     private TeacherType teacherType;
     private double rating;
+    private int ratingCount;
     private List<Course> courses;
     private List<Complaint> complaints;
     private List<ResearchPaper> papers;
@@ -36,6 +37,14 @@ public class Teacher extends Employee implements Researcher {
     public TeacherType getTeacherType() {return this.teacherType;}
 
     public double getRating() {return this.rating;}
+
+    public void addRating(double score) {
+        if (score < 0 || score > 5) {
+            throw new IllegalArgumentException("Rating must be between 0 and 5");
+        }
+        rating = ((rating * ratingCount) + score) / (ratingCount + 1);
+        ratingCount++;
+    }
 
     public List<Complaint> getComplaints() {return new ArrayList<>(this.complaints);}
 

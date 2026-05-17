@@ -3,209 +3,195 @@ package ui.menu;
 import comparator.ResearchPaperCitationComparator;
 import comparator.ResearchPaperDateComparator;
 import comparator.ResearchPaperLengthComparator;
-import enums.Format;
 import exceptions.NotResearcherEx;
 import interfaces.Researcher;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
 import model.social.Journal;
 import model.users.GraduateStudent;
-import services.*;
-import utils.UserNamePadding;
+import services.AuthService;
+import services.JournalService;
+import services.ResearchPaperService;
+import services.ResearchProjectService;
+import services.StudentService;
+import services.TranscriptService;
+import services.UserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 
-public class GraduateStudentMenu {
-    private final ResearchService researchService;
+public class GraduateStudentMenu extends StudentMenu {
+    private final AuthService authService;
     private final ResearchPaperService paperService;
     private final ResearchProjectService projectService;
-    private final AuthService authService;
-    private final Scanner sc;
-    private final UserNamePadding padding = new UserNamePadding();
-    private final JournalService journalService;
 
-
- public GraduateStudentMenu(AuthService authService, ResearchPaperService paperService, ResearchProjectService projectService, JournalService journalService, Scanner sc) {
+    public GraduateStudentMenu(AuthService authService, StudentService studentService, UserService userService,
+                               TranscriptService transcriptService, ResearchPaperService paperService,
+                               ResearchProjectService projectService, JournalService journalService, Scanner sc) {
+        super(authService, studentService, userService, transcriptService, journalService, sc);
         this.authService = authService;
-        this.researchService = ResearchService.getInstance();
         this.paperService = paperService;
         this.projectService = projectService;
-        this.journalService = journalService;
-        this.sc = sc;
     }
 
+    @Override
     public void show() {
-        GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
         boolean running = true;
-
         while (running) {
-            System.out.println("\n╔══════════════════════════════════════╗");
-            System.out.println("║           GRADUATE STUDENT            ║");
-            System.out.println("║  " + padding.padRight("Welcome, " + student.getFullName(), 32) + "║");
-            System.out.println("╠══════════════════════════════════════╣");
-            System.out.println("║  1. View my research papers         ║");
-            System.out.println("║  2. Add research paper              ║");
-            System.out.println("║  3. View research projects           ║");
-            System.out.println("║  4. Join research project           ║");
-            System.out.println("║  5. View my supervisor              ║");
-            System.out.println("║  0. Exit                            ║");
-            System.out.println("╚══════════════════════════════════════╝");
-
-            System.out.print("Your choice: ");
+            GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
+            MenuPrinter.print("GRADUATE STUDENT", "Welcome, " + student.getFullName(), List.of(
+                    "1. View available courses",
+                    "2. Register for course",
+                    "3. View registered courses",
+                    "4. View teacher info",
+                    "5. View marks",
+                    "6. View transcript",
+                    "7. Rate teacher",
+                    "8. Student organizations",
+                    "9. Journals",
+                    "10. View notifications",
+                    "11. Switch language",
+                    "12. View supervisor",
+                    "13. Publish research paper",
+                    "14. View my papers sorted",
+                    "15. View research projects",
+                    "16. Join research project",
+                    "17. Diploma papers",
+                    "0. Logout"
+            ));
 
             switch (sc.nextLine().trim()) {
-                case "1" -> viewPapers();
-                case "2" -> addPaper();
-                case "3" -> viewProjects();
-                case "4" -> joinProject();
-                case "5" -> viewSupervisor();
+                case "1" -> printCourses(studentService.getAvailableCourses(), "Available courses");
+                case "2" -> registerForCourse();
+                case "3" -> printCourses(student.getRegisteredCourses(), "Registered courses");
+                case "4" -> viewTeacherInfo();
+                case "5" -> printMarks(student.getTranscript().getMarks());
+                case "6" -> transcriptService.printTranscript(student.getTranscript());
+                case "7" -> rateTeacher();
+                case "8" -> organizationsMenu(student);
+                case "9" -> journalsMenu(student);
+                case "10" -> printNotifications(student);
+                case "11" -> switchLanguage(student);
+                case "12" -> viewSupervisor(student);
+                case "13" -> publishPaper(student, false);
+                case "14" -> viewPapersSorted(student);
+                case "15" -> viewProjects();
+                case "16" -> joinProject(student);
+                case "17" -> diplomaMenu(student);
                 case "0" -> {
                     authService.logout();
                     running = false;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println("Invalid choice.");
             }
         }
     }
 
-    private void viewPapers() {
-        GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
-        List<ResearchPaper> papers = student.getPapers();
-
-        if (papers.isEmpty()) {
-            System.out.println("You have no research papers yet.");
+    private void viewSupervisor(GraduateStudent student) {
+        Researcher supervisor = student.getSupervisor();
+        if (supervisor == null) {
+            System.out.println("No supervisor assigned.");
             return;
         }
-
-        System.out.println("\n╔══════════════════════════════════════╗");
-        System.out.println("║         YOUR RESEARCH PAPERS        ║");
-        System.out.println("╠══════════════════════════════════════╣");
-
-        System.out.println("║  Sort by:                           ║");
-        System.out.println("║    1. By date (newest first)         ║");
-        System.out.println("║    2. By citations (most first)      ║");
-        System.out.println("║    3. By pages (longest first)       ║");
-        System.out.println("║    0. Back                          ║");
-        System.out.println("╚══════════════════════════════════════╝");
-
-        System.out.print("Your choice: ");
-        String choice = sc.nextLine().trim();
-
-        Comparator<ResearchPaper> comparator;
-        switch (choice) {
-            case "1" -> comparator = new ResearchPaperDateComparator();
-            case "2" -> comparator = new ResearchPaperCitationComparator();
-            case "3" -> comparator = new ResearchPaperLengthComparator();
-            case "0" -> { return; }
-            default -> {
-                System.out.println("Invalid choice.");
-                return;
-            }
-        }
-
-        paperService.printPapers(student, comparator);
+        System.out.println(supervisor);
+        System.out.println("H-index: " + supervisor.calculateHIndex());
     }
 
-    private void addPaper() {
-        GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
+    private void publishPaper(GraduateStudent student, boolean diplomaOnly) {
+        ResearchPaper paper = readPaper(student);
+        if (paper == null) return;
+        if (diplomaOnly) {
+            paperService.addDiplomaPaper(student, paper);
+            System.out.println("Diploma paper added.");
+            return;
+        }
+        paperService.publishPaper(student, paper, paper.getJournal());
+        System.out.println("Research paper published.");
+    }
 
-        System.out.println("\n─── Add New Research Paper ───────────────────");
-        System.out.print("Title: ");
-        String title = sc.nextLine().trim();
-        System.out.print("Journal name: ");
-        String journalName = sc.nextLine().trim();
-        System.out.print("Pages: ");
-        int pages = readInt();
-        if (pages < 0) return;
-        System.out.print("DOI: ");
-        String doi = sc.nextLine().trim();
-        System.out.print("Citations (default 0): ");
-        int citations = readInt();
-        if (citations < 0) citations = 0;
-
+    private ResearchPaper readPaper(GraduateStudent student) {
+        String title = promptRequired("Title");
+        String journalName = promptRequired("Journal name");
+        int pages = readInt("Pages");
+        String doi = promptRequired("DOI");
+        int citations = readInt("Citations");
+        if (title == null || journalName == null || doi == null || pages < 0 || citations < 0) return null;
         Journal journal = paperService.findJournalByName(journalName);
         if (journal == null) {
             journal = new Journal(journalName);
             journalService.addJournal(journal);
         }
-
         List<Researcher> authors = new ArrayList<>();
         authors.add(student);
+        return new ResearchPaper(title, authors, journal, citations, pages, new Date(), doi);
+    }
 
-        ResearchPaper paper = new ResearchPaper(title, authors, journal, citations, pages, new Date(), doi);
+    private void viewPapersSorted(GraduateStudent student) {
+        Comparator<ResearchPaper> comparator = readPaperComparator();
+        if (comparator != null) paperService.printPapers(student, comparator);
+    }
 
-        paperService.publishPaper(student, paper, journal);
-        System.out.println("Research paper added successfully!");
+    private Comparator<ResearchPaper> readPaperComparator() {
+        MenuPrinter.print("SORT PAPERS", null, List.of(
+                "1. Date",
+                "2. Citations",
+                "3. Pages",
+                "0. Back"
+        ));
+        return switch (sc.nextLine().trim()) {
+            case "1" -> new ResearchPaperDateComparator();
+            case "2" -> new ResearchPaperCitationComparator();
+            case "3" -> new ResearchPaperLengthComparator();
+            case "0" -> null;
+            default -> {
+                System.out.println("Invalid choice.");
+                yield null;
+            }
+        };
     }
 
     private void viewProjects() {
         List<ResearchProject> projects = projectService.getAllProjects();
-
         if (projects.isEmpty()) {
             System.out.println("No research projects available.");
             return;
         }
-
-        System.out.println("\n╔══════════════════════════════════════════════╗");
-        System.out.println("║           RESEARCH PROJECTS                 ║");
-        System.out.println("╠══════════════════════════════════════════════╣");
-
-        for (int i = 0; i < projects.size(); i++) {
-            ResearchProject p = projects.get(i);
-            System.out.printf("║  %d. %s%n", i + 1, padding.padRight(p.getTopic(), 38));
-            System.out.println("║     Participants: " + p.getParticipants().size() +
-                    " | Papers: " + p.getPublishedPapers().size());
-        }
-        System.out.println("╚══════════════════════════════════════════════╝");
+        projects.forEach(projectService::printProjectInfo);
     }
 
-    private void joinProject() {
-        GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
-        List<ResearchProject> projects = projectService.getAllProjects();
-
-        if (projects.isEmpty()) {
-            System.out.println("No research projects available.");
+    private void joinProject(GraduateStudent student) {
+        String topic = promptRequired("Project topic");
+        if (topic == null) return;
+        ResearchProject project = projectService.findProjectByTopic(topic);
+        if (project == null) {
+            System.out.println("Project not found.");
             return;
         }
-
-        System.out.println("\n─── Join Research Project ───────────────────────");
-        viewProjects();
-        System.out.print("Enter project number to join: ");
-        int num = readInt();
-        if (num < 1 || num > projects.size()) {
-            System.out.println("Invalid selection.");
-            return;
-        }
-
-        ResearchProject project = projects.get(num - 1);
         try {
             projectService.joinProject(project, student);
-            System.out.println("Successfully joined project: " + project.getTopic());
+            System.out.println("Joined project.");
         } catch (NotResearcherEx e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void viewSupervisor() {
-        GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
-        Researcher supervisor = student.getSupervisor();
-
-        if (supervisor == null) {
-            System.out.println("You don't have a supervisor assigned yet.");
-            return;
-        }
-
-        System.out.println("\n─── Your Supervisor ────────────────────────────");
-        System.out.println("Supervisor: " + supervisor.toString());
-        System.out.println("H-Index: " + supervisor.calculateHIndex());
-    }
-
-    private int readInt() {
-        try {
-            return Integer.parseInt(sc.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a number.");
-            return -1;
+    private void diplomaMenu(GraduateStudent student) {
+        MenuPrinter.print("DIPLOMA PAPERS", null, List.of(
+                "1. View diploma papers",
+                "2. Add diploma paper",
+                "0. Back"
+        ));
+        switch (sc.nextLine().trim()) {
+            case "1" -> {
+                if (student.getDiplomaProjects().isEmpty()) System.out.println("No diploma papers.");
+                else student.getDiplomaProjects().forEach(System.out::println);
+            }
+            case "2" -> publishPaper(student, true);
+            case "0" -> { }
+            default -> System.out.println("Invalid choice.");
         }
     }
 }

@@ -47,6 +47,12 @@ public abstract class User implements Serializable {
         return new ArrayList<>(notifications);
     }
 
+    public void addNotification(String notification) {
+        if (notification == null || notification.isBlank()) return;
+        if (notifications == null) notifications = new ArrayList<>();
+        notifications.add(notification);
+    }
+
     public String getFullName() {return this.fullName;}
 
     public String getUsername() {return this.username;}

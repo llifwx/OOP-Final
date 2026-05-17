@@ -62,7 +62,9 @@ public class JournalService {
         if (journal == null) return;
         for (User user : journal.getSubscribers()) {
             if (user != null) {
-                user.receiveNotification("New paper in " + journal.getName());
+                String notification = "New paper in " + journal.getName();
+                user.addNotification(notification);
+                System.out.println(user.getUsername() + " received notification: " + notification);
             }
         }
     }
