@@ -1,25 +1,35 @@
 package services;
 
 import model.social.Journal;
+<<<<<<< HEAD
 import interfaces.Researcher;
 import model.users.Admin;
 import model.users.Manager;
+=======
+>>>>>>> fc28ef2 (review)
 import model.users.User;
 import model.research.ResearchPaper;
 import storage.Database;
 import utils.LogRecord;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
 public class JournalService {
     private static JournalService instance;
+=======
+import java.util.List;
+
+public class JournalService {
+>>>>>>> fc28ef2 (review)
     private final Database database;
     private final AuthService authService;
 
     public JournalService(Database database, AuthService authService) {
         this.database = database;
         this.authService = authService;
+<<<<<<< HEAD
     }
 
     public static JournalService getInstance() {
@@ -87,14 +97,56 @@ public class JournalService {
         requireJournalAuthor();
         if (journal == null || paper == null) {
             System.out.println("[JournalService] Journal and paper are required.");
+=======
+    }
+
+    public List<Journal> getAllJournals() {
+        return database.getJournals();
+    }
+
+    public Journal findJournalByName(String name) {
+        return database.findJournalByName(name);
+    }
+
+    public void addJournal(Journal journal) {
+        if (journal == null) return;
+        database.addJournal(journal);
+        log("Added journal: " + journal.getName());
+        database.save();
+    }
+
+    public void subscribe(User user, Journal journal) {
+        if (user == null || journal == null) return;
+        journal.subscribe(user);
+        log("Subscribed " + user.getUsername() + " to journal: " + journal.getName());
+        database.save();
+    }
+
+    public void unsubscribe(User user, Journal journal) {
+        if (user == null || journal == null) return;
+        journal.unsubscribe(user);
+        log("Unsubscribed " + user.getUsername() + " from journal: " + journal.getName());
+        database.save();
+    }
+
+    public void publishPaper(Journal journal, ResearchPaper paper) {
+        if (journal == null || paper == null) return;
+        if (journal.getPapers().contains(paper)) {
+>>>>>>> fc28ef2 (review)
             return;
         }
         journal.addPaper(paper);
         notifySubscribers(journal);
+<<<<<<< HEAD
         db().save();
         log("Published paper in journal: " + journal.getName());
+=======
+        log("Published paper in journal: " + journal.getName());
+        database.save();
+>>>>>>> fc28ef2 (review)
     }
 
+    // Observer Pattern: a Journal keeps subscribers, and this service notifies them when new papers appear.
     public void notifySubscribers(Journal journal) {
         if (journal == null) return;
         for (User user : journal.getSubscribers()) {
@@ -105,15 +157,20 @@ public class JournalService {
     }
 
     public void printJournalInfo(Journal journal) {
+<<<<<<< HEAD
         if (journal == null) {
             System.out.println("[JournalService] Journal is not available.");
             return;
         }
+=======
+        if (journal == null) return;
+>>>>>>> fc28ef2 (review)
         System.out.println("Name: " + journal.getName());
         System.out.println("Papers: " + journal.getPapers().size());
         System.out.println("Subscribers: " + journal.getSubscribers().size());
     }
 
+<<<<<<< HEAD
     private Database db() {
         return database;
     }
@@ -138,6 +195,12 @@ public class JournalService {
         if (actor != null) {
             db().addLog(new LogRecord(actor, action));
             db().save();
+=======
+    private void log(String action) {
+        User actor = authService.getCurrentUser();
+        if (actor != null) {
+            database.addLog(new LogRecord(actor, action));
+>>>>>>> fc28ef2 (review)
         }
     }
 }

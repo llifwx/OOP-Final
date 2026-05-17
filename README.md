@@ -60,6 +60,13 @@ cd OOP-Final
 
 Open the project in IntelliJ IDEA and run the main class located in `University/src/`.
 
+## Design Patterns
+
+- **Factory Pattern**: `factory.UserFactory` centralizes creation of role-specific users.
+- **Singleton Pattern**: `storage.Database` is the single central storage instance used by services.
+- **Strategy Pattern**: classes in `comparator/` provide interchangeable sorting strategies for students, teachers, and research papers.
+- **Observer Pattern**: `model.social.Journal` stores subscribers, and `services.JournalService.notifySubscribers()` notifies them when a new paper is published. Duplicate paper publications are ignored so subscribers are not notified twice for the same journal paper.
+
 ## Git Branch Naming
 
 Always create a new branch before working on something. Never push directly to `main`.

@@ -111,7 +111,10 @@ public class UserService {
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
         database.save();
+<<<<<<< HEAD
         System.out.println("[UserService] Language updated for '" + user.getUsername() + "' to " + language + ".");
+=======
+>>>>>>> fc28ef2 (review)
     }
 
     public boolean removeUser(String username) {
@@ -133,7 +136,6 @@ public class UserService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 

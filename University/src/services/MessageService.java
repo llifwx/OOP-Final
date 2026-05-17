@@ -52,9 +52,9 @@ public class MessageService {
 
         Message message = new Message(sender, receiver, text);
         database.addMessage(message);
-        database.save();
 
         log("Sent message to " + receiver.getUsername() + ": " + text);
+        database.save();
         System.out.println("[Message Service] : Message sent to " + receiver.getUsername() + ".");
         return message;
     }
@@ -104,8 +104,8 @@ public class MessageService {
         List<Message> unread = getUnreadMessages();
         unread.forEach(Message::markAsRead);
         if (!unread.isEmpty()) {
-            database.save();
             log("Marked " + unread.size() + " messages as read.");
+            database.save();
         }
 
         System.out.println("[Message Service] : Marked " + unread.size() + " messages as read.");
@@ -152,8 +152,8 @@ public class MessageService {
 
         boolean removed = database.removeMessage(message);
         if (removed) {
-            database.save();
             log("Deleted message with ID " + messageId);
+            database.save();
             System.out.println("[Message Service] : Message with ID " + messageId + " deleted.");
         }
 
@@ -193,7 +193,6 @@ public class MessageService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 }

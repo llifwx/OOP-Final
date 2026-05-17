@@ -27,7 +27,10 @@ public class GraduateStudent extends Student implements Researcher {
         this.projects = new ArrayList<>();
     }
 
-    public void setSupervisor(Researcher supervisor) {
+    public void setSupervisor(Researcher supervisor) throws InvalidSupervisorEx {
+        if (supervisor == null || supervisor.calculateHIndex() < 3) {
+            throw new InvalidSupervisorEx();
+        }
         this.supervisor = supervisor;
     }
 

@@ -12,17 +12,24 @@ import model.users.User;
 import storage.Database;
 import utils.LogRecord;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResearchProjectService {
     private static ResearchProjectService instance;
+=======
+import java.util.List;
+
+public class ResearchProjectService {
+>>>>>>> fc28ef2 (review)
     private final Database database;
     private final AuthService authService;
 
     public ResearchProjectService(Database database, AuthService authService) {
         this.database = database;
         this.authService = authService;
+<<<<<<< HEAD
     }
 
     public static ResearchProjectService getInstance() {
@@ -56,6 +63,23 @@ public class ResearchProjectService {
         db().addResearchProject(project);
         db().save();
         log("Added research project: " + project.getTopic());
+=======
+    }
+
+    public List<ResearchProject> getAllProjects() {
+        return database.getResearchProjects();
+    }
+
+    public ResearchProject findProjectByTopic(String topic) {
+        return database.findResearchProjectByTopic(topic);
+    }
+
+    public void addProject(ResearchProject project) {
+        if (project == null) return;
+        database.addResearchProject(project);
+        log("Added research project: " + project.getTopic());
+        database.save();
+>>>>>>> fc28ef2 (review)
     }
 
     public void joinProject(ResearchProject project, Researcher researcher) throws NotResearcherEx {
@@ -74,6 +98,7 @@ public class ResearchProjectService {
             teacher.addProject(project);
         }
 
+<<<<<<< HEAD
         db().save();
         log("Joined research project: " + project.getTopic());
     }
@@ -87,6 +112,17 @@ public class ResearchProjectService {
         project.addPublishedPaper(paper);
         db().save();
         log("Added paper to project: " + project.getTopic());
+=======
+        log("Researcher joined project: " + project.getTopic());
+        database.save();
+    }
+
+    public void addPaperToProject(ResearchProject project, ResearchPaper paper) {
+        if (project == null || paper == null) return;
+        project.publishPaper(paper);
+        log("Added paper to research project: " + project.getTopic());
+        database.save();
+>>>>>>> fc28ef2 (review)
     }
 
     public void assignSupervisor(GraduateStudent student, Researcher supervisor) throws InvalidSupervisorEx {
@@ -98,8 +134,13 @@ public class ResearchProjectService {
             throw new InvalidSupervisorEx();
         }
         student.setSupervisor(supervisor);
+<<<<<<< HEAD
         db().save();
         log("Assigned supervisor for graduate student: " + student.getUsername());
+=======
+        log("Assigned supervisor to graduate student: " + student.getUsername());
+        database.save();
+>>>>>>> fc28ef2 (review)
     }
 
     public void printProjectInfo(ResearchProject project) {
@@ -112,6 +153,7 @@ public class ResearchProjectService {
         System.out.println("Published Papers: " + project.getPublishedPapers().size());
     }
 
+<<<<<<< HEAD
     private Database db() {
         return database;
     }
@@ -136,6 +178,12 @@ public class ResearchProjectService {
         if (actor != null) {
             db().addLog(new LogRecord(actor, action));
             db().save();
+=======
+    private void log(String action) {
+        User actor = authService.getCurrentUser();
+        if (actor != null) {
+            database.addLog(new LogRecord(actor, action));
+>>>>>>> fc28ef2 (review)
         }
     }
 }

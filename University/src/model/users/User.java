@@ -61,6 +61,7 @@ public abstract class User implements Serializable {
 
     public void setLanguage(Language language) {this.language = language;}
 
+<<<<<<< HEAD
     public void receiveNotification(String notification) {
         if (notification != null && !notification.isBlank()) {
             if (notifications == null) notifications = new ArrayList<>();
@@ -68,6 +69,8 @@ public abstract class User implements Serializable {
         }
     }
 
+=======
+>>>>>>> fc28ef2 (review)
     public boolean login(String password) {
         return Objects.equals(this.password, hashPassword(password));
     }

@@ -30,12 +30,20 @@ public class ConsoleApplication {
     private final ReportService reportService;
     private final UserService userService;
     private final TeacherService teacherService;
+<<<<<<< HEAD
     private final NewsService newsService;
     private final JournalService journalService;
     private final ResearchService researchService;
     private final ResearchPaperService researchPaperService;
     private final ResearchProjectService researchProjectService;
     private final TranscriptService transcriptService;
+=======
+    private final JournalService journalService;
+    private final ResearchPaperService researchPaperService;
+    private final ResearchProjectService researchProjectService;
+    private final TranscriptService transcriptService;
+    // todo add other services
+>>>>>>> fc28ef2 (review)
 
     // Menus
     private final AdminMenu adminMenu;
@@ -57,19 +65,30 @@ public class ConsoleApplication {
         this.messageService = new MessageService(db, authService);
         this.techSupportService = new TechSupportService(db, authService);
         this.teacherService = new TeacherService(db, authService);
+<<<<<<< HEAD
         this.newsService = new NewsService(db, authService);
         this.journalService = new JournalService(db, authService);
         this.researchService = new ResearchService(db, authService);
         this.researchPaperService = new ResearchPaperService(db, authService, journalService);
         this.researchProjectService = new ResearchProjectService(db, authService);
         this.transcriptService = new TranscriptService(authService);
+=======
+        this.journalService = new JournalService(db, authService);
+        this.researchPaperService = new ResearchPaperService(db, authService, journalService);
+        this.researchProjectService = new ResearchProjectService(db, authService);
+        this.transcriptService = new TranscriptService(db, authService);
+>>>>>>> fc28ef2 (review)
         this.adminService = new AdminService(db, authService, userService);
         this.managerService = new ManagerService(db, authService, reportService);
 
         // Init menus
         this.adminMenu = new AdminMenu(adminService, authService, sc);
         this.studentMenu = new StudentMenu(authService, transcriptService, sc);
+<<<<<<< HEAD
         this.graduateStudentMenu = new GraduateStudentMenu(authService, researchService, researchPaperService, researchProjectService, journalService, sc);
+=======
+        this.graduateStudentMenu = new GraduateStudentMenu(authService, researchPaperService, researchProjectService, journalService, sc);
+>>>>>>> fc28ef2 (review)
         this.teacherMenu = new TeacherMenu(authService, researchPaperService, sc);
         this.managerMenu = new ManagerMenu(managerService, userService, authService, sc);
         this.techSupportSpecialistMenu = new TechSupportSpecialistMenu(techSupportService, authService, sc);

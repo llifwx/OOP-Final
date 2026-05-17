@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class ManagerService {
+    private static final int MAX_STUDENT_CREDITS = 21;
+
     private final Database database;
     private final AuthService authService;
     private final ReportService reportService;
@@ -55,9 +57,9 @@ public class ManagerService {
         }
 
         teacher.addCourse(course);
-        database.save();
 
         log("Assigned teacher" + teacher.getFullName() + " to course " + course.getName() + " as " + lessonType);
+        database.save();
         System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " assigned to course " + course.getName() + " as " + lessonType + ".");
     }
 
@@ -69,8 +71,8 @@ public class ManagerService {
             return false;
         }
 
-        if (student.getCredits() + course.getCredits() > 21) {
-            System.out.println("[Manager Service] : Cannot approve registration. Credit limit exceeded for student " + student.getFullName() + ". Limit: 21, Current: " + student.getCredits() + ", Course: " + course.getCredits());
+        if (student.getCredits() + course.getCredits() > MAX_STUDENT_CREDITS) {
+            System.out.println("[Manager Service] : Cannot approve registration. Credit limit exceeded for student " + student.getFullName() + ". Limit: " + MAX_STUDENT_CREDITS + ", Current: " + student.getCredits() + ", Course: " + course.getCredits());
             return false;
         }
         if (course.getEnrolledStudents().contains(student)) {
@@ -82,8 +84,8 @@ public class ManagerService {
 
         student.setCredits(student.getCredits() + course.getCredits());
 
-        database.save();
         log("Approved registration for student " + student.getFullName() + " in course " + course.getName());
+        database.save();
         System.out.println("[Manager Service] : Registration approved for student " + student.getFullName() + " in course " + course.getName() + ".");
 
         return true;
@@ -104,8 +106,8 @@ public class ManagerService {
         }
 
         database.addCourse(course);
-        database.save();
         log("Added course for registration: " + course.getName());
+        database.save();
         System.out.println("[Manager Service] : Course '" + course.getName() + "' added for registration.");
     }
 
@@ -176,8 +178,8 @@ public class ManagerService {
         }
 
         database.addNews(news);
-        database.save();
         log("Added news: " + news.getTitle());
+        database.save();
         System.out.println("[Manager Service] : News '" + news.getTitle() + " added");
     }
 
@@ -190,9 +192,14 @@ public class ManagerService {
             return false;
         }
 
+<<<<<<< HEAD
         database.removeNews(news);
         database.save();
+=======
+        database.getNews().remove(news);
+>>>>>>> fc28ef2 (review)
         log("Removed news: " + title);
+        database.save();
         System.out.println("[Manager Service] : News '" + title + "' removed.");
         return true;
     }
@@ -207,8 +214,8 @@ public class ManagerService {
         }
 
         news.pin();
-        database.save();
         log("Pinned news: " + title);
+        database.save();
         System.out.println("[Manager Service] : News '" + title + "' pinned.");
         return;
     }
@@ -247,7 +254,6 @@ public class ManagerService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 }

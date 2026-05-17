@@ -49,9 +49,8 @@ public class TechSupportService {
         TechSupportReq req = new TechSupportReq(id, sender, description);
 
         database.addTechSupportReq(req);
-        database.save();
-
         log("Submitted tech support request: " + description);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request submitted.");
         return req;
     }
@@ -105,8 +104,8 @@ public class TechSupportService {
 
         if (isSpecialist && req.getStatus() == RequestStatus.NEW) {
             req.setStatus(RequestStatus.VIEWED);
-            database.save();
             log("Viewed tech support request ID " + id);
+            database.save();
         }
 
         return req;
@@ -124,9 +123,8 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.ACCEPTED);
-        database.save();
-
         log("Accepted tech support request ID " + id);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
 
         return true;
@@ -149,9 +147,8 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.REJECTED);
-        database.save();
-
         log("Rejected tech support request ID " + id + " with reason: " + reason);
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
         return true;
     }
@@ -168,9 +165,8 @@ public class TechSupportService {
         }
 
         req.setStatus(RequestStatus.DONE);
-        database.save();
-
         log("Marked tech support request ID " + id + " as done");
+        database.save();
         System.out.println("[TechSupportService] : Tech support request ID " + id);
         return true;
     }
@@ -224,7 +220,6 @@ public class TechSupportService {
         User actor = authService.getCurrentUser();
         if (actor != null) {
             database.addLog(new LogRecord(actor, action));
-            database.save();
         }
     }
 
