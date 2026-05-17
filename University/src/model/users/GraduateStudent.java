@@ -8,7 +8,6 @@ import model.research.ResearchPaper;
 import model.research.ResearchProject;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,10 +28,7 @@ public class GraduateStudent extends Student implements Researcher {
         this.projects = new ArrayList<>();
     }
 
-    public void setSupervisor(Researcher supervisor) throws InvalidSupervisorEx {
-        if (supervisor.calculateHIndex() < 3) {
-            throw new InvalidSupervisorEx();
-        }
+    public void setSupervisor(Researcher supervisor) {
         this.supervisor = supervisor;
     }
 
@@ -51,15 +47,6 @@ public class GraduateStudent extends Student implements Researcher {
             else break;
         }
         return h;
-    }
-
-    @Override
-    public void printPapers(Comparator<ResearchPaper> comparator) {
-        List<ResearchPaper> sorted = new ArrayList<>(papers);
-        sorted.sort(comparator);
-        for (ResearchPaper p : sorted) {
-            System.out.println("- " + p.getTitle() + " | Citations: " + p.getCitations());
-        }
     }
 
     public DegreeType getDegreeType() {return degreeType;}

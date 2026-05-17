@@ -34,13 +34,6 @@ public class Transcript implements Serializable {
         return total / marks.size();
     }
 
-    public void printTranscript() {
-        System.out.println(toString());
-        for (Mark mark : marks) {
-            System.out.println(mark);
-        }
-    }
-
     public Student getStudent() {return student;}
 
     public void setStudent(Student student) {this.student = student;}
@@ -69,7 +62,8 @@ public class Transcript implements Serializable {
 
     @Override
     public String toString() {
-        return "Transcript of: " + getStudent().getFullName() + ". " + "Total marks: " + marks.size() + ". " + "GPA: " + calculateGpa() + ".";
+        String studentName = student == null ? "N/A" : student.getFullName();
+        return "Transcript of: " + studentName + ". " + "Total marks: " + marks.size() + ". " + "GPA: " + calculateGpa() + ".";
     }
 
     @Override

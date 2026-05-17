@@ -76,8 +76,7 @@ public class ManagerService {
             return false;
         }
 
-        student.addRegisteredCourse(course);
-        course.enrollStudent(student);
+        registerStudentToCourse(student, course);
 
         student.setCredits(student.getCredits() + course.getCredits());
 
@@ -106,6 +105,18 @@ public class ManagerService {
         database.save();
         log("Added course for registration: " + course.getName());
         System.out.println("[Manager Service] : Course '" + course.getName() + "' added for registration.");
+    }
+
+    public void registerStudentToCourse(Student student, Course course) {
+        if (student == null || course == null) return;
+        student.addRegisteredCourse(course);
+        course.enrollStudent(student);
+    }
+
+    public void unregisterStudentFromCourse(Student student, Course course) {
+        if (student == null || course == null) return;
+        student.removeRegisteredCourse(course);
+        course.removeStudent(student);
     }
 
     public Report createAcademicReport(List<Student> students) {

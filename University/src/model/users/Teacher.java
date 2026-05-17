@@ -9,7 +9,6 @@ import model.research.ResearchPaper;
 import model.research.ResearchProject;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,10 +27,10 @@ public class Teacher extends Employee implements Researcher {
         super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.teacherType = teacherType;
         this.rating = rating;
-        this.courses = courses;
-        this.complaints = complaints;
-        this.papers = papers;
-        this.projects = projects;
+        this.courses = courses == null ? new ArrayList<>() : new ArrayList<>(courses);
+        this.complaints = complaints == null ? new ArrayList<>() : new ArrayList<>(complaints);
+        this.papers = papers == null ? new ArrayList<>() : new ArrayList<>(papers);
+        this.projects = projects == null ? new ArrayList<>() : new ArrayList<>(projects);
     }
     
     public TeacherType getTeacherType() {return this.teacherType;}
@@ -64,15 +63,6 @@ public class Teacher extends Employee implements Researcher {
             else break;
         }
         return h;
-    }
-
-    @Override
-    public void printPapers(Comparator<ResearchPaper> cmp) {
-        List<ResearchPaper> sorted = new ArrayList<>(papers);
-        sorted.sort(cmp);
-        for (ResearchPaper paper : sorted) {
-            System.out.println("- " + paper.getTitle() + " | Citations: " + paper.getCitations());
-        }
     }
 
     public void addCourse(Course course) {

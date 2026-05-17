@@ -4,16 +4,19 @@ import model.academic.Course;
 import model.academic.Mark;
 import model.users.Student;
 import services.AuthService;
+import services.TranscriptService;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class StudentMenu {
     private final AuthService authService;
+    private final TranscriptService transcriptService;
     private final Scanner sc;
 
     public StudentMenu(AuthService authService, Scanner sc) {
         this.authService = authService;
+        this.transcriptService = TranscriptService.getInstance();
         this.sc = sc;
     }
 
@@ -33,7 +36,7 @@ public class StudentMenu {
             switch (sc.nextLine().trim()) {
                 case "1" -> printCourses(student.viewCourses());
                 case "2" -> printMarks(student.viewMarks());
-                case "3" -> student.viewTranscript().printTranscript();
+                case "3" -> transcriptService.printTranscript(student.viewTranscript());
                 case "0" -> {
                     authService.logout();
                     running = false;

@@ -16,17 +16,21 @@ public class Employee extends User {
         this.employeeId = employeeId;
         this.department = department;
         this.salary = salary;
-        this.hierDate = hierDate;
+        this.hierDate = hierDate == null ? null : new Date(hierDate.getTime());
     }
 
     public String getEmployeeId() {return this.employeeId;}
 
     public String getDepartment() {return this.department;}
 
+    public double getSalary() {return salary;}
+
+    public Date getHierDate() {return hierDate == null ? null : new Date(hierDate.getTime());}
+
     public String getRoleName() {return getClass().getSimpleName();}
 
     @Override
     public String toString() {
-        return "User: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId() + ". " + "EmployeeID: " + this.getEmployeeId() + "Department: " + this.getDepartment();
+        return "User: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId() + ". " + "EmployeeID: " + this.getEmployeeId() + ". Department: " + this.getDepartment();
     }
 }

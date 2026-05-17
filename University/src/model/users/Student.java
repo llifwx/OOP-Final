@@ -80,6 +80,10 @@ public class Student extends User {
         }
     }
 
+    public void removeRegisteredCourse(Course course) {
+        registeredCourses.remove(course);
+    }
+
     public void setStudentId(String studentId) {this.studentId = studentId;}
 
     public void setGpa(double gpa) {this.gpa = gpa;}

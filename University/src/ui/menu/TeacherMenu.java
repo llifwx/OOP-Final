@@ -1,18 +1,20 @@
 package ui.menu;
 
 import model.academic.Course;
-import model.research.ResearchPaper;
 import model.users.Teacher;
 import services.AuthService;
+import services.ResearchPaperService;
 
 import java.util.Scanner;
 
 public class TeacherMenu {
     private final AuthService authService;
+    private final ResearchPaperService paperService;
     private final Scanner sc;
 
     public TeacherMenu(AuthService authService, Scanner sc) {
         this.authService = authService;
+        this.paperService = ResearchPaperService.getInstance();
         this.sc = sc;
     }
 
@@ -54,13 +56,6 @@ public class TeacherMenu {
     }
 
     private void printPapers(Teacher teacher) {
-        if (teacher.getPapers().isEmpty()) {
-            System.out.println("No research papers yet.");
-            return;
-        }
-
-        for (ResearchPaper paper : teacher.getPapers()) {
-            System.out.println("- " + paper.getTitle() + " | Citations: " + paper.getCitations());
-        }
+        paperService.printPapers(teacher, null);
     }
 }

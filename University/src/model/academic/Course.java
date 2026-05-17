@@ -62,7 +62,7 @@ public class Course implements Serializable {
     // Методы
     public void addLesson(Lesson lesson) {
         if (lesson == null) return;
-        boolean alreadyExists = lessons.stream().anyMatch(existing -> existing.getDayOfWeek().equals(lesson.getDayOfWeek()) && existing.getTimeSlot().equals(lesson.getTimeSlot()) && existing.getRoom().equals(lesson.getRoom()));
+        boolean alreadyExists = lessons.stream().anyMatch(existing -> Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek()) && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot()) && Objects.equals(existing.getRoom(), lesson.getRoom()));
 
         if (!alreadyExists) {
             lessons.add(lesson);
@@ -70,13 +70,13 @@ public class Course implements Serializable {
     }
 
     public void addInstructor(Teacher teacher) {
-        if (!instructors.contains(teacher)) {
+        if (teacher != null && !instructors.contains(teacher)) {
             instructors.add(teacher);
         }
     }
 
     public void enrollStudent(Student student) {
-        if (!enrolledStudents.contains(student)) {
+        if (student != null && !enrolledStudents.contains(student)) {
             enrolledStudents.add(student);
         }
     }

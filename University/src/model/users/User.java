@@ -65,14 +65,6 @@ public abstract class User implements Serializable {
         }
     }
 
-    public void logout() {
-        System.out.println(this.getUsername() + " logged out.");
-    }
-
-    public void receiveNotification(String message) {
-        System.out.println(username + " received notification: " + message);
-    }
-
     @Override
     public String toString() {
         return "User: " + this.getUsername() + ". " + "Full name: " + this.getFullName() + ". " + "Email: " + this.getEmail() + ". " + "ID: " + this.getId() + ". ";

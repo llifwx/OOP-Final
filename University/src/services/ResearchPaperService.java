@@ -9,6 +9,8 @@ import model.social.News;
 import model.users.GraduateStudent;
 import model.users.Teacher;
 import storage.Database;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ResearchPaperService {
@@ -40,6 +42,30 @@ public class ResearchPaperService {
         System.out.println("Authors: " + paper.getAuthors());
     }
 
+    public void printPapers(Researcher researcher, Comparator<ResearchPaper> comparator) {
+        List<ResearchPaper> papers = getPapersByResearcher(researcher);
+        if (papers.isEmpty()) {
+            System.out.println("No research papers yet.");
+            return;
+        }
+        if (comparator != null) {
+            papers.sort(comparator);
+        }
+        for (ResearchPaper paper : papers) {
+            System.out.println("- " + paper.getTitle() + " | Citations: " + paper.getCitations());
+        }
+    }
+
+    private List<ResearchPaper> getPapersByResearcher(Researcher researcher) {
+        if (researcher instanceof GraduateStudent graduateStudent) {
+            return new ArrayList<>(graduateStudent.getPapers());
+        }
+        if (researcher instanceof Teacher teacher) {
+            return new ArrayList<>(teacher.getPapers());
+        }
+        return new ArrayList<>();
+    }
+
     public void addPaperToDatabase(ResearchPaper paper) {
         db().addResearchPaper(paper);
         db().save();
@@ -58,7 +84,7 @@ public class ResearchPaperService {
         }
 
         journal.addPaper(paper);
-        journal.notifySubscribers();
+        JournalService.getInstance().notifySubscribers(journal);
 
         if (!db().getResearchPapers().contains(paper)) {
             db().addResearchPaper(paper);

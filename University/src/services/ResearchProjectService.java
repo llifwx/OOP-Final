@@ -1,6 +1,7 @@
 package services;
 
 import exceptions.NotResearcherEx;
+import exceptions.InvalidSupervisorEx;
 import interfaces.Researcher;
 import model.research.ResearchProject;
 import model.research.ResearchPaper;
@@ -50,6 +51,17 @@ public class ResearchProjectService {
 
     public void addPaperToProject(ResearchProject project, ResearchPaper paper) {
         project.publishPaper(paper);
+        db().save();
+    }
+
+    public void assignSupervisor(GraduateStudent student, Researcher supervisor) throws InvalidSupervisorEx {
+        if (student == null || supervisor == null) {
+            throw new InvalidSupervisorEx("Student and supervisor are required");
+        }
+        if (supervisor.calculateHIndex() < 3) {
+            throw new InvalidSupervisorEx();
+        }
+        student.setSupervisor(supervisor);
         db().save();
     }
 

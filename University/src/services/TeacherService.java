@@ -35,6 +35,7 @@ public class TeacherService {
         }
 
         teacher.addCourse(course);
+        course.addInstructor(teacher);
         database.save();
         log("Teacher assigned self to course: " + course.getCourseCode());
     }

@@ -45,7 +45,4 @@ public class Journal implements Serializable {
         }
     }
 
-    public void notifySubscribers() {
-        for (User u : subscribers) u.receiveNotification("New paper in " + name);
-    }
 }

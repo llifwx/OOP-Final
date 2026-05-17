@@ -46,18 +46,25 @@ public class Mark implements Serializable {
     public double getTotalScore() {return totalScore;}
 
     public void setFirstAttestation(double score) {
-        this.firstAttestation = score;
+        this.firstAttestation = validateScore(score);
         calculateTotal();
     }
 
     public void setSecondAttestation(double score) {
-        this.secondAttestation = score;
+        this.secondAttestation = validateScore(score);
         calculateTotal();
     }
 
     public void setFinalExam(double score) {
-        this.finalExam = score;
+        this.finalExam = validateScore(score);
         calculateTotal();
+    }
+
+    private double validateScore(double score) {
+        if (score < 0 || score > 100) {
+            throw new IllegalArgumentException("Score must be between 0 and 100");
+        }
+        return score;
     }
 
     private void calculateTotal() {

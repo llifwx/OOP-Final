@@ -100,7 +100,7 @@ public class GraduateStudentMenu {
             }
         }
 
-        student.printPapers(comparator);
+        paperService.printPapers(student, comparator);
     }
 
     private void addPaper() {
