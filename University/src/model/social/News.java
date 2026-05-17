@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class News implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -57,5 +58,23 @@ public class News implements Serializable {
 
     public boolean isPinned() {
         return pinned;
+    }
+
+    @Override
+    public String toString() {
+        return "News{" + "title='" + title + '\'' + ", topic=" + topic
+                + ", date=" + date + ", pinned=" + pinned + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof News news)) return false;
+        return Objects.equals(title, news.title) && Objects.equals(date, news.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, date);
     }
 }

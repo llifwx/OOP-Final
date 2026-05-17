@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class ResearchPaper implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -49,5 +50,23 @@ public class ResearchPaper implements Serializable {
             throw new IllegalArgumentException(fieldName + " cannot be negative");
         }
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "ResearchPaper{" + "title='" + title + '\'' + ", doi='" + doi + '\''
+                + ", citations=" + citations + ", pages=" + pages + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof ResearchPaper paper)) return false;
+        return Objects.equals(doi, paper.doi);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(doi);
     }
 }

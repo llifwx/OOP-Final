@@ -4,6 +4,7 @@ import model.users.Employee;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -63,5 +64,25 @@ public class Message implements Serializable {
     public String getPreview() {
         if (text == null) return "";
         return this.text.substring(0, Math.min(this.text.length(), 20));
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" + "id=" + id + ", sender="
+                + (sender != null ? sender.getUsername() : "N/A") + ", receiver="
+                + (receiver != null ? receiver.getUsername() : "N/A") + ", sentDate="
+                + sentDate + ", isRead=" + isRead + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Message message)) return false;
+        return id == message.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

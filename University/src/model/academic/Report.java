@@ -5,6 +5,7 @@ import model.users.Student;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Report implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -28,5 +29,22 @@ public class Report implements Serializable {
 
     public String getReportContent() {
         return reportContent;
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" + "title='" + title + '\'' + ", studentsCount=" + studentData.size() + '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Report report)) return false;
+        return Objects.equals(title, report.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
     }
 }
