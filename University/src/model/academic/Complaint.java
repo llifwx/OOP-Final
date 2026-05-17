@@ -36,12 +36,6 @@ public class Complaint implements Serializable {
 
     public int getId() {return this.id;}
 
-    public String getSummary() {
-        String teacherName = teacher != null ? teacher.getFullName() : "N/A";
-        String studentName = student != null ? student.getFullName() : "N/A";
-        return "[" + urgency + "] " + teacherName + " -> " + studentName + ": " + text;
-    }
-
     public Teacher getTeacher() {return teacher;}
 
     public void setTeacher(Teacher teacher) {this.teacher = teacher;}
@@ -73,11 +67,11 @@ public class Complaint implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Complaint c)) return false;
-        return Objects.equals(teacher, c.teacher) && Objects.equals(student, c.student) && Objects.equals(date, c.date);
+        return id == c.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teacher, student, date);
+        return Objects.hash(id);
     }
 }

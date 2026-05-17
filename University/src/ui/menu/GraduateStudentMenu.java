@@ -185,7 +185,7 @@ public class GraduateStudentMenu {
 
     private void viewSupervisor() {
         GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
-        Researcher supervisor = student.viewSupervisor();
+        Researcher supervisor = student.getSupervisor();
 
         if (supervisor == null) {
             System.out.println("You don't have a supervisor assigned yet.");

@@ -46,6 +46,12 @@ public abstract class User implements Serializable {
 
     public void setUsername(String newUsername) {this.username = newUsername;}
 
+    public void setFullName(String fullName) {this.fullName = fullName;}
+
+    public void setEmail(String email) {this.email = email;}
+
+    public void setLanguage(Language language) {this.language = language;}
+
     public boolean login(String password) {
         return Objects.equals(this.password, hashPassword(password));
     }

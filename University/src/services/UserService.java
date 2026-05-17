@@ -104,11 +104,10 @@ public class UserService {
 
     public void changeLanguage(User user, Language language) {
         if (user == null || language == null) return;
-        // Language is stored in User but there's no setter in the base class,
-        // so we rely on the field being set; extend User if needed.
-        System.out.println("[UserService] Language update for '" + user.getUsername()
-                + "' to " + language + " (extend User with setLanguage if needed).");
-        log("Language change requested for: " + user.getUsername());
+        user.setLanguage(language);
+        log("Changed language for: " + user.getUsername());
+        database.save();
+        System.out.println("[UserService] Language updated for '" + user.getUsername() + "' to " + language + ".");
     }
 
     public boolean removeUser(String username) {

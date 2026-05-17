@@ -2,7 +2,6 @@ package model.users;
 
 import enums.DegreeType;
 import enums.Language;
-import exceptions.InvalidSupervisorEx;
 import interfaces.Researcher;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
@@ -31,8 +30,6 @@ public class GraduateStudent extends Student implements Researcher {
     public void setSupervisor(Researcher supervisor) {
         this.supervisor = supervisor;
     }
-
-    public Researcher viewSupervisor() {return supervisor;}
 
     @Override
     public int calculateHIndex() {

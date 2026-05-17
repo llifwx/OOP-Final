@@ -13,6 +13,9 @@ public class TechSupportSpecialist extends Employee {
 
     @Override
     public String toString() {
-        return "TechSupportSpecialist{" + "username='" + getUsername() + '\'' + ", fullName='" + getFullName() + '\'' + ", email='" + getEmail() + '\'' + ", language=" + getLanguage() + ", employeeId='" + getEmployeeId() + '\'' + ", department='" + getDepartment();
+        return "TechSupportSpecialist: " + getUsername() + ". Full name: " + getFullName()
+                + ". Email: " + getEmail() + ". ID: " + getId()
+                + ". EmployeeID: " + getEmployeeId() + ". Department: " + getDepartment()
+                + ". Salary: " + getSalary() + ". Hire date: " + getHierDate() + ".";
     }
 }

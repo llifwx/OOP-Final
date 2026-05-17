@@ -89,6 +89,11 @@ public class Teacher extends Employee implements Researcher {
 
     @Override
     public String toString() {
-        return "Teacher's type: " + this.getTeacherType() + "\n" + "Rating: " + this.getRating() + "\n" + "Complaints: " + this.getComplaints() + "\n" + "Papers: " + this.getPapers() + "\n" + "Projects: " + this.getProjects() + "\n";
+        return "Teacher: " + getUsername() + ". Full name: " + getFullName()
+                + ". ID: " + getId() + ". EmployeeID: " + getEmployeeId()
+                + ". Department: " + getDepartment() + ". Type: " + teacherType
+                + ". Rating: " + rating + ". Courses: " + courses.size()
+                + ". Complaints: " + complaints.size() + ". Papers: " + papers.size()
+                + ". Projects: " + projects.size() + ".";
     }
 }
