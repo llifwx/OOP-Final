@@ -39,6 +39,6 @@ public class TechSupportReq implements Serializable {
     }
 
     public Date getCreatedDate() {
-        return createdDate;
+        return createdDate == null ? null : new Date(createdDate.getTime());
     }
 }

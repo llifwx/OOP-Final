@@ -68,12 +68,11 @@ public class GraduateStudent extends Student implements Researcher {
 
     public Researcher getSupervisor() {return supervisor;}
 
-    //TODO:refactor lists getters and setters
-    public List<ResearchPaper> getPapers() {return papers;}
+    public List<ResearchPaper> getPapers() {return new ArrayList<>(papers);}
 
-    public List<ResearchPaper> getDiplomaProjects() {return diplomaProjects;}
+    public List<ResearchPaper> getDiplomaProjects() {return new ArrayList<>(diplomaProjects);}
 
-    public List<ResearchProject> getProjects() {return projects;}
+    public List<ResearchProject> getProjects() {return new ArrayList<>(projects);}
 
     public void addPaper(ResearchPaper paper) {
         if (paper != null && !papers.contains(paper)) {

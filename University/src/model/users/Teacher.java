@@ -38,14 +38,14 @@ public class Teacher extends Employee implements Researcher {
 
     public double getRating() {return this.rating;}
 
-    public List<Complaint> getComplaints() {return this.complaints;}
+    public List<Complaint> getComplaints() {return new ArrayList<>(this.complaints);}
 
-    public List<ResearchPaper> getPapers() {return this.papers;}
+    public List<ResearchPaper> getPapers() {return new ArrayList<>(this.papers);}
 
-    public List<ResearchProject> getProjects() {return this.projects;}
+    public List<ResearchProject> getProjects() {return new ArrayList<>(this.projects);}
 
     public List<Course> getCourses() {
-        return courses;
+        return new ArrayList<>(courses);
     }
 
     public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}

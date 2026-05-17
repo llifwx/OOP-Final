@@ -51,7 +51,7 @@ public class Message implements Serializable {
     }
 
     public Date getSentDate() {
-        return sentDate;
+        return sentDate == null ? null : new Date(sentDate.getTime());
     }
 
     public boolean isRead() {

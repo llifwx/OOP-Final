@@ -76,7 +76,7 @@ public class ManagerService {
             return false;
         }
 
-        student.getRegisteredCourses().add(course);
+        student.addRegisteredCourse(course);
         course.enrollStudent(student);
 
         student.setCredits(student.getCredits() + course.getCredits());

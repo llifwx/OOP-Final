@@ -1,14 +1,11 @@
 package model.users;
 
 import enums.Language;
-import model.social.Journal;
-import model.social.News;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class User implements Serializable {
@@ -68,33 +65,9 @@ public abstract class User implements Serializable {
         }
     }
 
-    ;
-
     public void logout() {
-        System.out.println(this.getUsername() + "logged out.");
+        System.out.println(this.getUsername() + " logged out.");
     }
-
-    ;
-
-    public void viewNews(List<News> newsList) {
-        for (News news : newsList) {
-            System.out.println(news);
-        }
-    }
-
-    ;
-
-    public void subscribeToJournal(Journal journal) {
-        journal.subscribe(this);
-    }
-
-    ;
-
-    public void unsubscribeFromJournal(Journal journal) {
-        journal.unsubscribe(this);
-    }
-
-    ;
 
     public void receiveNotification(String message) {
         System.out.println(username + " received notification: " + message);

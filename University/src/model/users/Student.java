@@ -39,7 +39,7 @@ public class Student extends User {
         this.transcript = new Transcript(this);
     }
 
-    public List<Course> viewCourses() {return registeredCourses;}
+    public List<Course> viewCourses() {return new ArrayList<>(registeredCourses);}
 
     public List<Mark> viewMarks() {return transcript.getMarks();}
 
@@ -70,9 +70,15 @@ public class Student extends User {
 
     public int getFailedCoursesCount() {return this.failedCoursesCount;}
 
-    public List<StudentOrganization> getOrganizations() {return this.organizations;}
+    public List<StudentOrganization> getOrganizations() {return new ArrayList<>(this.organizations);}
 
-    public List<Course> getRegisteredCourses() {return registeredCourses;}
+    public List<Course> getRegisteredCourses() {return new ArrayList<>(registeredCourses);}
+
+    public void addRegisteredCourse(Course course) {
+        if (course != null && !registeredCourses.contains(course)) {
+            registeredCourses.add(course);
+        }
+    }
 
     public void setStudentId(String studentId) {this.studentId = studentId;}
 

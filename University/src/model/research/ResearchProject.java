@@ -23,11 +23,11 @@ public class ResearchProject implements Serializable {
     }
 
     public List<Researcher> getParticipants() {
-        return participants;
+        return new ArrayList<>(participants);
     }
 
     public List<ResearchPaper> getPublishedPapers() {
-        return publishedPapers;
+        return new ArrayList<>(publishedPapers);
     }
 
     public void addParticipant(Researcher researcher) throws NotResearcherEx {
@@ -41,5 +41,9 @@ public class ResearchProject implements Serializable {
 
     public void removeParticipant(Researcher researcher) {this.participants.remove(researcher);}
 
-    public void publishPaper(ResearchPaper paper) {this.publishedPapers.add(paper);}
+    public void publishPaper(ResearchPaper paper) {
+        if (paper != null && !this.publishedPapers.contains(paper)) {
+            this.publishedPapers.add(paper);
+        }
+    }
 }

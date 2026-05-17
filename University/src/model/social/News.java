@@ -25,7 +25,11 @@ public class News implements Serializable {
         this.pinned = false;
     }
 
-    public void addComment(Comment comment) {this.comments.add(comment);}
+    public void addComment(Comment comment) {
+        if (comment != null) {
+            this.comments.add(comment);
+        }
+    }
 
     public void pin() {this.pinned = true;}
 
@@ -44,11 +48,11 @@ public class News implements Serializable {
     }
 
     public Date getDate() {
-        return date;
+        return date == null ? null : new Date(date.getTime());
     }
 
     public List<Comment> getComments() {
-        return comments;
+        return new ArrayList<>(comments);
     }
 
     public boolean isPinned() {

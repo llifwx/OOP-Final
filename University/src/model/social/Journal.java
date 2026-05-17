@@ -24,11 +24,11 @@ public class Journal implements Serializable {
     }
 
     public List<ResearchPaper> getPapers() {
-        return papers;
+        return new ArrayList<>(papers);
     }
 
     public List<User> getSubscribers() {
-        return subscribers;
+        return new ArrayList<>(subscribers);
     }
 
     public void subscribe(User user) {

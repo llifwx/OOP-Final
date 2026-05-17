@@ -45,10 +45,11 @@ public class Transcript implements Serializable {
 
     public void setStudent(Student student) {this.student = student;}
 
-    //TODO:refactor mark getter and setter
-    public List<Mark> getMarks() {return marks;}
+    public List<Mark> getMarks() {return new ArrayList<>(marks);}
 
-    public void setMarks(List<Mark> marks) {this.marks = marks;}
+    public void setMarks(List<Mark> marks) {
+        this.marks = marks == null ? new ArrayList<>() : new ArrayList<>(marks);
+    }
 
     private double scoreToGpa(double score) {
         if (score >= 94.5) return 4.0;
