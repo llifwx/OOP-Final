@@ -4,6 +4,7 @@ import model.academic.Course;
 import model.users.Teacher;
 import services.AuthService;
 import services.ResearchPaperService;
+import utils.UserNamePadding;
 
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ public class TeacherMenu {
     private final AuthService authService;
     private final ResearchPaperService paperService;
     private final Scanner sc;
+    private final UserNamePadding padding = new UserNamePadding();
 
     public TeacherMenu(AuthService authService, ResearchPaperService paperService, Scanner sc) {
         this.authService = authService;
@@ -23,12 +25,15 @@ public class TeacherMenu {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===== TEACHER =====");
-            System.out.println("Welcome, " + teacher.getFullName());
-            System.out.println("1. View my courses");
-            System.out.println("2. View my research papers");
-            System.out.println("3. View H-index");
-            System.out.println("0. Logout");
+            System.out.println("\n╔══════════════════════════════════════╗");
+            System.out.println("║                TEACHER               ║");
+            System.out.println("║       " + padding.padRight("Welcome, " + teacher.getFullName(), 32) + "║");
+            System.out.println("╠══════════════════════════════════════╣");
+            System.out.println("║       1. View my courses             ║");
+            System.out.println("║       2. View my research papers     ║");
+            System.out.println("║       3. View H-index                ║");
+            System.out.println("║       0. Logout                      ║");
+            System.out.println("╚══════════════════════════════════════╝");
             System.out.print("Your choice: ");
 
             switch (sc.nextLine().trim()) {
