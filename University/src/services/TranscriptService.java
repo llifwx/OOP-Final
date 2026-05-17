@@ -2,25 +2,6 @@ package services;
 
 import model.academic.Mark;
 import model.academic.Transcript;
-<<<<<<< HEAD
-import model.users.Admin;
-import model.users.Manager;
-import model.users.Student;
-import model.users.Teacher;
-import model.users.User;
-
-public class TranscriptService {
-    private static TranscriptService instance;
-    private final AuthService authService;
-
-    public TranscriptService(AuthService authService) {
-        this.authService = authService;
-    }
-
-    public static TranscriptService getInstance() {
-        if (instance == null) instance = new TranscriptService(null);
-        return instance;
-=======
 import storage.Database;
 
 public class TranscriptService {
@@ -30,7 +11,6 @@ public class TranscriptService {
     public TranscriptService(Database database, AuthService authService) {
         this.database = database;
         this.authService = authService;
->>>>>>> fc28ef2 (review)
     }
 
     public void printTranscript(Transcript transcript) {

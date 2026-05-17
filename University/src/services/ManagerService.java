@@ -192,12 +192,7 @@ public class ManagerService {
             return false;
         }
 
-<<<<<<< HEAD
-        database.removeNews(news);
-        database.save();
-=======
         database.getNews().remove(news);
->>>>>>> fc28ef2 (review)
         log("Removed news: " + title);
         database.save();
         System.out.println("[Manager Service] : News '" + title + "' removed.");

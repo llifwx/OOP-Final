@@ -24,18 +24,10 @@ public class GraduateStudentMenu {
     private final UserNamePadding padding = new UserNamePadding();
     private final JournalService journalService;
 
-<<<<<<< HEAD
-    private final JournalService journalService;
 
-    public GraduateStudentMenu(AuthService authService, ResearchService researchService, ResearchPaperService paperService,
-                               ResearchProjectService projectService, JournalService journalService, Scanner sc) {
-        this.authService = authService;
-        this.researchService = researchService;
-=======
-    public GraduateStudentMenu(AuthService authService, ResearchPaperService paperService, ResearchProjectService projectService, JournalService journalService, Scanner sc) {
+ public GraduateStudentMenu(AuthService authService, ResearchPaperService paperService, ResearchProjectService projectService, JournalService journalService, Scanner sc) {
         this.authService = authService;
         this.researchService = ResearchService.getInstance();
->>>>>>> fc28ef2 (review)
         this.paperService = paperService;
         this.projectService = projectService;
         this.journalService = journalService;

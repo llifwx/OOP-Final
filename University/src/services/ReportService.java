@@ -170,12 +170,7 @@ public class ReportService {
             return false;
         }
 
-<<<<<<< HEAD
-        database.removeReport(report);
-        database.save();
-=======
         database.getReports().remove(report);
->>>>>>> fc28ef2 (review)
         log("Deleted report: " + title);
         database.save();
         System.out.println("[Report Service] : Report '" + title + "' deleted.");

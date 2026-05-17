@@ -17,10 +17,6 @@ import java.util.List;
 public class TeacherService {
     private static final double FAILING_SCORE = 50.0;
     private static final int MAX_FAILED_COURSES = 3;
-<<<<<<< HEAD
-=======
-
->>>>>>> fc28ef2 (review)
     private final Database database;
     private final AuthService authService;
 
@@ -64,12 +60,6 @@ public class TeacherService {
             System.out.println("[TeacherService] Student is not enrolled in this course.");
             return false;
         }
-<<<<<<< HEAD
-        if (mark.getTotalScore() < FAILING_SCORE && student.getFailedCoursesCount() >= MAX_FAILED_COURSES) {
-            System.out.println("[TeacherService] Cannot put failing mark. Student already has "
-                    + student.getFailedCoursesCount() + " failed courses.");
-            return false;
-=======
         if (!student.equals(mark.getStudent()) || !course.equals(mark.getCourse())) {
             throw new MarkException("Mark must belong to the same student and course.");
         }
@@ -77,7 +67,6 @@ public class TeacherService {
         boolean isFailingMark = mark.getTotalScore() < FAILING_SCORE;
         if (isNewMark && isFailingMark && student.getFailedCoursesCount() >= MAX_FAILED_COURSES) {
             throw new MarkException("Student already has 3 failed courses.");
->>>>>>> fc28ef2 (review)
         }
 
         student.getTranscript().addMark(mark);
@@ -85,13 +74,6 @@ public class TeacherService {
             student.setFailedCoursesCount(student.getFailedCoursesCount() + 1);
         }
         student.setGpa(student.getTranscript().calculateGpa());
-<<<<<<< HEAD
-        if (mark.getTotalScore() < FAILING_SCORE) {
-            student.setFailedCoursesCount(student.getFailedCoursesCount() + 1);
-        }
-        database.save();
-=======
->>>>>>> fc28ef2 (review)
         log("Put mark for student " + student.getUsername() + " in course " + course.getCourseCode());
         database.save();
         return true;

@@ -111,10 +111,6 @@ public class UserService {
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
         database.save();
-<<<<<<< HEAD
-        System.out.println("[UserService] Language updated for '" + user.getUsername() + "' to " + language + ".");
-=======
->>>>>>> fc28ef2 (review)
     }
 
     public boolean removeUser(String username) {
