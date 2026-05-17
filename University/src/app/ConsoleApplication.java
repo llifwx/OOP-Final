@@ -29,6 +29,7 @@ public class ConsoleApplication {
     private final MessageService messageService;
     private final ReportService reportService;
     private final UserService userService;
+    private final TeacherService teacherService;
     // todo add other services
 
     // Menus
@@ -50,6 +51,7 @@ public class ConsoleApplication {
         this.reportService = new ReportService(db, authService);
         this.messageService = new MessageService(db, authService);
         this.techSupportService = new TechSupportService(db, authService);
+        this.teacherService = new TeacherService(db, authService);
         this.adminService = new AdminService(db, authService, userService);
         this.managerService = new ManagerService(db, authService, reportService);
         // todo add other service initializers

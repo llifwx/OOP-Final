@@ -47,7 +47,12 @@ public class Student extends User {
 
     public Transcript getTranscript() {return transcript;}
 
-    public Teacher viewTeacherInfo(Course course) {return null;}
+    public Teacher viewTeacherInfo(Course course) {
+        if (course == null || !registeredCourses.contains(course) || course.getInstructors().isEmpty()) {
+            return null;
+        }
+        return course.getInstructors().get(0);
+    }
 
     public String getStudentId() {return this.studentId;}
 

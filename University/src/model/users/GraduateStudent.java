@@ -1,17 +1,11 @@
 package model.users;
 
 import enums.DegreeType;
-import enums.Format;
 import enums.Language;
-import enums.NewsTopic;
 import exceptions.InvalidSupervisorEx;
-import exceptions.NotResearcherEx;
 import interfaces.Researcher;
-import model.social.Journal;
-import model.social.News;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import storage.Database;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,30 +62,6 @@ public class GraduateStudent extends Student implements Researcher {
         }
     }
 
-    @Override
-    public void joinProject(ResearchProject project) {
-        if (project == null || projects.contains(project)) return;
-        try {
-            project.addParticipant(this);
-            this.projects.add(project);
-            Database.getInstance().save();
-        } catch (NotResearcherEx e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void publishPaper(ResearchPaper paper, Journal journal) {
-        this.papers.add(paper);
-        journal.addPaper(paper);
-        journal.notifySubscribers();
-        Database.getInstance().addResearchPaper(paper);
-        News news = new News("New Paper Published: " + paper.getTitle(), paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
-        news.pin();
-        Database.getInstance().addNews(news);
-        Database.getInstance().save();
-    }
-
     public DegreeType getDegreeType() {return degreeType;}
 
     public void setDegreeType(DegreeType degreeType) {this.degreeType = degreeType;}
@@ -104,6 +74,18 @@ public class GraduateStudent extends Student implements Researcher {
     public List<ResearchPaper> getDiplomaProjects() {return diplomaProjects;}
 
     public List<ResearchProject> getProjects() {return projects;}
+
+    public void addPaper(ResearchPaper paper) {
+        if (paper != null && !papers.contains(paper)) {
+            papers.add(paper);
+        }
+    }
+
+    public void addProject(ResearchProject project) {
+        if (project != null && !projects.contains(project)) {
+            projects.add(project);
+        }
+    }
 
     @Override
     public String toString() {

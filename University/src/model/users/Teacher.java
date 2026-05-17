@@ -2,15 +2,11 @@ package model.users;
 
 import enums.Language;
 import enums.TeacherType;
-import enums.UrgencyLevel;
 import interfaces.Researcher;
 import model.academic.Complaint;
 import model.academic.Course;
-import model.academic.Mark;
-import model.social.Journal;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import storage.Database;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,30 +48,7 @@ public class Teacher extends Employee implements Researcher {
         return courses;
     }
 
-    public void manageCourse(Course course) {
-        addCourse(course);
-    }
-
-    public void putMark(Student student, Course course, Mark mark) {
-        if (student == null || course == null || mark == null) return;
-        if (!course.getEnrolledStudents().contains(student)) return;
-
-        student.getTranscript().addMark(mark);
-        student.setGpa(student.getTranscript().calculateGpa());
-        Database.getInstance().save();
-    }
-
     public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
-
-    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {
-        if (student == null || urgency == null || text == null || text.isBlank()) return null;
-
-        Complaint complaint = new Complaint(this, student, urgency, text);
-        complaints.add(complaint);
-        Database.getInstance().addComplaint(complaint);
-        Database.getInstance().save();
-        return complaint;
-    }
 
     @Override
     public int calculateHIndex() {
@@ -102,33 +75,27 @@ public class Teacher extends Employee implements Researcher {
         }
     }
 
-    @Override
-    public void joinProject(ResearchProject project) {
-        if (project == null || projects.contains(project)) return;
-        try {
-            project.addParticipant(this);
-            projects.add(project);
-            Database.getInstance().save();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void publishPaper(ResearchPaper paper, Journal journal) {
-        if (paper == null || journal == null) return;
-        if (!papers.contains(paper)) {
-            papers.add(paper);
-        }
-        journal.addPaper(paper);
-        journal.notifySubscribers();
-        Database.getInstance().addResearchPaper(paper);
-        Database.getInstance().save();
-    }
-
     public void addCourse(Course course) {
         if (course != null && !courses.contains(course)) {
             courses.add(course);
+        }
+    }
+
+    public void addComplaint(Complaint complaint) {
+        if (complaint != null && !complaints.contains(complaint)) {
+            complaints.add(complaint);
+        }
+    }
+
+    public void addPaper(ResearchPaper paper) {
+        if (paper != null && !papers.contains(paper)) {
+            papers.add(paper);
+        }
+    }
+
+    public void addProject(ResearchProject project) {
+        if (project != null && !projects.contains(project)) {
+            projects.add(project);
         }
     }
 

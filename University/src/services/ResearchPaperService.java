@@ -1,11 +1,15 @@
 package services;
 
+import enums.NewsTopic;
 import enums.Format;
+import interfaces.Researcher;
 import model.research.ResearchPaper;
 import model.social.Journal;
+import model.social.News;
+import model.users.GraduateStudent;
+import model.users.Teacher;
 import storage.Database;
 import java.util.List;
-import java.util.Scanner;
 
 public class ResearchPaperService {
     private static ResearchPaperService instance;
@@ -38,6 +42,32 @@ public class ResearchPaperService {
 
     public void addPaperToDatabase(ResearchPaper paper) {
         db().addResearchPaper(paper);
+        db().save();
+    }
+
+    public void publishPaper(Researcher researcher, ResearchPaper paper, Journal journal) {
+        if (researcher == null || paper == null || journal == null) {
+            System.out.println("[ResearchPaperService] Cannot publish paper with empty researcher, paper, or journal.");
+            return;
+        }
+
+        if (researcher instanceof GraduateStudent graduateStudent) {
+            graduateStudent.addPaper(paper);
+        } else if (researcher instanceof Teacher teacher) {
+            teacher.addPaper(paper);
+        }
+
+        journal.addPaper(paper);
+        journal.notifySubscribers();
+
+        if (!db().getResearchPapers().contains(paper)) {
+            db().addResearchPaper(paper);
+        }
+
+        News news = new News("New Paper Published: " + paper.getTitle(),
+                paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+        news.pin();
+        db().addNews(news);
         db().save();
     }
 

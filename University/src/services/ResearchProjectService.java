@@ -4,6 +4,8 @@ import exceptions.NotResearcherEx;
 import interfaces.Researcher;
 import model.research.ResearchProject;
 import model.research.ResearchPaper;
+import model.users.GraduateStudent;
+import model.users.Teacher;
 import storage.Database;
 import java.util.List;
 
@@ -32,7 +34,17 @@ public class ResearchProjectService {
     }
 
     public void joinProject(ResearchProject project, Researcher researcher) throws NotResearcherEx {
+        if (project == null || researcher == null) {
+            throw new NotResearcherEx();
+        }
+
         project.addParticipant(researcher);
+        if (researcher instanceof GraduateStudent graduateStudent) {
+            graduateStudent.addProject(project);
+        } else if (researcher instanceof Teacher teacher) {
+            teacher.addProject(project);
+        }
+
         db().save();
     }
 

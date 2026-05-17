@@ -1,12 +1,7 @@
 package model.users;
 
 import enums.Language;
-import model.social.Message;
-import storage.Database;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Employee extends User {
     private static final long serialVersionUID = 1L;
@@ -27,24 +22,6 @@ public class Employee extends User {
     public String getEmployeeId() {return this.employeeId;}
 
     public String getDepartment() {return this.department;}
-
-    public Message sendMessage(Employee receiver, String text) {
-        if (receiver == null || receiver.equals(this) || text == null || text.isBlank()) return null;
-
-        Message message = new Message(this, receiver, text);
-        Database.getInstance().addMessage(message);
-        Database.getInstance().save();
-        return message;
-    }
-
-    ;
-
-    public List<Message> viewMessages() {
-        List<Message> messages = new ArrayList<>();
-        messages.addAll(Database.getInstance().findMessagesBySender(this));
-        messages.addAll(Database.getInstance().findMessagesByReceiver(this));
-        return messages;
-    }
 
     public String getRoleName() {return getClass().getSimpleName();}
 
