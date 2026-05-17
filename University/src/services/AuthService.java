@@ -50,7 +50,6 @@ public class AuthService {
         database.addLog(log);
         database.save();
         System.out.println("[AuthService] User '" + currentUser.getUsername() + "' logged out.");
-        currentUser.logout();
         this.currentUser = null;
     }
 

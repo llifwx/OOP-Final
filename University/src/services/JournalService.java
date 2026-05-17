@@ -43,8 +43,17 @@ public class JournalService {
 
     public void publishPaper(Journal journal, ResearchPaper paper) {
         journal.addPaper(paper);
-        journal.notifySubscribers();
+        notifySubscribers(journal);
         db().save();
+    }
+
+    public void notifySubscribers(Journal journal) {
+        if (journal == null) return;
+        for (User user : journal.getSubscribers()) {
+            if (user != null) {
+                System.out.println(user.getUsername() + " received notification: New paper in " + journal.getName());
+            }
+        }
     }
 
     public void printJournalInfo(Journal journal) {

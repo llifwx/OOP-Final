@@ -1,13 +1,20 @@
 package app;
 
-import services.ReportService;
 import model.users.Admin;
+import model.users.GraduateStudent;
+import model.users.Manager;
+import model.users.Student;
+import model.users.Teacher;
 import model.users.TechSupportSpecialist;
 import model.users.User;
 import services.*;
 import storage.Database;
 import ui.menu.AdminMenu;
-import ui.TechSupportSpecialistMenu;
+import ui.menu.GraduateStudentMenu;
+import ui.menu.ManagerMenu;
+import ui.menu.StudentMenu;
+import ui.menu.TeacherMenu;
+import ui.menu.TechSupportSpecialistMenu;
 
 import java.util.Scanner;
 
@@ -22,10 +29,15 @@ public class ConsoleApplication {
     private final MessageService messageService;
     private final ReportService reportService;
     private final UserService userService;
+    private final TeacherService teacherService;
     // todo add other services
 
     // Menus
     private final AdminMenu adminMenu;
+    private final StudentMenu studentMenu;
+    private final GraduateStudentMenu graduateStudentMenu;
+    private final TeacherMenu teacherMenu;
+    private final ManagerMenu managerMenu;
     private final TechSupportSpecialistMenu techSupportSpecialistMenu;
     // todo add other menus
 
@@ -39,12 +51,17 @@ public class ConsoleApplication {
         this.reportService = new ReportService(db, authService);
         this.messageService = new MessageService(db, authService);
         this.techSupportService = new TechSupportService(db, authService);
+        this.teacherService = new TeacherService(db, authService);
         this.adminService = new AdminService(db, authService, userService);
         this.managerService = new ManagerService(db, authService, reportService);
         // todo add other service initializers
 
         // Init menus
         this.adminMenu = new AdminMenu(adminService, authService, sc);
+        this.studentMenu = new StudentMenu(authService, sc);
+        this.graduateStudentMenu = new GraduateStudentMenu(authService, sc);
+        this.teacherMenu = new TeacherMenu(authService, sc);
+        this.managerMenu = new ManagerMenu(managerService, userService, authService, sc);
         this.techSupportSpecialistMenu = new TechSupportSpecialistMenu(techSupportService, authService, sc);
     }
 
@@ -105,8 +122,11 @@ public class ConsoleApplication {
 
         switch (user) {
             case Admin i -> adminMenu.show();
+            case GraduateStudent i -> graduateStudentMenu.show();
+            case Student i -> studentMenu.show();
+            case Teacher i -> teacherMenu.show();
+            case Manager i -> managerMenu.show();
             case TechSupportSpecialist i -> techSupportSpecialistMenu.show();
-            // todo add other routes to roles
             default -> System.out.println("Menu for your role is not implemented yet.");
         }
     }

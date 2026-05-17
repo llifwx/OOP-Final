@@ -4,7 +4,6 @@ import comparator.ResearchPaperCitationComparator;
 import comparator.ResearchPaperDateComparator;
 import comparator.ResearchPaperLengthComparator;
 import enums.Format;
-import exceptions.InvalidSupervisorEx;
 import exceptions.NotResearcherEx;
 import interfaces.Researcher;
 import model.research.ResearchPaper;
@@ -57,7 +56,10 @@ public class GraduateStudentMenu {
                 case "3" -> viewProjects();
                 case "4" -> joinProject();
                 case "5" -> viewSupervisor();
-                case "0" -> running = false;
+                case "0" -> {
+                    authService.logout();
+                    running = false;
+                }
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
@@ -98,7 +100,7 @@ public class GraduateStudentMenu {
             }
         }
 
-        student.printPapers(comparator);
+        paperService.printPapers(student, comparator);
     }
 
     private void addPaper() {
@@ -129,7 +131,7 @@ public class GraduateStudentMenu {
 
         ResearchPaper paper = new ResearchPaper(title, authors, journal, citations, pages, new Date(), doi);
 
-        student.publishPaper(paper, journal);
+        paperService.publishPaper(student, paper, journal);
         System.out.println("Research paper added successfully!");
     }
 
@@ -173,8 +175,12 @@ public class GraduateStudentMenu {
         }
 
         ResearchProject project = projects.get(num - 1);
-        student.joinProject(project);
-        System.out.println("Successfully joined project: " + project.getTopic());
+        try {
+            projectService.joinProject(project, student);
+            System.out.println("Successfully joined project: " + project.getTopic());
+        } catch (NotResearcherEx e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void viewSupervisor() {

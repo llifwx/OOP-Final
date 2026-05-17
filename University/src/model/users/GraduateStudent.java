@@ -1,22 +1,14 @@
 package model.users;
 
 import enums.DegreeType;
-import enums.Format;
 import enums.Language;
-import enums.NewsTopic;
 import exceptions.InvalidSupervisorEx;
-import exceptions.NotResearcherEx;
 import interfaces.Researcher;
-import model.social.Journal;
-import model.social.News;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import storage.Database;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GraduateStudent extends Student implements Researcher {
@@ -36,10 +28,7 @@ public class GraduateStudent extends Student implements Researcher {
         this.projects = new ArrayList<>();
     }
 
-    public void setSupervisor(Researcher supervisor) throws InvalidSupervisorEx {
-        if (supervisor.calculateHIndex() < 3) {
-            throw new InvalidSupervisorEx();
-        }
+    public void setSupervisor(Researcher supervisor) {
         this.supervisor = supervisor;
     }
 
@@ -60,64 +49,33 @@ public class GraduateStudent extends Student implements Researcher {
         return h;
     }
 
-    @Override
-    public void printPapers(Comparator<ResearchPaper> comparator) {
-        List<ResearchPaper> sorted = new ArrayList<>(papers);
-        sorted.sort(comparator);
-        for (ResearchPaper p : sorted) {
-            System.out.println("- " + p.getTitle() + " | Citations: " + p.getCitations());
-        }
-    }
-
-    @Override
-    public void joinProject(ResearchProject project) {
-        try {
-            project.addParticipant(this);
-            this.projects.add(project);
-        } catch (NotResearcherEx e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void publishPaper(ResearchPaper paper, Journal journal) {
-        this.papers.add(paper);
-        journal.addPaper(paper);
-        journal.notifySubscribers();
-        Database.getInstance().addResearchPaper(paper);
-        News news = new News("New Paper Published: " + paper.getTitle(), paper.getCitation(Format.PLAIN_TEXT), NewsTopic.RESEARCH);
-        news.pin();
-        Database.getInstance().addNews(news);
-        Database.getInstance().save();
-    }
-
     public DegreeType getDegreeType() {return degreeType;}
 
     public void setDegreeType(DegreeType degreeType) {this.degreeType = degreeType;}
 
     public Researcher getSupervisor() {return supervisor;}
 
-    //TODO:refactor lists getters and setters
-    public List<ResearchPaper> getPapers() {return papers;}
+    public List<ResearchPaper> getPapers() {return new ArrayList<>(papers);}
 
-    public List<ResearchPaper> getDiplomaProjects() {return diplomaProjects;}
+    public List<ResearchPaper> getDiplomaProjects() {return new ArrayList<>(diplomaProjects);}
 
-    public List<ResearchProject> getProjects() {return projects;}
+    public List<ResearchProject> getProjects() {return new ArrayList<>(projects);}
+
+    public void addPaper(ResearchPaper paper) {
+        if (paper != null && !papers.contains(paper)) {
+            papers.add(paper);
+        }
+    }
+
+    public void addProject(ResearchProject project) {
+        if (project != null && !projects.contains(project)) {
+            projects.add(project);
+        }
+    }
 
     @Override
     public String toString() {
         return "GraduateStudent: " + getUsername() + ". " + "Full name: " + getFullName() + ". " + "ID: " + getId() + ". " + "Degree: " + degreeType + ". " + "Supervisor: " + (supervisor != null ? supervisor.toString() : "none") + ".";
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof GraduateStudent gs)) return false;
-        return Objects.equals(getStudentId(), gs.getStudentId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getStudentId());
-    }
 }

@@ -17,5 +17,11 @@ public class Comment implements Serializable {
         this.date = new Date();
     }
 
+    public User getAuthor() {return author;}
+
+    public String getText() {return text;}
+
+    public Date getDate() {return date == null ? null : new Date(date.getTime());}
+
     public void editText(String newText) {this.text = newText;}
 }

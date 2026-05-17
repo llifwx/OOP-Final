@@ -24,7 +24,7 @@ public class Course implements Serializable {
     private List<Teacher> instructors = new ArrayList<>();
     private List<Student> enrolledStudents = new ArrayList<>();
 
-    // Основной конструктор
+    // Main constructor
     public Course(String courseCode, String name, int credits, CourseType type, Language language) {
         this.id = ++idCounter;
         this.courseCode = courseCode;
@@ -40,7 +40,7 @@ public class Course implements Serializable {
         }
     }
 
-    // Геттеры
+    // Getters
     public int getId() {return id;}
 
     public String getCourseCode() {return courseCode;}
@@ -59,10 +59,10 @@ public class Course implements Serializable {
 
     public List<Student> getEnrolledStudents() {return new ArrayList<>(enrolledStudents);}
 
-    // Методы
+    // Methods
     public void addLesson(Lesson lesson) {
         if (lesson == null) return;
-        boolean alreadyExists = lessons.stream().anyMatch(existing -> existing.getDayOfWeek().equals(lesson.getDayOfWeek()) && existing.getTimeSlot().equals(lesson.getTimeSlot()) && existing.getRoom().equals(lesson.getRoom()));
+        boolean alreadyExists = lessons.stream().anyMatch(existing -> Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek()) && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot()) && Objects.equals(existing.getRoom(), lesson.getRoom()));
 
         if (!alreadyExists) {
             lessons.add(lesson);
@@ -70,13 +70,13 @@ public class Course implements Serializable {
     }
 
     public void addInstructor(Teacher teacher) {
-        if (!instructors.contains(teacher)) {
+        if (teacher != null && !instructors.contains(teacher)) {
             instructors.add(teacher);
         }
     }
 
     public void enrollStudent(Student student) {
-        if (!enrolledStudents.contains(student)) {
+        if (student != null && !enrolledStudents.contains(student)) {
             enrolledStudents.add(student);
         }
     }

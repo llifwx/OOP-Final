@@ -1,14 +1,11 @@
 package model.users;
 
 import enums.Language;
-import model.social.Journal;
-import model.social.News;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class User implements Serializable {
@@ -50,7 +47,7 @@ public abstract class User implements Serializable {
     public void setUsername(String newUsername) {this.username = newUsername;}
 
     public boolean login(String password) {
-        return Objects.equals(this.password, hashPassword(password)) || Objects.equals(this.password, password);
+        return Objects.equals(this.password, hashPassword(password));
     }
 
     private static String hashPassword(String password) {
@@ -66,38 +63,6 @@ public abstract class User implements Serializable {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is not available", e);
         }
-    }
-
-    ;
-
-    public void logout() {
-        System.out.println(this.getUsername() + "logged out.");
-    }
-
-    ;
-
-    public void viewNews(List<News> newsList) {
-        for (News news : newsList) {
-            System.out.println(news);
-        }
-    }
-
-    ;
-
-    public void subscribeToJournal(Journal journal) {
-        journal.subscribe(this);
-    }
-
-    ;
-
-    public void unsubscribeFromJournal(Journal journal) {
-        journal.unsubscribe(this);
-    }
-
-    ;
-
-    public void receiveNotification(String message) {
-        System.out.println(username + " received notification: " + message);
     }
 
     @Override

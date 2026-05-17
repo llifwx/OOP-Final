@@ -1,4 +1,4 @@
-package ui;
+package ui.menu;
 
 import enums.RequestStatus;
 import model.support.TechSupportReq;

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import utils.GradeScale;
 
 public class Transcript implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -18,24 +19,36 @@ public class Transcript implements Serializable {
         this.marks = new ArrayList<>();
     }
 
-    public void addMark(Mark mark) {}
+    public void addMark(Mark mark) {
+        if (mark != null && !marks.contains(mark)) {
+            marks.add(mark);
+        }
+    }
 
-    public double calculateGpa() {return 0.0;}
+    public double calculateGpa() {
+        if (marks.isEmpty()) return 0.0;
 
-    public void printTranscript() {}
+        double total = 0.0;
+        for (Mark mark : marks) {
+            total += GradeScale.scoreToGpa(mark.getTotalScore());
+        }
+        return total / marks.size();
+    }
 
     public Student getStudent() {return student;}
 
     public void setStudent(Student student) {this.student = student;}
 
-    //TODO:refactor mark getter and setter
-    public List<Mark> getMarks() {return marks;}
+    public List<Mark> getMarks() {return new ArrayList<>(marks);}
 
-    public void setMarks(List<Mark> marks) {this.marks = marks;}
+    public void setMarks(List<Mark> marks) {
+        this.marks = marks == null ? new ArrayList<>() : new ArrayList<>(marks);
+    }
 
     @Override
     public String toString() {
-        return "Transcript of: " + getStudent().getFullName() + ". " + "Total marks: " + marks.size() + ". " + "GPA: " + calculateGpa() + ".";
+        String studentName = student == null ? "N/A" : student.getFullName();
+        return "Transcript of: " + studentName + ". " + "Total marks: " + marks.size() + ". " + "GPA: " + calculateGpa() + ".";
     }
 
     @Override

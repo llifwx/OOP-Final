@@ -51,7 +51,7 @@ public class Message implements Serializable {
     }
 
     public Date getSentDate() {
-        return sentDate;
+        return sentDate == null ? null : new Date(sentDate.getTime());
     }
 
     public boolean isRead() {
@@ -60,5 +60,8 @@ public class Message implements Serializable {
 
     public void markAsRead() {this.isRead = true;}
 
-    public String getPreview() {return this.text.substring(0, Math.min(this.text.length(), 20));}
+    public String getPreview() {
+        if (text == null) return "";
+        return this.text.substring(0, Math.min(this.text.length(), 20));
+    }
 }

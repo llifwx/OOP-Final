@@ -2,20 +2,18 @@ package model.users;
 
 import enums.Language;
 import enums.TeacherType;
-import enums.UrgencyLevel;
+import interfaces.Researcher;
 import model.academic.Complaint;
 import model.academic.Course;
-import model.academic.Mark;
-import model.social.Journal;
 import model.research.ResearchPaper;
 import model.research.ResearchProject;
-import model.social.Message;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Teacher extends Employee {
+public class Teacher extends Employee implements Researcher {
     private static final long serialVersionUID = 1L;
 
     private TeacherType teacherType;
@@ -29,45 +27,65 @@ public class Teacher extends Employee {
         super(username, password, fullName, email, language, employeeId, department, salary, hierDate);
         this.teacherType = teacherType;
         this.rating = rating;
-        this.courses = courses;
-        this.complaints = complaints;
-        this.papers = papers;
-        this.projects = projects;
+        this.courses = courses == null ? new ArrayList<>() : new ArrayList<>(courses);
+        this.complaints = complaints == null ? new ArrayList<>() : new ArrayList<>(complaints);
+        this.papers = papers == null ? new ArrayList<>() : new ArrayList<>(papers);
+        this.projects = projects == null ? new ArrayList<>() : new ArrayList<>(projects);
     }
     
     public TeacherType getTeacherType() {return this.teacherType;}
 
     public double getRating() {return this.rating;}
 
-    public List<Complaint> getComplaints() {return this.complaints;}
+    public List<Complaint> getComplaints() {return new ArrayList<>(this.complaints);}
 
-    public List<ResearchPaper> getPapers() {return this.papers;}
+    public List<ResearchPaper> getPapers() {return new ArrayList<>(this.papers);}
 
-    public List<ResearchProject> getProjects() {return this.projects;}
+    public List<ResearchProject> getProjects() {return new ArrayList<>(this.projects);}
 
     public List<Course> getCourses() {
-        return courses;
+        return new ArrayList<>(courses);
     }
-
-    public void manageCourse(Course course) {}
-
-    public void putMark(Student student, Course course, Mark mark) {}
 
     public List<Student> viewStudents(Course course) {return course == null ? null : course.getEnrolledStudents();}
 
-    public Complaint sendComplaint(Student student, UrgencyLevel urgency, String text) {return null;}
+    @Override
+    public int calculateHIndex() {
+        if (papers == null || papers.isEmpty()) return 0;
 
-    public int calculateHIndex() {return 0;}
-
-    public void printPapers(Comparator<ResearchPaper> cmp) {}
-
-    public void joinProject(ResearchProject project) {}
-
-    public void publishPaper(ResearchPaper paper, Journal journal) {}
+        List<Integer> citations = papers.stream()
+                .map(ResearchPaper::getCitations)
+                .sorted((a, b) -> b - a)
+                .collect(Collectors.toList());
+        int h = 0;
+        for (int i = 0; i < citations.size(); i++) {
+            if (citations.get(i) >= i + 1) h = i + 1;
+            else break;
+        }
+        return h;
+    }
 
     public void addCourse(Course course) {
-        if (!courses.contains(course)) {
+        if (course != null && !courses.contains(course)) {
             courses.add(course);
+        }
+    }
+
+    public void addComplaint(Complaint complaint) {
+        if (complaint != null && !complaints.contains(complaint)) {
+            complaints.add(complaint);
+        }
+    }
+
+    public void addPaper(ResearchPaper paper) {
+        if (paper != null && !papers.contains(paper)) {
+            papers.add(paper);
+        }
+    }
+
+    public void addProject(ResearchProject project) {
+        if (project != null && !projects.contains(project)) {
+            projects.add(project);
         }
     }
 

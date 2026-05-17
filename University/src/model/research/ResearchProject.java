@@ -1,9 +1,6 @@
 package model.research;
 
-import exceptions.NotResearcherEx;
 import interfaces.Researcher;
-import model.users.User;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +22,27 @@ public class ResearchProject implements Serializable {
     }
 
     public List<Researcher> getParticipants() {
-        return participants;
+        return new ArrayList<>(participants);
     }
 
     public List<ResearchPaper> getPublishedPapers() {
-        return publishedPapers;
+        return new ArrayList<>(publishedPapers);
     }
 
-    public void addParticipant(Researcher researcher) throws NotResearcherEx {
-        if (!(researcher instanceof interfaces.Researcher)) {
-            throw new NotResearcherEx();
+    public void addParticipant(Researcher researcher) {
+        if (researcher == null) {
+            throw new IllegalArgumentException("Researcher cannot be null");
         }
-        this.participants.add(researcher);
+        if (!this.participants.contains(researcher)) {
+            this.participants.add(researcher);
+        }
     }
 
     public void removeParticipant(Researcher researcher) {this.participants.remove(researcher);}
 
-    public void publishPaper(ResearchPaper paper) {this.publishedPapers.add(paper);}
+    public void publishPaper(ResearchPaper paper) {
+        if (paper != null && !this.publishedPapers.contains(paper)) {
+            this.publishedPapers.add(paper);
+        }
+    }
 }

@@ -36,7 +36,11 @@ public class Complaint implements Serializable {
 
     public int getId() {return this.id;}
 
-    public String getSummary() {return "";}
+    public String getSummary() {
+        String teacherName = teacher != null ? teacher.getFullName() : "N/A";
+        String studentName = student != null ? student.getFullName() : "N/A";
+        return "[" + urgency + "] " + teacherName + " -> " + studentName + ": " + text;
+    }
 
     public Teacher getTeacher() {return teacher;}
 
@@ -54,13 +58,15 @@ public class Complaint implements Serializable {
 
     public void setText(String text) {this.text = text;}
 
-    public Date getDate() {return date;}
+    public Date getDate() {return date == null ? null : new Date(date.getTime());}
 
-    public void setDate(Date date) {this.date = date;}
+    public void setDate(Date date) {this.date = date == null ? new Date() : new Date(date.getTime());}
 
     @Override
     public String toString() {
-        return "Complaint. " + "Teacher: " + teacher.getFullName() + ". " + "Student: " + student.getFullName() + ". " + "Urgency: " + urgency + ". " + "Date: " + date + ".";
+        return "Complaint. " + "Teacher: " + (teacher != null ? teacher.getFullName() : "N/A") + ". "
+                + "Student: " + (student != null ? student.getFullName() : "N/A") + ". "
+                + "Urgency: " + urgency + ". " + "Date: " + date + ".";
     }
 
     @Override
