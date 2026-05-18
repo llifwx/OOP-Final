@@ -1,6 +1,8 @@
 package services;
 
+import enums.RegistrationStatus;
 import model.academic.Course;
+import model.academic.CourseRegistration;
 import model.academic.StudentOrganization;
 import model.users.Student;
 import model.users.Teacher;
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentService {
+    private static final int MAX_STUDENT_CREDITS = 21;
+
     private final Database database;
     private final AuthService authService;
 
@@ -36,10 +40,18 @@ public class StudentService {
             System.out.println("[StudentService] You are already registered for this course.");
             return false;
         }
-        student.addRegisteredCourse(course);
-        course.enrollStudent(student);
-        student.setCredits(student.getCredits() + course.getCredits());
-        log("Registered for course: " + course.getCourseCode());
+        if (hasPendingRegistration(student, course)) {
+            System.out.println("[StudentService] You already have a pending request for this course.");
+            return false;
+        }
+        if (student.getCredits() + getPendingCredits(student) + course.getCredits() > MAX_STUDENT_CREDITS) {
+            System.out.println("[StudentService] Cannot request registration. Credit limit would be exceeded.");
+            return false;
+        }
+
+        CourseRegistration registration = new CourseRegistration(student, course);
+        database.addCourseRegistration(registration);
+        log("Requested registration for course: " + course.getCourseCode());
         database.save();
         return true;
     }
@@ -105,6 +117,21 @@ public class StudentService {
             throw new SecurityException("[StudentService] Access denied: current user is not a Student.");
         }
         return student;
+    }
+
+    private boolean hasPendingRegistration(Student student, Course course) {
+        return database.findRegistrationsByStudent(student).stream()
+                .anyMatch(registration -> registration.getStatus() == RegistrationStatus.PENDING
+                        && course.equals(registration.getCourse()));
+    }
+
+    private int getPendingCredits(Student student) {
+        return database.findRegistrationsByStudent(student).stream()
+                .filter(registration -> registration.getStatus() == RegistrationStatus.PENDING)
+                .map(CourseRegistration::getCourse)
+                .filter(course -> course != null)
+                .mapToInt(Course::getCredits)
+                .sum();
     }
 
     private void log(String action) {

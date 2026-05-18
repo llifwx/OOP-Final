@@ -8,6 +8,7 @@ import enums.NewsTopic;
 import exceptions.InvalidSupervisorEx;
 import interfaces.Researcher;
 import model.academic.Course;
+import model.academic.CourseRegistration;
 import model.academic.Lesson;
 import model.academic.Report;
 import model.research.ResearchProject;
@@ -104,9 +105,24 @@ public class ManagerMenu {
     }
 
     private void approveRegistration() {
-        Student student = readStudent();
-        Course course = readCourse();
-        if (student != null && course != null) managerService.approveRegistration(student, course);
+        List<CourseRegistration> pending = managerService.getPendingRegistrations();
+        if (pending.isEmpty()) {
+            System.out.println("[Manager Menu] No pending registration requests.");
+            return;
+        }
+        pending.forEach(System.out::println);
+        int id = readInt("Registration request ID");
+        if (id < 0) return;
+        String action = promptRequired("Action (approve/reject)");
+        if (action == null) return;
+        if (action.equalsIgnoreCase("approve")) {
+            managerService.approveRegistration(id);
+        } else if (action.equalsIgnoreCase("reject")) {
+            String reason = promptRequired("Rejection reason");
+            if (reason != null) managerService.rejectRegistration(id, reason);
+        } else {
+            System.out.println(t("app.invalid"));
+        }
     }
 
     private void unregisterStudent() {
