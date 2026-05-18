@@ -21,7 +21,11 @@ public class Course implements Serializable {
     private String courseCode;
     private String name;
     private int credits;
-    private CourseType type;        // Major, Minor, FreeElective (enum from Amina)
+    private CourseType type;
+    private String intendedMajor;
+    private int intendedYear;
+
+    private boolean openForRegistration;
     private Language language;
     private List<Lesson> lessons = new ArrayList<>();
     private List<Teacher> instructors = new ArrayList<>();
@@ -36,6 +40,13 @@ public class Course implements Serializable {
         this.credits = credits;
         this.type = type;
         this.language = language;
+    }
+
+    public Course(String courseCode, String name, int credits, CourseType type, Language language, String intendedMajor, int intendedYear, boolean openForRegistration) {
+        this(courseCode, name, credits, type, language);
+        this.intendedMajor = intendedMajor;
+        this.intendedYear = intendedYear;
+        this.openForRegistration = openForRegistration;
     }
 
     public static void synchronizeIdCounter(int maxId) {
@@ -54,6 +65,12 @@ public class Course implements Serializable {
     public int getCredits() {return credits;}
 
     public CourseType getType() {return type;}
+
+    public boolean isOpenForRegistration() {return openForRegistration;}
+
+    public int getIntendedYear() {return intendedYear;}
+
+    public String getIntendedMajor() {return intendedMajor;}
 
     public Language getLanguage() {return language;}
 
@@ -75,6 +92,24 @@ public class Course implements Serializable {
     }
 
     public List<Student> getEnrolledStudents() {return new ArrayList<>(enrolledStudents);}
+
+    public void setIntendedMajor(String intendedMajor) {
+        if (intendedMajor == null || intendedMajor.isBlank()) {
+            throw new IllegalArgumentException("Intended major cannot be empty.");
+        }
+        this.intendedMajor = intendedMajor.trim();
+    }
+
+    public void setIntendedYear(int intendedYear) {
+        if (intendedYear < 1) {
+            throw new IllegalArgumentException("Intended year must be at least 1.");
+        }
+        this.intendedYear = intendedYear;
+    }
+
+    public void setOpenForRegistration(boolean openForRegistration) {
+        this.openForRegistration = openForRegistration;
+    }
 
     // Methods
     public void addLesson(Lesson lesson) {
