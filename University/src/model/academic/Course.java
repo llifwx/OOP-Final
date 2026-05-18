@@ -1,12 +1,15 @@
 package model.academic;
 
 import enums.Language;
+import enums.LessonType;
 import model.users.Student;
 import model.users.Teacher;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import enums.CourseType;
@@ -22,6 +25,7 @@ public class Course implements Serializable {
     private Language language;
     private List<Lesson> lessons = new ArrayList<>();
     private List<Teacher> instructors = new ArrayList<>();
+    private Map<LessonType, List<Teacher>> instructorsByLessonType = new EnumMap<>(LessonType.class);
     private List<Student> enrolledStudents = new ArrayList<>();
 
     // Main constructor
@@ -55,7 +59,20 @@ public class Course implements Serializable {
 
     public List<Lesson> getLessons() {return new ArrayList<>(lessons);}
 
-    public List<Teacher> getInstructors() {return new ArrayList<>(instructors);}
+    public List<Teacher> getInstructors() {return getAllInstructors();}
+
+    public List<Teacher> getInstructorsByLessonType(LessonType lessonType) {
+        initializeInstructorCollections();
+        if (lessonType == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(instructorsByLessonType.getOrDefault(lessonType, new ArrayList<>()));
+    }
+
+    public List<Teacher> getAllInstructors() {
+        initializeInstructorCollections();
+        return new ArrayList<>(instructors);
+    }
 
     public List<Student> getEnrolledStudents() {return new ArrayList<>(enrolledStudents);}
 
@@ -67,9 +84,20 @@ public class Course implements Serializable {
     }
 
     public void addInstructor(Teacher teacher) {
-        if (teacher != null && !instructors.contains(teacher)) {
-            instructors.add(teacher);
+        addInstructor(teacher, LessonType.LECTURE);
+    }
+
+    public void addInstructor(Teacher teacher, LessonType lessonType) {
+        initializeInstructorCollections();
+        if (teacher == null || lessonType == null) {
+            return;
         }
+
+        List<Teacher> lessonTypeInstructors = instructorsByLessonType.computeIfAbsent(lessonType, key -> new ArrayList<>());
+        if (!lessonTypeInstructors.contains(teacher)) {
+            lessonTypeInstructors.add(teacher);
+        }
+        addInstructorToAllInstructors(teacher);
     }
 
     public void enrollStudent(Student student) {
@@ -82,8 +110,24 @@ public class Course implements Serializable {
         enrolledStudents.remove(student);
     }
 
+    private void initializeInstructorCollections() {
+        if (instructors == null) {
+            instructors = new ArrayList<>();
+        }
+        if (instructorsByLessonType == null) {
+            instructorsByLessonType = new EnumMap<>(LessonType.class);
+        }
+    }
+
+    private void addInstructorToAllInstructors(Teacher teacher) {
+        if (!instructors.contains(teacher)) {
+            instructors.add(teacher);
+        }
+    }
+
     @Override
     public String toString() {
+        initializeInstructorCollections();
         return "Course{" + "id=" + id + ", courseCode='" + courseCode + '\'' + ", name='" + name + '\'' + ", credits=" + credits + ", type=" + type + ", language=" + language + ", instructorsCount=" + instructors.size() + ", studentsCount=" + enrolledStudents.size() + '}';
     }
 

@@ -43,6 +43,11 @@ public class ManagerService {
     public void assignCourseToTeacher(String courseCode, int teacherId, LessonType lessonType) {
         requireManager();
 
+        if (lessonType == null) {
+            System.out.println("[Manager Service] : Lesson type is required.");
+            return;
+        }
+
         Course course = database.findCourseByCode(courseCode);
         if (course == null) {
             System.out.println("Course with code '" + courseCode + "' not found.");
@@ -55,13 +60,15 @@ public class ManagerService {
             return;
         }
 
-        if (lessonType == LessonType.LECTURE) {
-            course.addInstructor(teacher);
+        if (course.getInstructorsByLessonType(lessonType).contains(teacher)) {
+            System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " is already assigned to course " + course.getName() + " as " + lessonType + ".");
+            return;
         }
 
+        course.addInstructor(teacher, lessonType);
         teacher.addCourse(course);
 
-        log("Assigned teacher" + teacher.getFullName() + " to course " + course.getName() + " as " + lessonType);
+        log("Assigned teacher " + teacher.getFullName() + " to course " + course.getName() + " as " + lessonType);
         database.save();
         System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " assigned to course " + course.getName() + " as " + lessonType + ".");
     }
