@@ -14,7 +14,7 @@ import storage.Database;
 import ui.menu.AdminMenu;
 import ui.menu.GraduateStudentMenu;
 import ui.menu.ManagerMenu;
-import ui.menu.MenuPrinter;
+import ui.MenuPrinter;
 import ui.menu.StudentMenu;
 import ui.menu.TeacherMenu;
 import ui.menu.TechSupportSpecialistMenu;
@@ -92,6 +92,9 @@ public class ConsoleApplication {
                         routeToMenu();
                     }
                 }
+                case "2" -> {
+                    switchLanguage();
+                }
                 case "0" -> {
                     System.out.println(t("app.exit"));
                     running = false;
@@ -104,7 +107,7 @@ public class ConsoleApplication {
     }
 
     private void showLoginMenu() {
-        MenuPrinter.print(t("login.menu"), null, List.of("1. " + t("login.option"), "0. " + t("login.exit")));
+        MenuPrinter.print(t("login.menu"), null, List.of("1. " + t("login.option"), "2. " + t("login.switch"), "0. " + t("login.exit")));
     }
 
     private boolean login() {
@@ -130,5 +133,27 @@ public class ConsoleApplication {
             case TechSupportSpecialist i -> techSupportSpecialistMenu.show();
             default -> System.out.println("Menu for your role is not implemented yet.");
         }
+    }
+
+    private void switchLanguage() {
+        System.out.println("Choose language / Выберите язык / Тілді таңдаңыз:");
+        System.out.println("1. English");
+        System.out.println("2. Русский");
+        System.out.println("3. Қазақша");
+        System.out.print(t("menu.choice") + ": ");
+
+        String choice = sc.nextLine().trim();
+
+        switch (choice) {
+            case "1" -> I18n.setLanguage(Language.EN);
+            case "2" -> I18n.setLanguage(Language.RU);
+            case "3" -> I18n.setLanguage(Language.KZ);
+            default -> {
+                System.out.println(t("lang.invalid"));
+                return;
+            }
+        }
+
+
     }
 }

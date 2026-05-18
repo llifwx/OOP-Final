@@ -22,12 +22,15 @@ import services.ResearchProjectService;
 import services.TeacherService;
 import services.TechSupportService;
 import services.UserService;
+import ui.MenuPrinter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+
+import static i18n.I18n.t;
 
 public class TeacherMenu {
     private final AuthService authService;
@@ -39,10 +42,7 @@ public class TeacherMenu {
     private final JournalService journalService;
     private final Scanner sc;
 
-    public TeacherMenu(AuthService authService, TeacherService teacherService, UserService userService,
-                       MessageService messageService, TechSupportService techSupportService,
-                       ResearchPaperService paperService, ResearchProjectService projectService,
-                       JournalService journalService, Scanner sc) {
+    public TeacherMenu(AuthService authService, TeacherService teacherService, UserService userService, MessageService messageService, TechSupportService techSupportService, ResearchPaperService paperService, ResearchProjectService projectService, JournalService journalService, Scanner sc) {
         this.authService = authService;
         this.teacherService = teacherService;
         this.userService = userService;
@@ -57,21 +57,7 @@ public class TeacherMenu {
         boolean running = true;
         while (running) {
             Teacher teacher = (Teacher) authService.getCurrentUser();
-            MenuPrinter.print("TEACHER", "Welcome, " + teacher.getFullName(), List.of(
-                    "1. View assigned courses",
-                    "2. View students in course",
-                    "3. Put marks",
-                    "4. Send complaint",
-                    "5. Messages",
-                    "6. Publish research paper",
-                    "7. View papers sorted",
-                    "8. View H-index",
-                    "9. Journals",
-                    "10. View notifications",
-                    "11. Tech support request",
-                    "12. Switch language",
-                    "0. Logout"
-            ));
+            MenuPrinter.print(t("teacher.title"), t("teacher.welcome", teacher.getFullName()), List.of("1.  " + t("teacher.courses"), "2.  " + t("teacher.students"), "3.  " + t("teacher.put_marks"), "4.  " + t("teacher.complaint"), "5.  " + t("teacher.messages"), "6.  " + t("teacher.publish_paper"), "7.  " + t("teacher.view_papers"), "8.  " + t("teacher.hindex"), "9.  " + t("teacher.journals"), "10. " + t("teacher.notifications"), "11. " + t("teacher.tech_support"), "12. " + t("teacher.switch_lang"), "0.  " + t("menu.logout")));
 
             switch (sc.nextLine().trim()) {
                 case "1" -> printCourses(teacher.getCourses());
@@ -81,7 +67,7 @@ public class TeacherMenu {
                 case "5" -> messagesMenu();
                 case "6" -> publishPaper(teacher);
                 case "7" -> viewPapersSorted(teacher);
-                case "8" -> System.out.println("H-index: " + teacher.calculateHIndex());
+                case "8" -> System.out.println(t("teacher.hindex_value", teacher.calculateHIndex()));
                 case "9" -> journalsMenu(teacher);
                 case "10" -> printNotifications(teacher);
                 case "11" -> techSupportMenu();
@@ -90,7 +76,7 @@ public class TeacherMenu {
                     authService.logout();
                     running = false;
                 }
-                default -> System.out.println("Invalid choice.");
+                default -> System.out.println(t("app.invalid"));
             }
         }
     }
@@ -99,87 +85,81 @@ public class TeacherMenu {
         Course course = selectOwnCourse(teacher);
         if (course == null) return;
         List<Student> students = teacherService.viewStudents(course);
-        if (students.isEmpty()) System.out.println("No students enrolled.");
+        if (students.isEmpty()) System.out.println(t("teacher.no_students"));
         else students.forEach(System.out::println);
     }
 
     private void putMark(Teacher teacher) {
         Course course = selectOwnCourse(teacher);
         if (course == null) return;
-        int studentId = readInt("Student ID");
+        int studentId = readInt(t("prompt.student_id"));
         User user = userService.findById(studentId);
         if (!(user instanceof Student student)) {
-            System.out.println("Student not found.");
+            System.out.println(t("teacher.student_not_found"));
             return;
         }
         Mark mark = new Mark(student, course);
         try {
-            mark.setFirstAttestation(readScore("First attestation"));
-            mark.setSecondAttestation(readScore("Second attestation"));
-            mark.setFinalExam(readScore("Final exam"));
-            System.out.println(teacherService.putMark(student, course, mark) ? "Mark saved." : "Mark rejected.");
+            mark.setFirstAttestation(readScore(t("prompt.first_attest")));
+            mark.setSecondAttestation(readScore(t("prompt.second_attest")));
+            mark.setFinalExam(readScore(t("prompt.final_exam")));
+            System.out.println(teacherService.putMark(student, course, mark) ? t("teacher.mark_saved") : t("teacher.mark_rejected"));
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
 
     private void sendComplaint(Teacher teacher) {
-        int studentId = readInt("Student ID");
+        int studentId = readInt(t("prompt.student_id"));
         User user = userService.findById(studentId);
         if (!(user instanceof Student student)) {
-            System.out.println("Student not found.");
+            System.out.println(t("teacher.student_not_found"));
             return;
         }
         UrgencyLevel urgency = readUrgency();
-        String text = promptRequired("Complaint text");
+        String text = promptRequired(t("prompt.complaint_text"));
         if (urgency != null && text != null && teacherService.sendComplaint(student, urgency, text) != null) {
-            System.out.println("Complaint sent.");
+            System.out.println(t("teacher.complaint_sent"));
         }
     }
 
     private void messagesMenu() {
-        MenuPrinter.print("MESSAGES", null, List.of(
-                "1. Send message",
-                "2. View inbox",
-                "3. View sent messages",
-                "4. Open message",
-                "5. Mark all read",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("msg.title"), null, List.of("1. " + t("msg.send"), "2. " + t("msg.inbox"), "3. " + t("msg.sent"), "4. " + t("msg.open"), "5. " + t("msg.mark_read"), "0. " + t("menu.back")));
         switch (sc.nextLine().trim()) {
             case "1" -> sendMessage();
             case "2" -> messageService.printInbox();
             case "3" -> messageService.printSentMessages();
             case "4" -> openMessage();
             case "5" -> messageService.markAllRead();
-            case "0" -> { }
-            default -> System.out.println("Invalid choice.");
+            case "0" -> {}
+            default -> System.out.println(t("app.invalid"));
         }
     }
 
     private void sendMessage() {
-        int id = readInt("Receiver employee ID");
+        int id = readInt(t("prompt.receiver_id"));
         User user = userService.findById(id);
         if (!(user instanceof Employee employee)) {
-            System.out.println("Employee not found.");
+            System.out.println(t("msg.receiver_not_found"));
             return;
         }
-        String text = promptRequired("Message");
+        String text = promptRequired(t("prompt.message"));
         if (text != null) messageService.sendMessage(employee, text);
     }
 
     private void openMessage() {
-        int id = readInt("Message ID");
+        int id = readInt(t("prompt.message_id"));
         if (id >= 0) System.out.println(messageService.openMessage(id));
     }
 
     private void publishPaper(Teacher teacher) {
-        String title = promptRequired("Title");
-        String journalName = promptRequired("Journal name");
-        int pages = readInt("Pages");
-        String doi = promptRequired("DOI");
-        int citations = readInt("Citations");
+        String title = promptRequired(t("prompt.title"));
+        String journalName = promptRequired(t("prompt.journal_name"));
+        int pages = readInt(t("prompt.pages"));
+        String doi = promptRequired(t("prompt.doi"));
+        int citations = readInt(t("prompt.citations"));
         if (title == null || journalName == null || doi == null || pages < 0 || citations < 0) return;
+
         Journal journal = paperService.findJournalByName(journalName);
         if (journal == null) {
             journal = new Journal(journalName);
@@ -188,7 +168,7 @@ public class TeacherMenu {
         List<Researcher> authors = new ArrayList<>();
         authors.add(teacher);
         paperService.publishPaper(teacher, new ResearchPaper(title, authors, journal, citations, pages, new Date(), doi), journal);
-        System.out.println("Research paper published.");
+        System.out.println(t("teacher.paper_published"));
     }
 
     private void viewPapersSorted(Teacher teacher) {
@@ -197,110 +177,93 @@ public class TeacherMenu {
     }
 
     private void journalsMenu(Teacher teacher) {
-        MenuPrinter.print("JOURNALS", null, List.of(
-                "1. View journals",
-                "2. Subscribe",
-                "3. Unsubscribe",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("journal.title"), null, List.of("1. " + t("journal.view"), "2. " + t("journal.subscribe"), "3. " + t("journal.unsubscribe"), "0. " + t("menu.back")));
         switch (sc.nextLine().trim()) {
             case "1" -> journalService.getAllJournals().forEach(journalService::printJournalInfo);
             case "2" -> {
-                Journal journal = readJournal();
-                if (journal != null) journalService.subscribe(teacher, journal);
+                Journal j = readJournal();
+                if (j != null) journalService.subscribe(teacher, j);
             }
             case "3" -> {
-                Journal journal = readJournal();
-                if (journal != null) journalService.unsubscribe(teacher, journal);
+                Journal j = readJournal();
+                if (j != null) journalService.unsubscribe(teacher, j);
             }
-            case "0" -> { }
-            default -> System.out.println("Invalid choice.");
+            case "0" -> {}
+            default -> System.out.println(t("app.invalid"));
         }
     }
 
     private void techSupportMenu() {
-        MenuPrinter.print("TECH SUPPORT", null, List.of(
-                "1. Submit request",
-                "2. View my requests",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("tech.title"), null, List.of("1. " + t("tech.submit"), "2. " + t("tech.my_requests"), "0. " + t("menu.back")));
         switch (sc.nextLine().trim()) {
             case "1" -> {
-                String description = promptRequired("Description");
-                if (description != null) techSupportService.submitRequest(description);
+                String d = promptRequired(t("prompt.description"));
+                if (d != null) techSupportService.submitRequest(d);
             }
             case "2" -> techSupportService.printMyRequests();
-            case "0" -> { }
-            default -> System.out.println("Invalid choice.");
+            case "0" -> {}
+            default -> System.out.println(t("app.invalid"));
         }
     }
 
     private Course selectOwnCourse(Teacher teacher) {
-        String code = promptRequired("Course code");
+        String code = promptRequired(t("prompt.course_code"));
         if (code == null) return null;
         for (Course course : teacher.getCourses()) {
             if (course.getCourseCode().equalsIgnoreCase(code)) return course;
         }
-        System.out.println("You are not assigned to this course.");
+        System.out.println(t("teacher.not_assigned"));
         return null;
     }
 
     private void printCourses(List<Course> courses) {
-        if (courses.isEmpty()) {
-            System.out.println("No assigned courses.");
-            return;
-        }
-        courses.forEach(System.out::println);
+        if (courses.isEmpty()) System.out.println(t("teacher.no_courses"));
+        else courses.forEach(System.out::println);
     }
 
     private void printNotifications(User user) {
         List<String> notifications = user.getNotifications();
-        if (notifications.isEmpty()) System.out.println("No notifications.");
+        if (notifications.isEmpty()) System.out.println(t("student.no_notifications"));
         else notifications.forEach(System.out::println);
     }
 
     private void switchLanguage(User user) {
-        System.out.print("Language (KZ, EN, RU): ");
+        System.out.print(t("prompt.language") + ": ");
         try {
             userService.changeLanguage(user, Language.valueOf(sc.nextLine().trim().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid language.");
+            System.out.println(t("lang.invalid"));
         }
     }
 
     private Journal readJournal() {
-        String name = promptRequired("Journal name");
+        String name = promptRequired(t("prompt.journal_name"));
         if (name == null) return null;
         Journal journal = journalService.findJournalByName(name);
-        if (journal == null) System.out.println("Journal not found.");
+        if (journal == null) System.out.println(t("journal.not_found"));
         return journal;
     }
 
     private Comparator<ResearchPaper> readPaperComparator() {
-        MenuPrinter.print("SORT PAPERS", null, List.of(
-                "1. Date",
-                "2. Citations",
-                "3. Pages",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("sort.title"), null, List.of("1. " + t("sort.date"), "2. " + t("sort.citations"), "3. " + t("sort.pages"), "0. " + t("menu.back")));
         return switch (sc.nextLine().trim()) {
             case "1" -> new ResearchPaperDateComparator();
             case "2" -> new ResearchPaperCitationComparator();
             case "3" -> new ResearchPaperLengthComparator();
             case "0" -> null;
             default -> {
-                System.out.println("Invalid choice.");
+                System.out.println(t("app.invalid"));
                 yield null;
             }
         };
     }
 
     private UrgencyLevel readUrgency() {
-        System.out.print("Urgency (LOW, MEDIUM, HIGH): ");
+        System.out.print(t("prompt.urgency") + ": ");
         try {
             return UrgencyLevel.valueOf(sc.nextLine().trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid urgency.");
+            System.out.println(t("invalid.urgency"));
             return null;
         }
     }
@@ -316,7 +279,7 @@ public class TeacherMenu {
         try {
             return Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid number.");
+            System.out.println(t("invalid.number"));
             return -1;
         }
     }
@@ -326,7 +289,7 @@ public class TeacherMenu {
         try {
             return Double.parseDouble(sc.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid number.");
+            System.out.println(t("invalid.number"));
             return -1;
         }
     }
@@ -335,7 +298,7 @@ public class TeacherMenu {
         System.out.print(label + ": ");
         String value = sc.nextLine().trim();
         if (value.isEmpty()) {
-            System.out.println(label + " cannot be empty.");
+            System.out.println(t("prompt.cannot_empty", label));
             return null;
         }
         return value;

@@ -7,11 +7,14 @@ import model.users.User;
 import services.AdminService;
 import services.AuthService;
 import services.UserService;
+import ui.MenuPrinter;
 import utils.LogRecord;
 import utils.UserNamePadding;
 
 import java.util.List;
 import java.util.Scanner;
+
+import static i18n.I18n.t;
 
 public class AdminMenu {
     private final AdminService adminService;
@@ -34,98 +37,88 @@ public class AdminMenu {
             int usersCount = adminService.listAllUsers().size();
             int logsCount = adminService.viewAllLogs().size();
 
-            System.out.println("\n╔══════════════════════════════════════╗");
-            System.out.println("║                ADMIN                 ║");
-            System.out.println("║         " + padding.padRight("Welcome, " + admin.getFullName(), 28) + " ║");
-            System.out.println("╠══════════════════════════════════════╣");
-            System.out.printf("║  1. Add user              (%s)      ║%n", padding.padRight(String.valueOf(usersCount), 3));
-            System.out.println("║  2. Remove user                      ║");
-            System.out.println("║  3. Update user                      ║");
-            System.out.println("║  4. View all users                   ║");
-            System.out.printf("║  5. View all logs         (%s)      ║%n", padding.padRight(String.valueOf(logsCount), 3));
-            System.out.println("║  6. View logs by username            ║");
-            System.out.println("║  7. Switch my language               ║");
-            System.out.println("║  0. Logout                           ║");
-            System.out.println("╚══════════════════════════════════════╝");
-            System.out.print("Your choice: ");
+            MenuPrinter.print(t("admin.title"), t("admin.welcome", admin.getFullName()), List.of("1. " + t("admin.add_user") + " (" + usersCount + ")", "2. " + t("admin.remove_user"), "3. " + t("admin.update_user"), "4. " + t("admin.view_users"), "5. " + t("admin.view_logs") + " (" + logsCount + ")", "6. " + t("admin.view_logs_user"), "7. " + t("admin.switch_lang"), "0. " + t("menu.logout")));
 
             switch (sc.nextLine().trim()) {
                 case "1" -> addUser();
                 case "2" -> removeUser();
                 case "3" -> updateUser();
                 case "4" -> adminService.printAllUsers();
-                case "5" -> printLogs(adminService.viewAllLogs(), "System logs");
+                case "5" -> printLogs(adminService.viewAllLogs(), t("admin.logs.title"));
                 case "6" -> printLogsForUser();
                 case "7" -> switchLanguage(admin);
                 case "0" -> {
                     authService.logout();
                     running = false;
                 }
-                default -> System.out.println("Invalid choice.");
+                default -> System.out.println(t("app.invalid"));
             }
         }
     }
 
     private void addUser() {
         System.out.println("Supported roles: " + UserFactory.getSupportedRoles());
-        String role = promptRequired("Role");
-        String username = promptRequired("Username");
-        String password = promptRequired("Password");
-        String fullName = promptRequired("Full name");
-        String email = promptRequired("Email");
+        String role = promptRequired(t("prompt.role"));
+        String username = promptRequired(t("prompt.username"));
+        String password = promptRequired(t("prompt.password"));
+        String fullName = promptRequired(t("prompt.fullname"));
+        String email = promptRequired(t("prompt.email"));
         if (role == null || username == null || password == null || fullName == null || email == null) return;
 
         User user = UserFactory.createUser(role, username, password, fullName, email);
         if (user == null) {
-            System.out.println("Unsupported role.");
+            System.out.println(t("admin.unsupported_role"));
             return;
         }
         adminService.addUser(user);
     }
 
     private void removeUser() {
-        String username = promptRequired("Username to remove");
+        String username = promptRequired(t("prompt.username_remove"));
         if (username != null) adminService.removeUser(username);
     }
 
     private void updateUser() {
-        String username = promptRequired("Username to update");
+        String username = promptRequired(t("prompt.username_update"));
         if (username == null) return;
         User user = userService.findByUsername(username);
         if (user == null) {
-            System.out.println("User not found.");
+            System.out.println(t("admin.user_not_found"));
             return;
         }
-        System.out.println("1. Full name");
-        System.out.println("2. Email");
-        System.out.println("3. Language");
-        System.out.print("Field: ");
+        System.out.println("1. " + t("admin.field.name"));
+        System.out.println("2. " + t("admin.field.email"));
+        System.out.println("3. " + t("admin.field.language"));
+        System.out.print(t("prompt.field") + ": ");
         switch (sc.nextLine().trim()) {
             case "1" -> {
-                String value = promptRequired("New full name");
-                if (value != null) System.out.println(adminService.updateUserFullName(username, value) ? "Updated." : "Update failed.");
+                String value = promptRequired(t("admin.field.new_name"));
+                if (value != null)
+                    System.out.println(adminService.updateUserFullName(username, value) ? t("admin.updated") : t("admin.update_failed"));
             }
             case "2" -> {
-                String value = promptRequired("New email");
-                if (value != null) System.out.println(adminService.updateUserEmail(username, value) ? "Updated." : "Update failed.");
+                String value = promptRequired(t("admin.field.new_email"));
+                if (value != null)
+                    System.out.println(adminService.updateUserEmail(username, value) ? t("admin.updated") : t("admin.update_failed"));
             }
             case "3" -> {
                 Language language = readLanguage();
-                if (language != null) System.out.println(adminService.updateUserLanguage(username, language) ? "Updated." : "Update failed.");
+                if (language != null)
+                    System.out.println(adminService.updateUserLanguage(username, language) ? t("admin.updated") : t("admin.update_failed"));
             }
-            default -> System.out.println("Invalid field.");
+            default -> System.out.println(t("admin.invalid_field"));
         }
     }
 
     private void printLogsForUser() {
-        String username = promptRequired("Username");
+        String username = promptRequired(t("prompt.username"));
         if (username == null) return;
         User user = userService.findByUsername(username);
         if (user == null) {
-            System.out.println("User not found.");
+            System.out.println(t("admin.user_not_found"));
             return;
         }
-        printLogs(adminService.viewLogsForUser(user), "Logs for " + username);
+        printLogs(adminService.viewLogsForUser(user), t("admin.logs.for", username));
     }
 
     private void switchLanguage(User user) {
@@ -135,7 +128,7 @@ public class AdminMenu {
 
     private void printLogs(List<LogRecord> logs, String title) {
         if (logs.isEmpty()) {
-            System.out.println("No logs found.");
+            System.out.println(t("admin.no_logs"));
             return;
         }
         System.out.println("--- " + title + " ---");
@@ -143,11 +136,11 @@ public class AdminMenu {
     }
 
     private Language readLanguage() {
-        System.out.print("Language (KZ, EN, RU): ");
+        System.out.print(t("prompt.language") + ": ");
         try {
             return Language.valueOf(sc.nextLine().trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid language.");
+            System.out.println(t("lang.invalid"));
             return null;
         }
     }
@@ -156,7 +149,7 @@ public class AdminMenu {
         System.out.print(label + ": ");
         String value = sc.nextLine().trim();
         if (value.isEmpty()) {
-            System.out.println(label + " cannot be empty.");
+            System.out.println(t("prompt.cannot_empty", label));
             return null;
         }
         return value;
