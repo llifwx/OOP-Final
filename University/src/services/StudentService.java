@@ -1,5 +1,6 @@
 package services;
 
+import enums.CourseType;
 import enums.RegistrationStatus;
 import model.academic.Course;
 import model.academic.CourseRegistration;
@@ -25,8 +26,17 @@ public class StudentService {
     }
 
     public List<Course> getAvailableCourses() {
-        requireStudent();
-        return new ArrayList<>(database.getCourses());
+        Student student = requireStudent();
+
+        List<Course> availableCourse = new ArrayList<>();
+
+        for (Course c : database.getCourses()) {
+            if (isCourseAvailableForStudent(c, student)) {
+                availableCourse.add(c);
+            }
+        }
+
+        return availableCourse;
     }
 
     public boolean registerForCourse(String courseCode) {
@@ -34,6 +44,14 @@ public class StudentService {
         Course course = database.findCourseByCode(courseCode);
         if (course == null) {
             System.out.println("[StudentService] Course not found.");
+            return false;
+        }
+        if (!course.isOpenForRegistration()) {
+            System.out.println("[StudentService] Course is not open for registration.");
+            return false;
+        }
+        if (!isCourseAvailableForStudent(course, student)) {
+            System.out.println("[StudentService] You do not meet the requirements for this course.");
             return false;
         }
         if (student.getRegisteredCourses().contains(course)) {
@@ -120,18 +138,40 @@ public class StudentService {
     }
 
     private boolean hasPendingRegistration(Student student, Course course) {
-        return database.findRegistrationsByStudent(student).stream()
-                .anyMatch(registration -> registration.getStatus() == RegistrationStatus.PENDING
-                        && course.equals(registration.getCourse()));
+        return database.findRegistrationsByStudent(student)
+                .stream()
+                .anyMatch(registration -> registration.getStatus() == RegistrationStatus.PENDING && course.equals(registration.getCourse()));
     }
 
     private int getPendingCredits(Student student) {
-        return database.findRegistrationsByStudent(student).stream()
+        return database.findRegistrationsByStudent(student)
+                .stream()
                 .filter(registration -> registration.getStatus() == RegistrationStatus.PENDING)
                 .map(CourseRegistration::getCourse)
                 .filter(course -> course != null)
                 .mapToInt(Course::getCredits)
                 .sum();
+    }
+
+    private boolean isCourseAvailableForStudent(Course course, Student student) {
+        if (course == null || student == null) return false;
+        if (!course.isOpenForRegistration()) return false;
+
+        if (course.getType() == CourseType.MAJOR) {
+            return course.getIntendedMajor() != null && student.getMajor() != null && course.getIntendedMajor()
+                    .equalsIgnoreCase(student.getMajor()) && course.getIntendedYear() == student.getYearOfStudy();
+        }
+
+        if (course.getType() == CourseType.FREE_ELECTIVE) {
+            return true;
+        }
+
+        if (course.getType() == CourseType.MINOR) {
+            return course.getIntendedMajor() != null && student.getMajor() != null && course.getIntendedMajor()
+                    .equalsIgnoreCase(student.getMajor());
+        }
+
+        return false;
     }
 
     private void log(String action) {
