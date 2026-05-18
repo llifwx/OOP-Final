@@ -25,11 +25,7 @@ public class ResearchPaperService {
     private final AuthService authService;
     private final JournalService journalService;
 
-    public ResearchPaperService(
-        Database database,
-        AuthService authService,
-        JournalService journalService
-    ) {
+    public ResearchPaperService(Database database, AuthService authService, JournalService journalService) {
         this.database = database;
         this.authService = authService;
         this.journalService = journalService;
@@ -80,7 +76,8 @@ public class ResearchPaperService {
             return "Unknown paper";
         }
 
-        String authorsStr = paper.getAuthors().stream()
+        String authorsStr = paper.getAuthors()
+                .stream()
                 .filter(Objects::nonNull)
                 .map(Object::toString)
                 .collect(Collectors.joining(", "));
@@ -93,24 +90,15 @@ public class ResearchPaperService {
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(publishDate == null ? new Date() : publishDate);
 
         if (format == Format.PLAIN_TEXT) {
-            return authorsStr + " (" + dateStr + "). " + safeTitle + ". " + journalName
-                    + ", pp. " + paper.getPages() + ". DOI: " + safeDoi + ". Citations: " + paper.getCitations();
+            return authorsStr + " (" + dateStr + "). " + safeTitle + ". " + journalName + ", pp. " + paper.getPages() + ". DOI: " + safeDoi + ". Citations: " + paper.getCitations();
         }
 
         String key = Integer.toString((safeDoi + safeTitle).hashCode());
-        return "@article{" + key + ",\n  title={" + safeTitle + "},\n  author={" + authorsStr
-                + "},\n  journal={" + journalName + "},\n  year={" + dateStr.substring(0, 4)
-                + "},\n  pages={" + paper.getPages() + "},\n  doi={" + safeDoi + "}\n}";
+        return "@article{" + key + ",\n  title={" + safeTitle + "},\n  author={" + authorsStr + "},\n  journal={" + journalName + "},\n  year={" + dateStr.substring(0, 4) + "},\n  pages={" + paper.getPages() + "},\n  doi={" + safeDoi + "}\n}";
     }
 
     private List<ResearchPaper> getPapersByResearcher(Researcher researcher) {
-        if (researcher instanceof GraduateStudent graduateStudent) {
-            return new ArrayList<>(graduateStudent.getPapers());
-        }
-        if (researcher instanceof Teacher teacher) {
-            return new ArrayList<>(teacher.getPapers());
-        }
-        return new ArrayList<>();
+        return researcher == null ? new ArrayList<>() : new ArrayList<>(researcher.getPapers());
     }
 
     public void addPaperToDatabase(ResearchPaper paper) {
@@ -131,11 +119,7 @@ public class ResearchPaperService {
             return;
         }
 
-        if (researcher instanceof GraduateStudent graduateStudent) {
-            graduateStudent.addPaper(paper);
-        } else if (researcher instanceof Teacher teacher) {
-            teacher.addPaper(paper);
-        }
+        researcher.addPaper(paper);
 
         boolean newJournalPaper = !journal.getPapers().contains(paper);
         if (newJournalPaper) {
@@ -147,8 +131,7 @@ public class ResearchPaperService {
             database.addResearchPaper(paper);
         }
 
-        News news = new News("New Paper Published: " + paper.getTitle(),
-                getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+        News news = new News("New Paper Published: " + paper.getTitle(), getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
         news.pin();
         database.addNews(news);
         log("Published research paper: " + paper.getTitle());
