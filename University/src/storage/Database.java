@@ -2,6 +2,7 @@ package storage;
 
 
 import enums.NewsTopic;
+import enums.RegistrationStatus;
 import enums.RequestStatus;
 import model.academic.*;
 import model.research.ResearchPaper;
@@ -28,6 +29,7 @@ public class Database implements Serializable {
     private List<User> users;
 
     private List<Course> courses;
+    private List<CourseRegistration> courseRegistrations;
     private List<Lesson> lessons;
     private List<Complaint> complaints;
     private List<StudentOrganization> studentOrganizations;
@@ -49,6 +51,7 @@ public class Database implements Serializable {
         this.users = new ArrayList<>();
 
         this.courses = new ArrayList<>();
+        this.courseRegistrations = new ArrayList<>();
         this.lessons = new ArrayList<>();
         this.complaints = new ArrayList<>();
         this.studentOrganizations = new ArrayList<>();
@@ -105,6 +108,7 @@ public class Database implements Serializable {
     private void ensureLists() {
         if (users == null) users = new ArrayList<>();
         if (courses == null) courses = new ArrayList<>();
+        if (courseRegistrations == null) courseRegistrations = new ArrayList<>();
         if (lessons == null) lessons = new ArrayList<>();
         if (complaints == null) complaints = new ArrayList<>();
         if (studentOrganizations == null) studentOrganizations = new ArrayList<>();
@@ -131,6 +135,17 @@ public class Database implements Serializable {
             if (course != null && course.getId() > maxCourseId) maxCourseId = course.getId();
         }
         Course.synchronizeIdCounter(maxCourseId);
+
+        int maxCourseRegistrationId = 0;
+        for (CourseRegistration registration : courseRegistrations) {
+            if (registration != null && registration.getId() > maxCourseRegistrationId) {
+                maxCourseRegistrationId = registration.getId();
+            }
+        }
+        CourseRegistration.synchronizeIdCounter(maxCourseRegistrationId);
+        for (CourseRegistration registration : courseRegistrations) {
+            if (registration != null) registration.ensureId();
+        }
 
         int maxLessonId = 0;
         for (Lesson lesson : lessons) {
@@ -228,6 +243,8 @@ public class Database implements Serializable {
 
     public List<Course> getCourses() {return courses;}
 
+    public List<CourseRegistration> getCourseRegistrations() {return courseRegistrations;}
+
     public List<Lesson> getLessons() {return lessons;}
 
     public List<Complaint> getComplaints() {return complaints;}
@@ -253,6 +270,8 @@ public class Database implements Serializable {
     public void addUser(User user) {users.add(user);}
 
     public void addCourse(Course course) {courses.add(course);}
+
+    public void addCourseRegistration(CourseRegistration registration) {courseRegistrations.add(registration);}
 
     public void addLesson(Lesson lesson) {lessons.add(lesson);}
 
@@ -318,6 +337,39 @@ public class Database implements Serializable {
             }
         }
         return null;
+    }
+
+    public CourseRegistration findCourseRegistrationById(int id) {
+        for (CourseRegistration registration : courseRegistrations) {
+            if (registration != null && registration.getId() == id) {
+                return registration;
+            }
+        }
+        return null;
+    }
+
+    public List<CourseRegistration> findRegistrationsByStatus(RegistrationStatus status) {
+        List<CourseRegistration> result = new ArrayList<>();
+
+        for (CourseRegistration registration : courseRegistrations) {
+            if (registration != null && registration.getStatus() == status) {
+                result.add(registration);
+            }
+        }
+
+        return result;
+    }
+
+    public List<CourseRegistration> findRegistrationsByStudent(Student student) {
+        List<CourseRegistration> result = new ArrayList<>();
+
+        for (CourseRegistration registration : courseRegistrations) {
+            if (registration != null && registration.getStudent() != null && registration.getStudent().equals(student)) {
+                result.add(registration);
+            }
+        }
+
+        return result;
     }
 
     public Lesson findLessonById(int id) {

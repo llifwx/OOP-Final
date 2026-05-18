@@ -56,9 +56,35 @@ cd OOP-Final
 > git pull
 > ```
 
-### Run
+### Run from terminal
 
-Open the project in IntelliJ IDEA and run the main class located in `University/src/`.
+First, check that Java and the Java compiler are available:
+
+```powershell
+java -version
+javac -version
+```
+
+If `javac` is not recognized, install JDK 21+ and add it to `PATH`.
+
+From the project root folder, run:
+
+```powershell
+cd University
+javac -encoding UTF-8 -d out (Get-ChildItem -Recurse -Filter *.java -Path src).FullName
+java -cp out Main
+```
+
+Default admin account:
+
+```text
+login: admin
+password: admin123
+```
+
+### Run from IntelliJ IDEA
+
+Open the project in IntelliJ IDEA and run the `Main` class located in `University/src/Main.java`.
 
 ## Design Patterns
 

@@ -2,8 +2,10 @@ package services;
 
 import comparator.StudentGpaComparator;
 import comparator.TeacherNameComparator;
+import enums.RegistrationStatus;
 import enums.LessonType;
 import model.academic.Course;
+import model.academic.CourseRegistration;
 import model.academic.Lesson;
 import model.academic.Report;
 import model.social.News;
@@ -29,11 +31,12 @@ public class ManagerService {
     }
 
     // Helper for auth checking.
-    private void requireManager() {
+    private Manager requireManager() {
         User current = authService.getCurrentUser();
-        if (!(current instanceof Manager)) {
+        if (!(current instanceof Manager manager)) {
             throw new SecurityException("[Manager Service] : Access denied.");
         }
+        return manager;
     }
 
     // Academic management.
@@ -63,9 +66,26 @@ public class ManagerService {
         System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " assigned to course " + course.getName() + " as " + lessonType + ".");
     }
 
-    public boolean approveRegistration(Student student, Course course) {
+    public List<CourseRegistration> getPendingRegistrations() {
         requireManager();
+        return new ArrayList<>(database.findRegistrationsByStatus(RegistrationStatus.PENDING));
+    }
 
+    public boolean approveRegistration(int registrationId) {
+        Manager manager = requireManager();
+
+        CourseRegistration registration = database.findCourseRegistrationById(registrationId);
+        if (registration == null) {
+            System.out.println("[Manager Service] : Registration request not found.");
+            return false;
+        }
+        if (registration.getStatus() != RegistrationStatus.PENDING) {
+            System.out.println("[Manager Service] : Registration request has already been reviewed.");
+            return false;
+        }
+
+        Student student = registration.getStudent();
+        Course course = registration.getCourse();
         if (student == null || course == null) {
             System.out.println("[Manager Service] : Approve failed. Student or course is null.");
             return false;
@@ -83,11 +103,36 @@ public class ManagerService {
         registerStudentToCourse(student, course);
 
         student.setCredits(student.getCredits() + course.getCredits());
+        registration.approve(manager);
 
         log("Approved registration for student " + student.getFullName() + " in course " + course.getName());
         database.save();
         System.out.println("[Manager Service] : Registration approved for student " + student.getFullName() + " in course " + course.getName() + ".");
 
+        return true;
+    }
+
+    public boolean rejectRegistration(int registrationId, String reason) {
+        Manager manager = requireManager();
+
+        CourseRegistration registration = database.findCourseRegistrationById(registrationId);
+        if (registration == null) {
+            System.out.println("[Manager Service] : Registration request not found.");
+            return false;
+        }
+        if (registration.getStatus() != RegistrationStatus.PENDING) {
+            System.out.println("[Manager Service] : Registration request has already been reviewed.");
+            return false;
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            System.out.println("[Manager Service] : Rejection reason cannot be blank.");
+            return false;
+        }
+
+        registration.reject(manager, reason.trim());
+        log("Rejected registration request " + registrationId + ": " + reason.trim());
+        database.save();
+        System.out.println("[Manager Service] : Registration request rejected.");
         return true;
     }
 
