@@ -1,6 +1,7 @@
 package services;
 
 import enums.Language;
+import i18n.I18n;
 import model.academic.Course;
 import model.users.Admin;
 import model.users.*;
@@ -114,6 +115,11 @@ public class UserService {
         user.setLanguage(language);
         log("Changed language for: " + user.getUsername());
         database.save();
+
+        User current = authService.getCurrentUser();
+        if (current != null && current.equals(user)) {
+            I18n.setLanguage(language);
+        }
     }
 
     public void saveCurrentUserNotification(String notification) {

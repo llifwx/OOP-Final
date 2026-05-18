@@ -1,5 +1,7 @@
 package services;
 
+import enums.Language;
+import i18n.I18n;
 import model.users.User;
 import storage.Database;
 import utils.LogRecord;
@@ -33,6 +35,9 @@ public class AuthService {
         }
 
         this.currentUser = user;
+
+        I18n.setLanguage(user.getLanguage());
+
         LogRecord log = new LogRecord(user, "Logged in");
         database.addLog(log);
         database.save();
@@ -51,6 +56,8 @@ public class AuthService {
         database.save();
         System.out.println("[AuthService] User '" + currentUser.getUsername() + "' logged out.");
         this.currentUser = null;
+
+        I18n.setLanguage(Language.EN);
     }
 
     public User getCurrentUser() {

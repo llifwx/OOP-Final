@@ -1,5 +1,7 @@
 package app;
 
+import enums.Language;
+import i18n.I18n;
 import model.users.Admin;
 import model.users.GraduateStudent;
 import model.users.Manager;
@@ -19,6 +21,8 @@ import ui.menu.TechSupportSpecialistMenu;
 
 import java.util.List;
 import java.util.Scanner;
+
+import static i18n.I18n.t;
 
 public class ConsoleApplication {
     private final Scanner sc;
@@ -49,6 +53,8 @@ public class ConsoleApplication {
         Database db = Database.getInstance();
         this.sc = new Scanner(System.in);
 
+        I18n.setLanguage(Language.EN);
+
         this.authService = new AuthService(db);
         this.userService = new UserService(db, authService);
         this.reportService = new ReportService(db, authService);
@@ -73,7 +79,7 @@ public class ConsoleApplication {
     }
 
     public void run() {
-        MenuPrinter.printPromptBox("UNIVERSITY MANAGEMENT SYSTEM");
+        MenuPrinter.printPromptBox(t("app.title"));
 
         boolean running = true;
         while (running) {
@@ -87,10 +93,10 @@ public class ConsoleApplication {
                     }
                 }
                 case "0" -> {
-                    System.out.println("Exiting application. Goodbye!");
+                    System.out.println(t("app.exit"));
                     running = false;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println(t("app.invalid"));
             }
         }
 
@@ -98,17 +104,14 @@ public class ConsoleApplication {
     }
 
     private void showLoginMenu() {
-        MenuPrinter.print("LOGIN MENU", null, List.of(
-                "1. Login",
-                "0. Exit"
-        ));
+        MenuPrinter.print(t("login.menu"), null, List.of("1. " + t("login.option"), "0. " + t("login.exit")));
     }
 
     private boolean login() {
-        MenuPrinter.printPromptBox("LOGIN");
-        System.out.print("Username: ");
+        MenuPrinter.printPromptBox(t("auth.login.prompt"));
+        System.out.print(t("auth.username") + ": ");
         String username = sc.nextLine().trim();
-        System.out.print("Password: ");
+        System.out.print(t("auth.password") + ": ");
         String password = sc.nextLine().trim();
 
         User user = authService.login(username, password);
