@@ -121,7 +121,7 @@ public class TechSupportService {
     }
 
     public boolean acceptRequest(int id) {
-        requireSpecialist();
+        TechSupportSpecialist specialist = requireSpecialist();
 
         TechSupportReq req = findById(id);
         if (req == null) return false;
@@ -131,11 +131,12 @@ public class TechSupportService {
             return false;
         }
 
-        req.setStatus(RequestStatus.ACCEPTED);
-        log("Accepted tech support request ID " + id);
-        database.save();
-        System.out.println("[TechSupportService] : Tech support request ID " + id);
+        req.assignTo(specialist);
 
+        log("Accepted tech support request ID " + id + " by " + specialist.getUsername());
+        database.save();
+
+        System.out.println("[TechSupportService] : Tech support request ID " + id + " accepted.");
         return true;
     }
 
@@ -155,10 +156,12 @@ public class TechSupportService {
             return false;
         }
 
-        req.setStatus(RequestStatus.REJECTED);
-        log("Rejected tech support request ID " + id + " with reason: " + reason);
+        req.reject(reason);
+
+        log("Rejected tech support request ID " + id + " with reason: " + reason.trim());
         database.save();
-        System.out.println("[TechSupportService] : Tech support request ID " + id);
+
+        System.out.println("[TechSupportService] : Tech support request ID " + id + " rejected.");
         return true;
     }
 
@@ -173,10 +176,12 @@ public class TechSupportService {
             return false;
         }
 
-        req.setStatus(RequestStatus.DONE);
+        req.markDone();
+
         log("Marked tech support request ID " + id + " as done");
         database.save();
-        System.out.println("[TechSupportService] : Tech support request ID " + id);
+
+        System.out.println("[TechSupportService] : Tech support request ID " + id + " marked as done.");
         return true;
     }
 
@@ -204,9 +209,15 @@ public class TechSupportService {
         }
 
         System.out.println("─────Tech Support Requests (" + all.size() + ")─────");
+
         for (TechSupportReq req : all) {
             System.out.println("ID: " + req.getId() + " | Sender: " + req.getSender()
-                    .getUsername() + " | Status: " + req.getStatus());
+                    .getUsername() + " | Status: " + req.getStatus() + " | Specialist: " + (req.getAssignedSpecialist() != null ? req.getAssignedSpecialist()
+                    .getUsername() : "none") + " | Resolved: " + (req.getResolvedDate() != null ? req.getResolvedDate() : "not resolved"));
+
+            if (req.getRejectionReason() != null) {
+                System.out.println("    Rejection reason: " + req.getRejectionReason());
+            }
         }
 
         System.out.println("───────────────────────────────────────────────");
@@ -217,8 +228,20 @@ public class TechSupportService {
         if (mine.isEmpty()) return;
 
         System.out.println("─────My Tech Support Requests (" + mine.size() + ")─────");
+
         for (TechSupportReq req : mine) {
-            System.out.println("ID: " + req.getId() + " | Status: " + req.getStatus() + "\n    Description: " + req.getDescription());
+            System.out.println("ID: " + req.getId() + " | Status: " + req.getStatus() + " | Specialist: " + (req.getAssignedSpecialist() != null ? req.getAssignedSpecialist()
+                    .getUsername() : "none"));
+
+            System.out.println("    Description: " + req.getDescription());
+
+            if (req.getRejectionReason() != null) {
+                System.out.println("    Rejection reason: " + req.getRejectionReason());
+            }
+
+            if (req.getResolvedDate() != null) {
+                System.out.println("    Resolved date: " + req.getResolvedDate());
+            }
         }
 
         System.out.println("───────────────────────────────────────────────");

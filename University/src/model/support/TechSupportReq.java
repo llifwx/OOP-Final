@@ -1,7 +1,8 @@
 package model.support;
 
-import model.users.Employee;
 import enums.RequestStatus;
+import model.users.Employee;
+import model.users.TechSupportSpecialist;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -9,11 +10,16 @@ import java.util.Objects;
 
 public class TechSupportReq implements Serializable {
     private static final long serialVersionUID = 1L;
+
     private int id;
     private Employee sender;
     private String description;
     private RequestStatus status;
     private Date createdDate;
+
+    private TechSupportSpecialist assignedSpecialist;
+    private String rejectionReason;
+    private Date resolvedDate;
 
     public TechSupportReq(int id, Employee sender, String description) {
         this.id = id;
@@ -22,10 +28,6 @@ public class TechSupportReq implements Serializable {
         this.status = RequestStatus.NEW;
         this.createdDate = new Date();
     }
-
-    public void setStatus(RequestStatus status) {this.status = status;}
-
-    public RequestStatus getStatus() {return this.status;}
 
     public int getId() {
         return id;
@@ -39,15 +41,66 @@ public class TechSupportReq implements Serializable {
         return description;
     }
 
+    public RequestStatus getStatus() {
+        return status;
+    }
+
     public Date getCreatedDate() {
         return createdDate == null ? null : new Date(createdDate.getTime());
     }
 
+    public TechSupportSpecialist getAssignedSpecialist() {
+        return assignedSpecialist;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public Date getResolvedDate() {
+        return resolvedDate == null ? null : new Date(resolvedDate.getTime());
+    }
+
+    public void setStatus(RequestStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Request status cannot be null.");
+        }
+        this.status = status;
+    }
+
+    public void assignTo(TechSupportSpecialist specialist) {
+        if (specialist == null) {
+            throw new IllegalArgumentException("Assigned specialist cannot be null.");
+        }
+
+        this.assignedSpecialist = specialist;
+        this.status = RequestStatus.ACCEPTED;
+        this.rejectionReason = null;
+        this.resolvedDate = null;
+    }
+
+    public void reject(String reason) {
+        if (reason == null || reason.isBlank()) {
+            throw new IllegalArgumentException("Rejection reason cannot be empty.");
+        }
+
+        this.status = RequestStatus.REJECTED;
+        this.rejectionReason = reason.trim();
+        this.resolvedDate = new Date();
+    }
+
+    public void markDone() {
+        if (status != RequestStatus.ACCEPTED) {
+            throw new IllegalStateException("Only accepted request can be marked as done.");
+        }
+
+        this.status = RequestStatus.DONE;
+        this.resolvedDate = new Date();
+    }
+
     @Override
     public String toString() {
-        return "TechSupportReq{" + "id=" + id + ", sender="
-                + (sender != null ? sender.getUsername() : "N/A") + ", status="
-                + status + ", createdDate=" + createdDate + '}';
+        return "TechSupportReq{" + "id=" + id + ", sender=" + (sender != null ? sender.getUsername() : "N/A") + ", status=" + status + ", createdDate=" + createdDate + ", assignedSpecialist=" + (assignedSpecialist != null ? assignedSpecialist.getUsername() : "none") + ", rejectionReason='" + (rejectionReason != null ? rejectionReason : "none") + '\'' + ", resolvedDate=" + resolvedDate + '}';
     }
 
     @Override
