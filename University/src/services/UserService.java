@@ -25,14 +25,13 @@ public class UserService {
         if (user == null) return false;
 
         if (database.findUserByUsername(user.getUsername()) != null) {
-            System.out.println("[UserService] Registration failed: username '"
-                    + user.getUsername() + "' is already taken.");
+            System.out.println("[UserService] Registration failed: username '" + user.getUsername() + "' is already taken.");
             return false;
         }
 
         database.addUser(user);
-        log("Registered new user: " + user.getUsername() + " [" + user.getClass().getSimpleName() + "]");
         database.save();
+        log("Registered new user: " + user.getUsername() + " [" + user.getClass().getSimpleName() + "]");
         System.out.println("[UserService] User '" + user.getUsername() + "' registered successfully.");
         return true;
     }
