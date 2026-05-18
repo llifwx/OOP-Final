@@ -5,6 +5,7 @@ import comparator.ResearchPaperDateComparator;
 import comparator.ResearchPaperLengthComparator;
 import enums.Language;
 import enums.UrgencyLevel;
+import exceptions.MarkException;
 import interfaces.Researcher;
 import model.academic.Course;
 import model.academic.Mark;
@@ -104,6 +105,8 @@ public class TeacherMenu {
             mark.setSecondAttestation(readScore(t("prompt.second_attest")));
             mark.setFinalExam(readScore(t("prompt.final_exam")));
             System.out.println(teacherService.putMark(student, course, mark) ? t("teacher.mark_saved") : t("teacher.mark_rejected"));
+        } catch (MarkException e) {
+            System.out.println(e.getMessage());
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }

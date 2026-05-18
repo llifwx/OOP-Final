@@ -16,7 +16,6 @@ import java.util.List;
 
 public class TeacherService {
     private static final double FAILING_SCORE = 50.0;
-    private static final int MAX_FAILED_COURSES = 3;
     private final Database database;
     private final AuthService authService;
 
@@ -65,13 +64,13 @@ public class TeacherService {
         }
         boolean isNewMark = !student.getTranscript().getMarks().contains(mark);
         boolean isFailingMark = mark.getTotalScore() < FAILING_SCORE;
-        if (isNewMark && isFailingMark && student.getFailedCoursesCount() >= MAX_FAILED_COURSES) {
-            throw new MarkException("Student already has 3 failed courses.");
+        if (isNewMark && isFailingMark && student.getTranscript().hasExceededFailedAttempts(course)) {
+            throw new MarkException("Student cannot fail this course more than 3 times.");
         }
 
         student.getTranscript().addMark(mark);
         if (isNewMark && isFailingMark) {
-            student.setFailedCoursesCount(student.getFailedCoursesCount() + 1);
+            student.getTranscript().incrementFailedAttempts(course);
         }
         student.setGpa(student.getTranscript().calculateGpa());
         log("Put mark for student " + student.getUsername() + " in course " + course.getCourseCode());
