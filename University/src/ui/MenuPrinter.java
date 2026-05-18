@@ -1,6 +1,8 @@
-package ui.menu;
+package ui;
 
 import java.util.List;
+
+import static i18n.I18n.t;
 
 public final class MenuPrinter {
     private static final int WIDTH = 38;
@@ -20,7 +22,7 @@ public final class MenuPrinter {
             printLine(option);
         }
         printBottom();
-        System.out.print("Your choice: ");
+        System.out.print(t("menu.choice") + ": ");
     }
 
     public static void printPromptBox(String title) {

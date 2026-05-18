@@ -16,6 +16,7 @@ import services.ResearchProjectService;
 import services.StudentService;
 import services.TranscriptService;
 import services.UserService;
+import ui.MenuPrinter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,14 +24,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
+import static i18n.I18n.t;
+
 public class GraduateStudentMenu extends StudentMenu {
     private final AuthService authService;
     private final ResearchPaperService paperService;
     private final ResearchProjectService projectService;
 
-    public GraduateStudentMenu(AuthService authService, StudentService studentService, UserService userService,
-                               TranscriptService transcriptService, ResearchPaperService paperService,
-                               ResearchProjectService projectService, JournalService journalService, Scanner sc) {
+    public GraduateStudentMenu(AuthService authService, StudentService studentService, UserService userService, TranscriptService transcriptService, ResearchPaperService paperService, ResearchProjectService projectService, JournalService journalService, Scanner sc) {
         super(authService, studentService, userService, transcriptService, journalService, sc);
         this.authService = authService;
         this.paperService = paperService;
@@ -42,31 +43,12 @@ public class GraduateStudentMenu extends StudentMenu {
         boolean running = true;
         while (running) {
             GraduateStudent student = (GraduateStudent) authService.getCurrentUser();
-            MenuPrinter.print("GRADUATE STUDENT", "Welcome, " + student.getFullName(), List.of(
-                    "1. View available courses",
-                    "2. Register for course",
-                    "3. View registered courses",
-                    "4. View teacher info",
-                    "5. View marks",
-                    "6. View transcript",
-                    "7. Rate teacher",
-                    "8. Student organizations",
-                    "9. Journals",
-                    "10. View notifications",
-                    "11. Switch language",
-                    "12. View supervisor",
-                    "13. Publish research paper",
-                    "14. View my papers sorted",
-                    "15. View research projects",
-                    "16. Join research project",
-                    "17. Diploma papers",
-                    "0. Logout"
-            ));
+            MenuPrinter.print(t("grad.title"), t("grad.welcome", student.getFullName()), List.of("1.  " + t("student.courses_available"), "2.  " + t("student.courses_register"), "3.  " + t("student.courses_registered"), "4.  " + t("student.teacher_info"), "5.  " + t("student.marks"), "6.  " + t("student.transcript"), "7.  " + t("student.rate_teacher"), "8.  " + t("student.organizations"), "9.  " + t("student.journals"), "10. " + t("student.notifications"), "11. " + t("student.switch_lang"), "12. " + t("grad.supervisor"), "13. " + t("grad.publish_paper"), "14. " + t("grad.view_papers"), "15. " + t("grad.view_projects"), "16. " + t("grad.join_project"), "17. " + t("grad.diploma"), "0.  " + t("menu.logout")));
 
             switch (sc.nextLine().trim()) {
-                case "1" -> printCourses(studentService.getAvailableCourses(), "Available courses");
+                case "1" -> printCourses(studentService.getAvailableCourses(), t("student.courses.available"));
                 case "2" -> registerForCourse();
-                case "3" -> printCourses(student.getRegisteredCourses(), "Registered courses");
+                case "3" -> printCourses(student.getRegisteredCourses(), t("student.courses.mine"));
                 case "4" -> viewTeacherInfo();
                 case "5" -> printMarks(student.getTranscript().getMarks());
                 case "6" -> transcriptService.printTranscript(student.getTranscript());
@@ -85,7 +67,7 @@ public class GraduateStudentMenu extends StudentMenu {
                     authService.logout();
                     running = false;
                 }
-                default -> System.out.println("Invalid choice.");
+                default -> System.out.println(t("app.invalid"));
             }
         }
     }
@@ -93,11 +75,11 @@ public class GraduateStudentMenu extends StudentMenu {
     private void viewSupervisor(GraduateStudent student) {
         Researcher supervisor = student.getSupervisor();
         if (supervisor == null) {
-            System.out.println("No supervisor assigned.");
+            System.out.println(t("grad.no_supervisor"));
             return;
         }
         System.out.println(supervisor);
-        System.out.println("H-index: " + supervisor.calculateHIndex());
+        System.out.println(t("teacher.hindex_value", supervisor.calculateHIndex()));
     }
 
     private void publishPaper(GraduateStudent student, boolean diplomaOnly) {
@@ -105,20 +87,21 @@ public class GraduateStudentMenu extends StudentMenu {
         if (paper == null) return;
         if (diplomaOnly) {
             paperService.addDiplomaPaper(student, paper);
-            System.out.println("Diploma paper added.");
+            System.out.println(t("grad.diploma_added"));
             return;
         }
         paperService.publishPaper(student, paper, paper.getJournal());
-        System.out.println("Research paper published.");
+        System.out.println(t("grad.paper_added"));
     }
 
     private ResearchPaper readPaper(GraduateStudent student) {
-        String title = promptRequired("Title");
-        String journalName = promptRequired("Journal name");
-        int pages = readInt("Pages");
-        String doi = promptRequired("DOI");
-        int citations = readInt("Citations");
+        String title = promptRequired(t("prompt.title"));
+        String journalName = promptRequired(t("prompt.journal_name"));
+        int pages = readInt(t("prompt.pages"));
+        String doi = promptRequired(t("prompt.doi"));
+        int citations = readInt(t("prompt.citations"));
         if (title == null || journalName == null || doi == null || pages < 0 || citations < 0) return null;
+
         Journal journal = paperService.findJournalByName(journalName);
         if (journal == null) {
             journal = new Journal(journalName);
@@ -135,19 +118,14 @@ public class GraduateStudentMenu extends StudentMenu {
     }
 
     private Comparator<ResearchPaper> readPaperComparator() {
-        MenuPrinter.print("SORT PAPERS", null, List.of(
-                "1. Date",
-                "2. Citations",
-                "3. Pages",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("sort.title"), null, List.of("1. " + t("sort.date"), "2. " + t("sort.citations"), "3. " + t("sort.pages"), "0. " + t("menu.back")));
         return switch (sc.nextLine().trim()) {
             case "1" -> new ResearchPaperDateComparator();
             case "2" -> new ResearchPaperCitationComparator();
             case "3" -> new ResearchPaperLengthComparator();
             case "0" -> null;
             default -> {
-                System.out.println("Invalid choice.");
+                System.out.println(t("app.invalid"));
                 yield null;
             }
         };
@@ -156,42 +134,38 @@ public class GraduateStudentMenu extends StudentMenu {
     private void viewProjects() {
         List<ResearchProject> projects = projectService.getAllProjects();
         if (projects.isEmpty()) {
-            System.out.println("No research projects available.");
+            System.out.println(t("grad.no_projects"));
             return;
         }
         projects.forEach(projectService::printProjectInfo);
     }
 
     private void joinProject(GraduateStudent student) {
-        String topic = promptRequired("Project topic");
+        String topic = promptRequired(t("prompt.project_topic"));
         if (topic == null) return;
         ResearchProject project = projectService.findProjectByTopic(topic);
         if (project == null) {
-            System.out.println("Project not found.");
+            System.out.println(t("grad.project_not_found"));
             return;
         }
         try {
             projectService.joinProject(project, student);
-            System.out.println("Joined project.");
+            System.out.println(t("grad.project_joined"));
         } catch (NotResearcherEx e) {
             System.out.println(e.getMessage());
         }
     }
 
     private void diplomaMenu(GraduateStudent student) {
-        MenuPrinter.print("DIPLOMA PAPERS", null, List.of(
-                "1. View diploma papers",
-                "2. Add diploma paper",
-                "0. Back"
-        ));
+        MenuPrinter.print(t("diploma.title"), null, List.of("1. " + t("diploma.view"), "2. " + t("diploma.add"), "0. " + t("menu.back")));
         switch (sc.nextLine().trim()) {
             case "1" -> {
-                if (student.getDiplomaProjects().isEmpty()) System.out.println("No diploma papers.");
+                if (student.getDiplomaProjects().isEmpty()) System.out.println(t("grad.no_diploma"));
                 else student.getDiplomaProjects().forEach(System.out::println);
             }
             case "2" -> publishPaper(student, true);
-            case "0" -> { }
-            default -> System.out.println("Invalid choice.");
+            case "0" -> {}
+            default -> System.out.println(t("app.invalid"));
         }
     }
 }
