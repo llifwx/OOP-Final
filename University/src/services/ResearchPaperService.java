@@ -110,8 +110,8 @@ public class ResearchPaperService {
 
     public void publishPaper(Researcher researcher, ResearchPaper paper, Journal journal) {
         User current = requireResearcher();
-        if (researcher == null || paper == null || journal == null) {
-            System.out.println("[ResearchPaperService] Cannot publish paper with empty researcher, paper, or journal.");
+        if (researcher == null || paper == null) {
+            System.out.println("[ResearchPaperService] Cannot publish paper with empty researcher or paper.");
             return;
         }
         if (researcher != current) {
@@ -119,23 +119,37 @@ public class ResearchPaperService {
             return;
         }
 
-        researcher.addPaper(paper);
+        Journal targetJournal = journal != null ? journal : paper.getJournal();
 
-        boolean newJournalPaper = !journal.getPapers().contains(paper);
+        for (Researcher author : paper.getAuthors()) {
+            if (author != null) {
+                author.addPaper(paper);
+            }
+        }
+
+        boolean newJournalPaper = targetJournal != null && !targetJournal.getPapers().contains(paper);
         if (newJournalPaper) {
-            journal.addPaper(paper);
-            journalService.notifySubscribers(journal);
+            targetJournal.addPaper(paper);
+            journalService.notifySubscribers(targetJournal);
         }
 
         if (!database.getResearchPapers().contains(paper)) {
             database.addResearchPaper(paper);
         }
 
-        News news = new News("New Paper Published: " + paper.getTitle(), getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
-        news.pin();
-        database.addNews(news);
+        String newsTitle = getResearchNewsTitle(paper);
+        if (database.findNewsByTitle(newsTitle) == null) {
+            News news = new News(newsTitle, getCitation(paper, Format.PLAIN_TEXT), NewsTopic.RESEARCH);
+            news.pin();
+            database.addNews(news);
+        }
         log("Published research paper: " + paper.getTitle());
         database.save();
+    }
+
+    private String getResearchNewsTitle(ResearchPaper paper) {
+        String title = paper.getTitle() == null || paper.getTitle().isBlank() ? "Untitled" : paper.getTitle();
+        return "New Paper Published: " + title;
     }
 
     public boolean addDiplomaPaper(GraduateStudent student, ResearchPaper paper) {

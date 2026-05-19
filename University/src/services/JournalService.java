@@ -1,6 +1,9 @@
 package services;
 
+import enums.NewsTopic;
+import interfaces.Researcher;
 import model.social.Journal;
+import model.social.News;
 import model.users.User;
 import model.research.ResearchPaper;
 import storage.Database;
@@ -48,13 +51,45 @@ public class JournalService {
 
     public void publishPaper(Journal journal, ResearchPaper paper) {
         if (journal == null || paper == null) return;
-        if (journal.getPapers().contains(paper)) {
-            return;
+
+        for (Researcher author : paper.getAuthors()) {
+            if (author != null) {
+                author.addPaper(paper);
+            }
         }
-        journal.addPaper(paper);
-        notifySubscribers(journal);
+
+        boolean newJournalPaper = !journal.getPapers().contains(paper);
+        if (newJournalPaper) {
+            journal.addPaper(paper);
+        }
+
+        if (!database.getResearchPapers().contains(paper)) {
+            database.addResearchPaper(paper);
+        }
+
+        String newsTitle = getResearchNewsTitle(paper);
+        if (database.findNewsByTitle(newsTitle) == null) {
+            News news = new News(newsTitle, getResearchNewsContent(paper, journal), NewsTopic.RESEARCH);
+            news.pin();
+            database.addNews(news);
+        }
+
+        if (newJournalPaper) {
+            notifySubscribers(journal);
+        }
         log("Published paper in journal: " + journal.getName());
         database.save();
+    }
+
+    private String getResearchNewsTitle(ResearchPaper paper) {
+        String title = paper.getTitle() == null || paper.getTitle().isBlank() ? "Untitled" : paper.getTitle();
+        return "New Paper Published: " + title;
+    }
+
+    private String getResearchNewsContent(ResearchPaper paper, Journal journal) {
+        String journalName = journal == null ? "Unknown journal" : journal.getName();
+        String doi = paper.getDoi() == null || paper.getDoi().isBlank() ? "N/A" : paper.getDoi();
+        return paper.getTitle() + " was published in " + journalName + ". DOI: " + doi + ".";
     }
 
     // Observer Pattern: a Journal keeps subscribers, and this service notifies them when new papers appear.
