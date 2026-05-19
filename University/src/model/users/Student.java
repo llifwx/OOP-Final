@@ -18,7 +18,6 @@ public class Student extends User {
     private int yearOfStudy;
     private double gpa;
     private int credits;
-    private int failedCoursesCount;
     private List<Course> registeredCourses;
     private Transcript transcript;
     private List<StudentOrganization> organizations;
@@ -31,7 +30,6 @@ public class Student extends User {
         setYearOfStudy(yearOfStudy);
         this.gpa = 0.0;
         this.credits = 0;
-        this.failedCoursesCount = 0;
         this.registeredCourses = new ArrayList<>();
         this.organizations = new ArrayList<>();
         this.transcript = new Transcript(this);
@@ -53,7 +51,7 @@ public class Student extends User {
 
     public int getCredits() {return this.credits;}
 
-    public int getFailedCoursesCount() {return this.failedCoursesCount;}
+    public int getFailedCoursesCount() {return transcript.countFailedCourses();}
 
     public List<StudentOrganization> getOrganizations() {return new ArrayList<>(this.organizations);}
 
@@ -107,13 +105,6 @@ public class Student extends User {
     public void setMajor(String major) {this.major = major;}
 
     public void setSchool(String school) {this.school = school;}
-
-    public void setFailedCoursesCount(int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("Failed courses count cannot be negative");
-        }
-        this.failedCoursesCount = count;
-    }
 
     @Override
     public String toString() {

@@ -59,6 +59,10 @@ public class Transcript implements Serializable {
         return getFailedAttempts(course) >= MAX_FAILED_ATTEMPTS_PER_COURSE;
     }
 
+    public int countFailedCourses() {
+        return ensureFailedAttemptsByCourse().size();
+    }
+
     public Student getStudent() {return student;}
 
     public void setStudent(Student student) {this.student = student;}
