@@ -14,6 +14,8 @@ import utils.LogRecord;
 import java.util.ArrayList;
 import java.util.List;
 
+import static i18n.I18n.t;
+
 public class StudentService {
     private static final int MAX_STUDENT_CREDITS = 21;
 
@@ -84,10 +86,16 @@ public class StudentService {
     }
 
     public boolean rateTeacher(int teacherId, double rating) {
-        requireStudent();
+        Student student = requireStudent();
         User user = database.findUserById(teacherId);
         if (!(user instanceof Teacher teacher)) {
-            System.out.println("[StudentService] Teacher not found.");
+            System.out.println(t("student.teacher_not_found"));
+            return false;
+        }
+        boolean studiedWithTeacher = student.getRegisteredCourses().stream()
+                .anyMatch(course -> course.getInstructors().contains(teacher));
+        if (!studiedWithTeacher) {
+            System.out.println(t("student.teacher_not_registered_course"));
             return false;
         }
         teacher.addRating(rating);
