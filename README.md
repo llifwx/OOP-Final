@@ -82,6 +82,16 @@ login: admin
 password: admin123
 ```
 
+### Manual verification: manager-only course assignment
+
+1. Log in as a teacher.
+2. Open the teacher menu and confirm there is no action for assigning yourself to a course.
+3. Use teacher actions only for assigned courses: view courses, view enrolled students, put marks, send complaints, and send messages.
+4. Log out, then log in as a manager.
+5. Choose the manager course assignment action and assign a teacher with lesson type `LECTURE` or `PRACTICE`.
+6. Confirm the course lists the teacher for that lesson type and the teacher's course list includes the course.
+7. Repeat the same assignment for the same lesson type and confirm no duplicate instructor is added.
+
 ### Run from IntelliJ IDEA
 
 Open the project in IntelliJ IDEA and run the `Main` class located in `University/src/Main.java`.
