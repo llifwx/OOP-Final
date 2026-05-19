@@ -1,7 +1,6 @@
 package services;
 
 import enums.UrgencyLevel;
-import enums.LessonType;
 import exceptions.MarkException;
 import model.academic.Complaint;
 import model.academic.Course;
@@ -31,27 +30,6 @@ public class TeacherService {
             throw new SecurityException("[TeacherService] Access denied: current user is not a Teacher.");
         }
         return teacher;
-    }
-
-    public void assignCourse(Course course) {
-        assignCourse(course, LessonType.LECTURE);
-    }
-
-    public void assignCourse(Course course, LessonType lessonType) {
-        Teacher teacher = requireTeacher();
-        if (course == null) {
-            System.out.println("[TeacherService] Course is null.");
-            return;
-        }
-        if (lessonType == null) {
-            System.out.println("[TeacherService] Lesson type is required.");
-            return;
-        }
-
-        teacher.addCourse(course);
-        course.addInstructor(teacher, lessonType);
-        log("Teacher assigned self to course: " + course.getCourseCode() + " as " + lessonType);
-        database.save();
     }
 
     public boolean putMark(Student student, Course course, Mark mark) {
