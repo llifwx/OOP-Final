@@ -106,6 +106,10 @@ public class ManagerService {
             System.out.println("[Manager Service] : Student " + student.getFullName() + " is already enrolled in course " + course.getName() + ".");
             return false;
         }
+        if (course.getEnrolledStudents().size() >= course.getCapacity()) {
+            System.out.println("[Manager Service] : Cannot approve registration. Course " + course.getName() + " is full. Capacity: " + course.getCapacity() + ".");
+            return false;
+        }
 
         registerStudentToCourse(student, course);
 
