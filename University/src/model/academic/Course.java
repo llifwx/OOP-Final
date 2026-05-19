@@ -16,11 +16,13 @@ import enums.CourseType;
 
 public class Course implements Serializable {
     private static final long serialVersionUID = 1L;
+    public static final int DEFAULT_CAPACITY = 30;
     private static int idCounter = 0;
     private final int id;
     private String courseCode;
     private String name;
     private int credits;
+    private int capacity = DEFAULT_CAPACITY;
     private CourseType type;
     private String intendedMajor;
     private int intendedYear;
@@ -63,6 +65,13 @@ public class Course implements Serializable {
     public String getName() {return name;}
 
     public int getCredits() {return credits;}
+
+    public int getCapacity() {
+        if (capacity <= 0) {
+            capacity = DEFAULT_CAPACITY;
+        }
+        return capacity;
+    }
 
     public CourseType getType() {return type;}
 
@@ -111,6 +120,11 @@ public class Course implements Serializable {
         this.openForRegistration = openForRegistration;
     }
 
+    public void setCapacity(int capacity) {
+        if (capacity <= 0) throw new IllegalArgumentException("Capacity must be positive");
+        this.capacity = capacity;
+    }
+
     // Methods
     public void addLesson(Lesson lesson) {
         if (lesson != null && !lessons.contains(lesson)) {
@@ -137,6 +151,9 @@ public class Course implements Serializable {
 
     public void enrollStudent(Student student) {
         if (student != null && !enrolledStudents.contains(student)) {
+            if (enrolledStudents.size() >= getCapacity()) {
+                throw new IllegalStateException("Course is full");
+            }
             enrolledStudents.add(student);
         }
     }
@@ -163,7 +180,7 @@ public class Course implements Serializable {
     @Override
     public String toString() {
         initializeInstructorCollections();
-        return "Course{" + "id=" + id + ", courseCode='" + courseCode + '\'' + ", name='" + name + '\'' + ", credits=" + credits + ", type=" + type + ", language=" + language + ", instructorsCount=" + instructors.size() + ", studentsCount=" + enrolledStudents.size() + '}';
+        return "Course{" + "id=" + id + ", courseCode='" + courseCode + '\'' + ", name='" + name + '\'' + ", credits=" + credits + ", capacity=" + getCapacity() + ", type=" + type + ", language=" + language + ", instructorsCount=" + instructors.size() + ", studentsCount=" + enrolledStudents.size() + '}';
     }
 
     @Override
