@@ -1,9 +1,11 @@
 package services;
 
 import enums.NewsTopic;
+import exceptions.NotResearcherException;
 import storage.Database;
 import interfaces.Researcher;
 import model.research.ResearchPaper;
+import model.research.ResearchProject;
 import model.social.Journal;
 import model.social.News;
 import model.users.Admin;
@@ -96,6 +98,23 @@ public class ResearchService {
         db().save();
     }
 
+    public void joinProject(User user, ResearchProject project) {
+        if (user == null) {
+            throw new IllegalArgumentException("[ResearchService] User cannot be null.");
+        }
+        if (project == null) {
+            throw new IllegalArgumentException("[ResearchService] Project cannot be null.");
+        }
+        if (!(user instanceof Researcher researcher)) {
+            throw new NotResearcherException();
+        }
+
+        project.addParticipant(researcher);
+        researcher.addProject(project);
+        log(user, "Researcher joined project: " + project.getTopic());
+        db().save();
+    }
+
     private Database db() {
         return database;
     }
@@ -137,6 +156,10 @@ public class ResearchService {
 
     private void log(String action) {
         User actor = authService == null ? null : authService.getCurrentUser();
+        log(actor, action);
+    }
+
+    private void log(User actor, String action) {
         if (actor != null) {
             db().addLog(new LogRecord(actor, action));
             db().save();

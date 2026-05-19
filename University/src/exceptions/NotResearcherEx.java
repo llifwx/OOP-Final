@@ -1,8 +1,8 @@
 package exceptions;
 
-public class NotResearcherEx extends Exception {
+public class NotResearcherEx extends NotResearcherException {
     public NotResearcherEx() {
-        super("Only researchers can perform this action");
+        super();
     }
 
     public NotResearcherEx(String message) {
