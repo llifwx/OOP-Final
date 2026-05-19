@@ -6,13 +6,15 @@ The system simulates a real university environment where different types of user
 
 ## Features
 
-- **Authentication** — all users log in with credentials
-- **Course management** — registration, approval, mark assignment
-- **Research** — publish papers, manage projects, calculate h-index, subscribe to journals
-- **Multi-language support** — KZ / EN / RU
-- **Tech support** — submit and handle requests with status tracking
-- **Messaging & News** — internal messages between employees, pinned research news
-- **Reports** — academic statistics, transcripts, log files
+- **Authentication** — every user accesses the system through login credentials.
+- **Role-based access** — Admin, Student, Graduate Student, Teacher, Manager, and Tech Support Specialist have different permissions.
+- **Course management** — course registration, approval, teacher assignment, lesson types, and mark management.
+- **Research module** — research papers, research projects, h-index calculation, journals, and researcher-specific behavior.
+- **Multi-language support** — KZ / EN / RU.
+- **Tech support** — users can submit requests, while tech support specialists can review and update request statuses.
+- **Messaging and news** — employees can exchange messages; research news can be prioritized.
+- **Reports and logs** — academic reports, transcripts, and user action logs.
+- **Serialization** — system data is saved and restored through file-based storage.
 
 ## Project Structure
 
@@ -25,12 +27,14 @@ University/
 │   ├── academic/
 │   ├── research/
 │   ├── social/
+│   ├── users/
 │   └── support/
 ├── interfaces/
 ├── services/
 ├── ui/
 │   └── menu/
 ├── storage/
+├── i18n/
 ├── factory/
 ├── comparator/
 ├── enums/
@@ -82,16 +86,6 @@ login: admin
 password: admin123
 ```
 
-### Manual verification: manager-only course assignment
-
-1. Log in as a teacher.
-2. Open the teacher menu and confirm there is no action for assigning yourself to a course.
-3. Use teacher actions only for assigned courses: view courses, view enrolled students, put marks, send complaints, and send messages.
-4. Log out, then log in as a manager.
-5. Choose the manager course assignment action and assign a teacher with lesson type `LECTURE` or `PRACTICE`.
-6. Confirm the course lists the teacher for that lesson type and the teacher's course list includes the course.
-7. Repeat the same assignment for the same lesson type and confirm no duplicate instructor is added.
-
 ### Run from IntelliJ IDEA
 
 Open the project in IntelliJ IDEA and run the `Main` class located in `University/src/Main.java`.
@@ -103,27 +97,125 @@ Open the project in IntelliJ IDEA and run the `Main` class located in `Universit
 - **Strategy Pattern**: classes in `comparator/` provide interchangeable sorting strategies for students, teachers, and research papers.
 - **Observer Pattern**: `model.social.Journal` stores subscribers, and `services.JournalService.notifySubscribers()` notifies them when a new paper is published. Duplicate paper publications are ignored so subscribers are not notified twice for the same journal paper.
 
-## Git Branch Naming
+## Main OOP Concepts Used
 
-Always create a new branch before working on something. Never push directly to `main`.
+### Encapsulation
 
-| Prefix | When to use | Example |
-|--------|-------------|---------|
-| `feat/` | Adding new functionality | `feat/course-registration` |
-| `fix/` | Fixing a bug | `fix/mark-calculation` |
-| `refactor/` | Restructuring code, no new features | `refactor/user-hierarchy` |
-| `docs/` | Documentation only | `docs/update-readme` |
-| `test/` | Adding or fixing tests | `test/research-paper` |
+Domain classes keep their data inside fields and expose behavior through methods.
 
-```bash
-# Create and switch to a new branch
-git checkout -b feat/your-feature-name
- 
-# Push the branch
-git push origin feat/your-feature-name
+Examples:
+
+- `Course` stores course code, credits, instructors, lessons, enrolled students, intended major/year, and registration status.
+- `User` hides user-related data and exposes it through controlled getters, setters, and methods.
+
+### Inheritance
+
+The user hierarchy is based on inheritance.
+
+```text
+User
+├── Employee
+│   ├── Teacher
+│   ├── Manager
+│   └── TechSupportSpecialist
+└── Admin
 ```
 
-> Use lowercase and hyphens only — no spaces, no camelCase.
+This allows common user data to stay in `User`, while specific behavior is implemented in subclasses.
+
+Examples:
+
+- `Student` inherits common user fields from `User`.
+- `Teacher`, `Manager`, and `TechSupportSpecialist` extend `Employee`.
+
+### Polymorphism
+
+Different user types can be treated through a common parent type or interface, while still keeping their own role-specific behavior.
+
+Examples:
+
+- Authentication can return a general `User`, but the system can handle it as `Student`, `Teacher`, `Manager`, `Admin`, or `TechSupportSpecialist`.
+- `Researcher` can be implemented by different user types.
+- Comparators allow different sorting behavior for the same type of object.
+
+### Abstraction
+
+The project separates high-level behavior from implementation details.
+
+Examples:
+
+- `Researcher` defines research-related behavior without forcing every user to be a researcher.
+- Service classes hide business logic from UI classes.
+- Menu classes call services instead of directly changing model data.
+- Storage logic is hidden inside `Database` and `FileStorage`.
+
+## SOLID Principles
+
+### S — Single Responsibility Principle
+
+Each class has a focused responsibility.
+
+Examples:
+
+- `AuthService` handles authentication.
+- `UserService` handles user-related operations.
+- `CourseService` works with courses and course registration.
+- UI menu classes only interact with the user and call services.
+
+This makes the system easier to maintain because one class does not try to do everything at once.
+
+### O — Open/Closed Principle
+
+The system can be extended without rewriting existing logic.
+
+Examples:
+
+- New user roles can be added by creating new subclasses of `User`.
+- New sorting rules can be added by creating another `Comparator`.
+
+### L — Liskov Substitution Principle
+
+Subclasses can be used where their parent class is expected.
+
+Examples:
+
+- `Student` and `GraduateStudent` can be handled as `User`.
+- `Teacher`, `Manager`, and `TechSupportSpecialist` can be handled as `Employee`.
+- Any class implementing `Researcher` can participate in research-related operations.
+
+
+### I — Interface Segregation Principle
+
+The system uses focused interfaces instead of forcing all classes to implement unnecessary methods.
+
+Example:
+
+- `Researcher` is separate from `User`, because not every user must have research papers, research projects, or h-index calculation.
+- Only users that actually perform research need researcher-specific behavior.
+- `Notifiable` can be used for users or entities that should receive notifications.
+
+This avoids the problem where every user class would be forced to implement research methods even if that role does not need them.
+
+### D — Dependency Inversion Principle
+
+Higher-level logic depends on services and abstractions instead of direct console or storage details.
+
+Examples:
+
+- UI classes call service classes instead of directly modifying the database.
+- Services work with models and storage access methods.
+- Business rules are kept outside the menu layer.
+- The console UI can be changed in the future without rewriting the whole business logic.
+
+Example:
+
+```java
+StudentMenu -> StudentService -> Database
+```
+
+The menu does not directly change all collections manually. It asks the service to perform the operation.
+
+
 
 ## Team
 
