@@ -5,6 +5,7 @@ import exceptions.MarkException;
 import model.academic.Complaint;
 import model.academic.Course;
 import model.academic.Mark;
+import model.academic.Transcript;
 import model.users.Student;
 import model.users.Teacher;
 import model.users.User;
@@ -49,17 +50,24 @@ public class TeacherService {
         if (!student.equals(mark.getStudent()) || !course.equals(mark.getCourse())) {
             throw new MarkException("Mark must belong to the same student and course.");
         }
-        boolean isNewMark = !student.getTranscript().getMarks().contains(mark);
+        Transcript transcript = student.getTranscript();
+        boolean isExistingRecord = transcript.getMarks().contains(mark);
+        if (transcript.hasMarkForCourse(course) && !isExistingRecord) {
+            System.out.println("[TeacherService] Mark for this student and course already exists.");
+            return false;
+        }
+
+        boolean isNewMark = !isExistingRecord;
         boolean isFailingMark = mark.getTotalScore() < FAILING_SCORE;
-        if (isNewMark && isFailingMark && student.getTranscript().hasExceededFailedAttempts(course)) {
+        if (isNewMark && isFailingMark && transcript.hasExceededFailedAttempts(course)) {
             throw new MarkException("Student cannot fail this course more than 3 times.");
         }
 
-        student.getTranscript().addMark(mark);
+        transcript.addMark(mark);
         if (isNewMark && isFailingMark) {
-            student.getTranscript().incrementFailedAttempts(course);
+            transcript.incrementFailedAttempts(course);
         }
-        student.setGpa(student.getTranscript().calculateGpa());
+        student.setGpa(transcript.calculateGpa());
         log("Put mark for student " + student.getUsername() + " in course " + course.getCourseCode());
         database.save();
         return true;

@@ -25,9 +25,13 @@ public class Transcript implements Serializable {
     }
 
     public void addMark(Mark mark) {
-        if (mark != null && !marks.contains(mark)) {
+        if (mark != null && !hasMarkForStudentAndCourse(mark.getStudent(), mark.getCourse())) {
             marks.add(mark);
         }
+    }
+
+    public boolean hasMarkForCourse(Course course) {
+        return hasMarkForStudentAndCourse(student, course);
     }
 
     public double calculateGpa() {
@@ -61,6 +65,14 @@ public class Transcript implements Serializable {
 
     public List<Mark> getMarks() {return new ArrayList<>(marks);}
 
+    private boolean hasMarkForStudentAndCourse(Student student, Course course) {
+        return marks.stream().anyMatch(existing ->
+                existing != null
+                        && Objects.equals(existing.getStudent(), student)
+                        && Objects.equals(existing.getCourse(), course)
+        );
+    }
+
     private Map<Course, Integer> ensureFailedAttemptsByCourse() {
         if (failedAttemptsByCourse == null) {
             failedAttemptsByCourse = new HashMap<>();
@@ -75,7 +87,12 @@ public class Transcript implements Serializable {
     }
 
     public void setMarks(List<Mark> marks) {
-        this.marks = marks == null ? new ArrayList<>() : new ArrayList<>(marks);
+        this.marks = new ArrayList<>();
+        if (marks != null) {
+            for (Mark mark : marks) {
+                addMark(mark);
+            }
+        }
         this.failedAttemptsByCourse = null;
     }
 
