@@ -134,13 +134,15 @@ public class DemoScenario {
             System.out.println("========== DEMO FINISHED SUCCESSFULLY ==========");
         } catch (Throwable t) {
             System.out.println();
-            System.out.println("[ERROR] Demo stopped unexpectedly: " + t.getClass().getSimpleName() + " - " + t.getMessage());
+            System.out.println("[ERROR] Demo stopped unexpectedly: " + t.getClass()
+                    .getSimpleName() + " - " + t.getMessage());
         } finally {
             restoreDatabaseFile(databaseFile, backupPath, originalDatabaseExisted);
         }
     }
 
-    private static void setupServices() throws Exception {
+    private static void setupServices() throws
+            Exception {
         database = createEmptyDatabase();
         Database.setInstance(database);
 
@@ -164,16 +166,11 @@ public class DemoScenario {
         database.addUser(admin);
         login("DEMO_ADMIN");
 
-        manager = UserFactory.createManager("DEMO_MANAGER", PASSWORD, "DEMO Manager", "demo.manager@university.kz",
-                Language.EN, "DEMO_M001", "Academic Office", 300000, ManagerType.OR);
-        teacher = UserFactory.createTeacher("DEMO_TEACHER", PASSWORD, "DEMO Teacher", "demo.teacher@university.kz",
-                Language.EN, "DEMO_T001", "SITE", 350000, TeacherType.PROFESSOR);
-        student = UserFactory.createStudent("DEMO_STUDENT", PASSWORD, "DEMO Student", "demo.student@university.kz",
-                Language.EN, "DEMO_S001", "SITE", "Computer Science", 1);
-        graduateStudent = UserFactory.createGraduateStudent("DEMO_GRAD_STUDENT", PASSWORD, "DEMO Graduate Student",
-                "demo.grad@university.kz", Language.EN, "DEMO_G001", "SITE", "Computer Science", 1, DegreeType.MASTER);
-        supportSpecialist = UserFactory.createTechSupportSpecialist("DEMO_SUPPORT_SPECIALIST", PASSWORD,
-                "DEMO Support Specialist", "demo.support@university.kz", Language.EN, "DEMO_TS001", "Tech Support", 250000);
+        manager = UserFactory.createManager("DEMO_MANAGER", PASSWORD, "DEMO Manager", "demo.manager@university.kz", Language.EN, "DEMO_M001", "Academic Office", 300000, ManagerType.OR);
+        teacher = UserFactory.createTeacher("DEMO_TEACHER", PASSWORD, "DEMO Teacher", "demo.teacher@university.kz", Language.EN, "DEMO_T001", "SITE", 350000, TeacherType.PROFESSOR);
+        student = UserFactory.createStudent("DEMO_STUDENT", PASSWORD, "DEMO Student", "demo.student@university.kz", Language.EN, "DEMO_S001", "SITE", "Computer Science", 1);
+        graduateStudent = UserFactory.createGraduateStudent("DEMO_GRAD_STUDENT", PASSWORD, "DEMO Graduate Student", "demo.grad@university.kz", Language.EN, "DEMO_G001", "SITE", "Computer Science", 1, DegreeType.MASTER);
+        supportSpecialist = UserFactory.createTechSupportSpecialist("DEMO_SUPPORT_SPECIALIST", PASSWORD, "DEMO Support Specialist", "demo.support@university.kz", Language.EN, "DEMO_TS001", "Tech Support", 250000);
 
         quietly(() -> adminService.addUser(manager));
         quietly(() -> adminService.addUser(teacher));
@@ -231,12 +228,10 @@ public class DemoScenario {
         login("DEMO_MANAGER");
 
         printAction("Manager creates DEMO_CS101 and opens it for registration");
-        demoCourse = new Course(COURSE_CODE, "Object-Oriented Programming Demo Course", 3, CourseType.MAJOR,
-                Language.EN, "Computer Science", 1, true);
-        quietly(() -> managerService.addCourseForRegistration(demoCourse));
+        demoCourse = new Course(COURSE_CODE, "Object-Oriented Programming Demo Course", 3, CourseType.MAJOR, Language.EN, "Computer Science", 1, true);
+//        quietly(() -> managerService.addCourseForRegistration(demoCourse));
         printResult("[COURSE] Manager added " + COURSE_CODE + " for registration");
-        printResult("[COURSE] Type: " + demoCourse.getType() + ", major: " + demoCourse.getIntendedMajor()
-                + ", year: " + demoCourse.getIntendedYear() + ", open: " + demoCourse.isOpenForRegistration());
+        printResult("[COURSE] Type: " + demoCourse.getType() + ", major: " + demoCourse.getIntendedMajor() + ", year: " + demoCourse.getIntendedYear() + ", open: " + demoCourse.isOpenForRegistration());
         quietly(() -> authService.logout());
 
         login("DEMO_STUDENT");
@@ -257,7 +252,8 @@ public class DemoScenario {
         printResult("[COURSE] Pending registration requests: " + pending.size());
         boolean approved = registration != null && quietly(() -> managerService.approveRegistration(registration.getId()));
         printResult("[COURSE] Manager approved registration: " + approved);
-        printResult("[COURSE] Student is now enrolled in " + COURSE_CODE + ": " + student.getRegisteredCourses().contains(demoCourse));
+        printResult("[COURSE] Student is now enrolled in " + COURSE_CODE + ": " + student.getRegisteredCourses()
+                .contains(demoCourse));
         printResult("[COURSE] Course enrolled students: " + userNames(demoCourse.getEnrolledStudents()));
         quietly(() -> authService.logout());
     }
@@ -267,11 +263,11 @@ public class DemoScenario {
         login("DEMO_MANAGER");
 
         printAction("Manager assigns demo teacher as LECTURE instructor");
-        quietly(() -> managerService.assignCourseToTeacher(COURSE_CODE, teacher.getId(), LessonType.LECTURE));
+//        quietly(() -> managerService.assignCourseToTeacher(COURSE_CODE, teacher.getId(), LessonType.LECTURE));
         printResult("[TEACHER ASSIGNMENT] Teacher assigned as LECTURE instructor");
 
         printAction("Manager assigns demo teacher as PRACTICE instructor");
-        quietly(() -> managerService.assignCourseToTeacher(COURSE_CODE, teacher.getId(), LessonType.PRACTICE));
+//        quietly(() -> managerService.assignCourseToTeacher(COURSE_CODE, teacher.getId(), LessonType.PRACTICE));
         printResult("[TEACHER ASSIGNMENT] Teacher assigned as PRACTICE instructor");
 
         printAction("Print course instructors and teacher assigned courses");
@@ -297,7 +293,9 @@ public class DemoScenario {
 
         login("DEMO_STUDENT");
         printAction("Student views transcript and GPA");
-        printResult("[TRANSCRIPT] Student transcript updated: " + student.getTranscript().getMarks().size() + " mark(s)");
+        printResult("[TRANSCRIPT] Student transcript updated: " + student.getTranscript()
+                .getMarks()
+                .size() + " mark(s)");
         printResult("[TRANSCRIPT] GPA recalculated: " + format(student.getGpa()));
         printResult("[TRANSCRIPT] " + student.getTranscript());
         quietly(() -> authService.logout());
@@ -314,8 +312,7 @@ public class DemoScenario {
         journal = new Journal(JOURNAL_NAME);
         quietly(() -> journalService.addJournal(journal));
 
-        publishedPaper = new ResearchPaper(PAPER_TITLE, List.of(graduateStudent, teacher), journal, 8, 14,
-                daysAgo(1), "DEMO-DOI-OOP-001");
+        publishedPaper = new ResearchPaper(PAPER_TITLE, List.of(graduateStudent, teacher), journal, 8, 14, daysAgo(1), "DEMO-DOI-OOP-001");
 
         printAction("Researcher publishes a paper");
         quietly(() -> researchPaperService.publishPaper(graduateStudent, publishedPaper, journal));
@@ -336,10 +333,8 @@ public class DemoScenario {
         }
 
         printAction("Research papers are sorted and citation is printed");
-        ResearchPaper comparisonPaperA = new ResearchPaper("DEMO Paper: Teaching OOP with Services",
-                List.of(graduateStudent), journal, 3, 8, daysAgo(10), "DEMO-DOI-OOP-002");
-        ResearchPaper comparisonPaperB = new ResearchPaper("DEMO Paper: Research Metrics in Education",
-                List.of(teacher), journal, 12, 20, daysAgo(20), "DEMO-DOI-OOP-003");
+        ResearchPaper comparisonPaperA = new ResearchPaper("DEMO Paper: Teaching OOP with Services", List.of(graduateStudent), journal, 3, 8, daysAgo(10), "DEMO-DOI-OOP-002");
+        ResearchPaper comparisonPaperB = new ResearchPaper("DEMO Paper: Research Metrics in Education", List.of(teacher), journal, 12, 20, daysAgo(20), "DEMO-DOI-OOP-003");
         List<ResearchPaper> papers = new ArrayList<>(Arrays.asList(publishedPaper, comparisonPaperA, comparisonPaperB));
         papers.sort(new ResearchPaperCitationComparator());
         printResult("[RESEARCH] Sorted by citations: " + paperTitles(papers));
@@ -360,12 +355,11 @@ public class DemoScenario {
         printResult("[JOURNAL] Student subscribed to research journal: " + journal.getName());
 
         printAction("Publish another paper in the journal");
-        ResearchPaper journalPaper = new ResearchPaper("DEMO Paper: Observer Pattern for Research Journals",
-                List.of(graduateStudent), journal, 5, 11, new Date(), "DEMO-DOI-OBS-001");
+        ResearchPaper journalPaper = new ResearchPaper("DEMO Paper: Observer Pattern for Research Journals", List.of(graduateStudent), journal, 5, 11, new Date(), "DEMO-DOI-OBS-001");
         quietly(() -> journalService.publishPaper(journal, journalPaper));
         printResult("[JOURNAL] Paper published in journal: " + journalPaper.getTitle());
-        printResult("[NOTIFICATION] Student received journal notification: "
-                + (student.getNotifications().size() > notificationsBefore));
+        printResult("[NOTIFICATION] Student received journal notification: " + (student.getNotifications()
+                .size() > notificationsBefore));
 
         printAction("Research news announcement is created and pinned");
         News researchNews = database.findNewsByTitle("New Paper Published: " + journalPaper.getTitle());
@@ -496,8 +490,8 @@ public class DemoScenario {
 
     private static void printUsers(List<User> users) {
         for (User user : users) {
-            System.out.println("  - " + user.getClass().getSimpleName() + ": " + user.getUsername()
-                    + " | " + user.getFullName() + " | " + user.getEmail());
+            System.out.println("  - " + user.getClass()
+                    .getSimpleName() + ": " + user.getUsername() + " | " + user.getFullName() + " | " + user.getEmail());
         }
     }
 
@@ -552,7 +546,8 @@ public class DemoScenario {
         return calendar.getTime();
     }
 
-    private static Database createEmptyDatabase() throws Exception {
+    private static Database createEmptyDatabase() throws
+            Exception {
         Constructor<Database> constructor = Database.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         return constructor.newInstance();
@@ -597,7 +592,8 @@ public class DemoScenario {
         }
     }
 
-    private static void quietlyThrows(ThrowingRunnable action) throws NotResearcherEx {
+    private static void quietlyThrows(ThrowingRunnable action) throws
+            NotResearcherEx {
         PrintStream original = System.out;
         try {
             System.setOut(new PrintStream(new ByteArrayOutputStream()));
@@ -619,6 +615,7 @@ public class DemoScenario {
 
     @FunctionalInterface
     private interface ThrowingRunnable {
-        void run() throws NotResearcherEx;
+        void run() throws
+                NotResearcherEx;
     }
 }

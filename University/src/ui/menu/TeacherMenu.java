@@ -93,13 +93,12 @@ public class TeacherMenu {
     private void putMark(Teacher teacher) {
         Course course = selectOwnCourse(teacher);
         if (course == null) return;
-        int studentId = readInt(t("prompt.student_id"));
-        User user = userService.findById(studentId);
-        if (!(user instanceof Student student)) {
-            System.out.println(t("teacher.student_not_found"));
-            return;
-        }
+
+        Student student = readStudentFromCourseByUsername(course);
+        if (student == null) return;
+
         Mark mark = new Mark(student, course);
+
         try {
             mark.setFirstAttestation(readScore(t("prompt.first_attest")));
             mark.setSecondAttestation(readScore(t("prompt.second_attest")));
@@ -113,14 +112,15 @@ public class TeacherMenu {
     }
 
     private void sendComplaint(Teacher teacher) {
-        int studentId = readInt(t("prompt.student_id"));
-        User user = userService.findById(studentId);
-        if (!(user instanceof Student student)) {
-            System.out.println(t("teacher.student_not_found"));
-            return;
-        }
+        Course course = selectOwnCourse(teacher);
+        if (course == null) return;
+
+        Student student = readStudentFromCourseByUsername(course);
+        if (student == null) return;
+
         UrgencyLevel urgency = readUrgency();
         String text = promptRequired(t("prompt.complaint_text"));
+
         if (urgency != null && text != null && teacherService.sendComplaint(student, urgency, text) != null) {
             System.out.println(t("teacher.complaint_sent"));
         }
@@ -140,12 +140,9 @@ public class TeacherMenu {
     }
 
     private void sendMessage() {
-        int id = readInt(t("prompt.receiver_id"));
-        User user = userService.findById(id);
-        if (!(user instanceof Employee employee)) {
-            System.out.println(t("msg.receiver_not_found"));
-            return;
-        }
+        Employee employee = readEmployeeByUsername();
+        if (employee == null) return;
+
         String text = promptRequired(t("prompt.message"));
         if (text != null) messageService.sendMessage(employee, text);
     }
@@ -259,6 +256,63 @@ public class TeacherMenu {
                 yield null;
             }
         };
+    }
+
+    private Employee readEmployeeByUsername() {
+        printEmployees(userService.getAllEmployees());
+
+        String username = promptRequired(t("prompt.receiver_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof Employee employee) {
+            return employee;
+        }
+
+        System.out.println(t("msg.receiver_not_found"));
+        return null;
+    }
+
+    private Student readStudentFromCourseByUsername(Course course) {
+        if (course == null) return null;
+
+        List<Student> students = course.getEnrolledStudents();
+
+        if (students.isEmpty()) {
+            System.out.println(t("teacher.no_students"));
+            return null;
+        }
+
+        System.out.println("Students in course:");
+        for (Student student : students) {
+            System.out.println("- " + student.getUsername() + " | " + student.getFullName());
+        }
+
+        String username = promptRequired(t("prompt.student_id"));
+        if (username == null) return null;
+
+        for (Student student : students) {
+            if (student.getUsername().equalsIgnoreCase(username)) {
+                return student;
+            }
+        }
+
+        System.out.println(t("teacher.student_not_found"));
+        return null;
+    }
+
+    private void printEmployees(List<Employee> employees) {
+        if (employees.isEmpty()) {
+            System.out.println(t("msg.receiver_not_found"));
+            return;
+        }
+
+        System.out.println("Available employees:");
+        for (Employee employee : employees) {
+            System.out.println("- " + employee.getUsername() + " | " + employee.getClass()
+                    .getSimpleName() + " | " + employee.getFullName());
+        }
     }
 
     private UrgencyLevel readUrgency() {

@@ -40,7 +40,7 @@ public class ManagerService {
     }
 
     // Academic management.
-    public void assignCourseToTeacher(String courseCode, int teacherId, LessonType lessonType) {
+    public void assignCourseToTeacher(String courseCode, String teacherUsername, LessonType lessonType) {
         requireManager();
 
         if (lessonType == null) {
@@ -54,9 +54,9 @@ public class ManagerService {
             return;
         }
 
-        User user = database.findUserById(teacherId);
+        User user = database.findUserByUsername(teacherUsername);
         if (!(user instanceof Teacher teacher)) {
-            System.out.println("Teacher with ID '" + teacherId + "' not found.");
+            System.out.println("Teacher with username '" + teacherUsername + "' not found.");
             return;
         }
 
@@ -69,7 +69,9 @@ public class ManagerService {
         teacher.addCourse(course);
 
         log("Assigned teacher " + teacher.getFullName() + " to course " + course.getName() + " as " + lessonType);
+
         database.save();
+
         System.out.println("[Manager Service] : Teacher " + teacher.getFullName() + " assigned to course " + course.getName() + " as " + lessonType + ".");
     }
 
@@ -148,7 +150,7 @@ public class ManagerService {
     }
 
 
-    public void addCourseForRegistration(Course course) {
+    public void createCourse(Course course) {
         requireManager();
 
         if (course == null) {
@@ -161,10 +163,43 @@ public class ManagerService {
             return;
         }
 
+        course.setOpenForRegistration(false);
+
         database.addCourse(course);
-        log("Added course for registration: " + course.getName());
+        log("Created course: " + course.getName());
         database.save();
-        System.out.println("[Manager Service] : Course '" + course.getName() + "' added for registration.");
+
+        System.out.println("[Manager Service] : Course '" + course.getName() + "' created.");
+    }
+
+    public void openCourseForRegistration(String courseCode, String intendedMajor, int intendedYear) {
+        requireManager();
+
+        Course course = database.findCourseByCode(courseCode);
+
+        if (course == null) {
+            System.out.println("[Manager Service] : Course with code '" + courseCode + "' not found.");
+            return;
+        }
+
+        if (course.isOpenForRegistration()) {
+            System.out.println("[Manager Service] : Course '" + course.getName() + "' is already open for registration.");
+            return;
+        }
+
+        try {
+            course.setIntendedMajor(intendedMajor);
+            course.setIntendedYear(intendedYear);
+            course.setOpenForRegistration(true);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[Manager Service] : " + e.getMessage());
+            return;
+        }
+
+        log("Opened course for registration: " + course.getName());
+        database.save();
+
+        System.out.println("[Manager Service] : Course '" + course.getName() + "' opened for registration.");
     }
 
     public boolean addLessonToCourse(Course course, Lesson lesson) {
@@ -186,10 +221,9 @@ public class ManagerService {
     }
 
     private boolean hasLessonConflict(Course course, Lesson lesson) {
-        return course.getLessons().stream().anyMatch(existing ->
-                Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek())
-                        && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot())
-                        && Objects.equals(existing.getRoom(), lesson.getRoom()));
+        return course.getLessons()
+                .stream()
+                .anyMatch(existing -> Objects.equals(existing.getDayOfWeek(), lesson.getDayOfWeek()) && Objects.equals(existing.getTimeSlot(), lesson.getTimeSlot()) && Objects.equals(existing.getRoom(), lesson.getRoom()));
     }
 
     private void registerStudentToCourse(Student student, Course course) {
