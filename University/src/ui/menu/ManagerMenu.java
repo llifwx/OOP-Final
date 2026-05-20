@@ -61,23 +61,23 @@ public class ManagerMenu {
         boolean running = true;
         while (running) {
             Manager manager = (Manager) authService.getCurrentUser();
-            MenuPrinter.print(t("manager.title"), t("manager.welcome", manager.getFullName()), List.of("1.  " + t("manager.add_course"), "2.  " + t("manager.assign_course"), "3.  " + t("manager.approve_reg"), "4.  " + t("manager.unregister"), "5.  " + t("manager.add_lesson"), "6.  " + t("manager.reports"), "7.  " + t("manager.news"), "8.  " + t("manager.students_gpa"), "9.  " + t("manager.teachers_alpha"), "10. " + t("manager.assign_supervisor"), "11. " + t("manager.add_project"), "12. " + t("manager.emp_requests"), "13. " + t("manager.messages"), "14. " + t("manager.switch_lang"), "0.  " + t("menu.logout")));
-
+            MenuPrinter.print(t("manager.title"), t("manager.welcome", manager.getFullName()), List.of("1.  " + t("manager.create_course"), "2.  " + t("manager.open_course_registration"), "3.  " + t("manager.assign_course"), "4.  " + t("manager.approve_reg"), "5.  " + t("manager.unregister"), "6.  " + t("manager.add_lesson"), "7.  " + t("manager.reports"), "8.  " + t("manager.news"), "9.  " + t("manager.students_gpa"), "10. " + t("manager.teachers_alpha"), "11. " + t("manager.assign_supervisor"), "12. " + t("manager.add_project"), "13. " + t("manager.emp_requests"), "14. " + t("manager.messages"), "15. " + t("manager.switch_lang"), "0.  " + t("menu.logout")));
             switch (sc.nextLine().trim()) {
-                case "1" -> addCourse();
-                case "2" -> assignCourse();
-                case "3" -> approveRegistration();
-                case "4" -> unregisterStudent();
-                case "5" -> addLesson();
-                case "6" -> reportsMenu();
-                case "7" -> newsMenu();
-                case "8" -> printStudents(managerService.viewStudentsSortedByGpa(userService.getAllStudents()));
-                case "9" -> printTeachers(managerService.viewTeachersAlphabetically(userService.getAllTeachers()));
-                case "10" -> assignSupervisor();
-                case "11" -> addResearchProject();
-                case "12" -> techSupportService.printAllRequests();
-                case "13" -> messagesMenu();
-                case "14" -> switchLanguage(manager);
+                case "1" -> createCourse();
+                case "2" -> openCourseForRegistration();
+                case "3" -> assignCourse();
+                case "4" -> approveRegistration();
+                case "5" -> unregisterStudent();
+                case "6" -> addLesson();
+                case "7" -> reportsMenu();
+                case "8" -> newsMenu();
+                case "9" -> printStudents(managerService.viewStudentsSortedByGpa(userService.getAllStudents()));
+                case "10" -> printTeachers(managerService.viewTeachersAlphabetically(userService.getAllTeachers()));
+                case "11" -> assignSupervisor();
+                case "12" -> addResearchProject();
+                case "13" -> techSupportService.printAllRequests();
+                case "14" -> messagesMenu();
+                case "15" -> switchLanguage(manager);
                 case "0" -> {
                     authService.logout();
                     running = false;
@@ -87,21 +87,45 @@ public class ManagerMenu {
         }
     }
 
-    private void addCourse() {
+    private void createCourse() {
         String code = promptRequired(t("prompt.course_code"));
         String name = promptRequired(t("prompt.course_name"));
         int credits = readInt(t("prompt.credits"));
         CourseType type = readCourseType();
         Language lang = readLanguage();
-        if (code == null || name == null || credits < 0 || type == null || lang == null) return;
-        managerService.addCourseForRegistration(new Course(code, name, credits, type, lang));
+
+        if (code == null || name == null || credits < 0 || type == null || lang == null) {
+            return;
+        }
+
+        Course course = new Course(code, name, credits, type, lang);
+        managerService.createCourse(course);
+    }
+
+    private void openCourseForRegistration() {
+        String code = promptRequired(t("prompt.course_code"));
+        if (code == null) return;
+
+        String intendedMajor = promptRequired(t("prompt.intended_major"));
+        if (intendedMajor == null) return;
+
+        int intendedYear = readInt(t("prompt.intended_year"));
+        if (intendedYear < 1) return;
+
+        managerService.openCourseForRegistration(code, intendedMajor, intendedYear);
     }
 
     private void assignCourse() {
         String code = promptRequired(t("prompt.course_code"));
-        int teacherId = readInt(t("prompt.teacher_id"));
+        if (code == null) return;
+
+        Teacher teacher = readTeacherByUsername();
+        if (teacher == null) return;
+
         LessonType type = readLessonType();
-        if (code != null && teacherId >= 0 && type != null) managerService.assignCourseToTeacher(code, teacherId, type);
+        if (type == null) return;
+
+        managerService.assignCourseToTeacher(code, teacher.getUsername(), type);
     }
 
     private void approveRegistration() {
@@ -134,17 +158,17 @@ public class ManagerMenu {
     private void addLesson() {
         Course course = readCourse();
         if (course == null) return;
-        int teacherId = readInt(t("prompt.teacher_id"));
-        User user = userService.findById(teacherId);
-        if (!(user instanceof Teacher teacher)) {
-            System.out.println(t("manager.teacher_not_found"));
-            return;
-        }
+
+        Teacher teacher = readTeacherByUsername();
+        if (teacher == null) return;
+
         LessonType type = readLessonType();
         String day = promptRequired(t("prompt.day_of_week"));
         String time = promptRequired(t("prompt.time_slot"));
         String room = promptRequired(t("prompt.room"));
+
         if (type == null || day == null || time == null || room == null) return;
+
         managerService.addLessonToCourse(course, new Lesson(type, day, time, room, course, teacher));
     }
 
@@ -190,16 +214,12 @@ public class ManagerMenu {
     }
 
     private void assignSupervisor() {
-        User studentUser = userService.findById(readInt(t("prompt.grad_student_id")));
-        if (!(studentUser instanceof GraduateStudent student)) {
-            System.out.println(t("manager.grad_not_found"));
-            return;
-        }
-        User supervisorUser = userService.findById(readInt(t("prompt.supervisor_id")));
-        if (!(supervisorUser instanceof Researcher supervisor)) {
-            System.out.println(t("manager.supervisor_not_researcher"));
-            return;
-        }
+        GraduateStudent student = readGraduateStudentByUsername();
+        if (student == null) return;
+
+        Researcher supervisor = readResearcherByUsername();
+        if (supervisor == null) return;
+
         try {
             projectService.assignSupervisor(student, supervisor);
             System.out.println(t("manager.supervisor_assigned"));
@@ -234,20 +254,15 @@ public class ManagerMenu {
     }
 
     private void sendMessage() {
-        User user = userService.findById(readInt(t("prompt.receiver_id")));
-        if (!(user instanceof Employee employee)) {
-            System.out.println(t("msg.receiver_not_found"));
-            return;
-        }
+        Employee employee = readEmployeeByUsername();
+        if (employee == null) return;
+
         String text = promptRequired(t("prompt.message"));
         if (text != null) messageService.sendMessage(employee, text);
     }
 
     private Student readStudent() {
-        User user = userService.findById(readInt(t("prompt.student_id")));
-        if (user instanceof Student student) return student;
-        System.out.println(t("manager.student_not_found"));
-        return null;
+        return readStudentByUsername();
     }
 
     private Course readCourse() {
@@ -290,6 +305,112 @@ public class ManagerMenu {
     private void switchLanguage(User user) {
         Language language = readLanguage();
         if (language != null) userService.changeLanguage(user, language);
+    }
+
+    private Employee readEmployeeByUsername() {
+        printEmployees(userService.getAllEmployees());
+
+        String username = promptRequired(t("prompt.receiver_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof Employee employee) {
+            return employee;
+        }
+
+        System.out.println(t("msg.receiver_not_found"));
+        return null;
+    }
+
+    private Teacher readTeacherByUsername() {
+        printTeachers(userService.getAllTeachers());
+
+        String username = promptRequired(t("prompt.teacher_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof Teacher teacher) {
+            return teacher;
+        }
+
+        System.out.println(t("manager.teacher_not_found"));
+        return null;
+    }
+
+    private Student readStudentByUsername() {
+        printStudents(userService.getAllStudents());
+
+        String username = promptRequired(t("prompt.student_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof Student student) {
+            return student;
+        }
+
+        System.out.println(t("manager.student_not_found"));
+        return null;
+    }
+
+    private GraduateStudent readGraduateStudentByUsername() {
+        System.out.println("Available graduate students:");
+
+        for (Student student : userService.getAllStudents()) {
+            if (student instanceof GraduateStudent) {
+                System.out.println("- " + student.getUsername() + " | " + student.getFullName());
+            }
+        }
+
+        String username = promptRequired(t("prompt.grad_student_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof GraduateStudent graduateStudent) {
+            return graduateStudent;
+        }
+
+        System.out.println(t("manager.grad_not_found"));
+        return null;
+    }
+
+    private Researcher readResearcherByUsername() {
+        System.out.println("Available researchers:");
+
+        for (User user : userService.getAllUsers()) {
+            if (user instanceof Researcher) {
+                System.out.println("- " + user.getUsername() + " | " + user.getFullName() + " | " + user.getClass()
+                        .getSimpleName());
+            }
+        }
+
+        String username = promptRequired(t("prompt.supervisor_id"));
+        if (username == null) return null;
+
+        User user = userService.findByUsername(username);
+
+        if (user instanceof Researcher researcher) {
+            return researcher;
+        }
+
+        System.out.println(t("manager.supervisor_not_researcher"));
+        return null;
+    }
+
+    private void printEmployees(List<Employee> employees) {
+        if (employees.isEmpty()) {
+            System.out.println(t("msg.receiver_not_found"));
+            return;
+        }
+
+        System.out.println("Available employees:");
+        for (Employee employee : employees) {
+            System.out.println("- " + employee.getUsername() + " | " + employee.getClass()
+                    .getSimpleName() + " | " + employee.getFullName());
+        }
     }
 
     private CourseType readCourseType() {

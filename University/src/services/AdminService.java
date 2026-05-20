@@ -2,6 +2,7 @@ package services;
 
 import enums.Language;
 import model.users.Admin;
+import model.users.Student;
 import model.users.User;
 import storage.Database;
 import utils.LogRecord;
@@ -71,6 +72,54 @@ public class AdminService {
         return true;
     }
 
+    public boolean updateStudentSchool(String username, String school) {
+        requireAdmin();
+
+        User user = database.findUserByUsername(username);
+
+        if (!(user instanceof Student student)) {
+            return false;
+        }
+
+        student.setSchool(school);
+        database.save();
+        log("Updated student school for " + username);
+
+        return true;
+    }
+
+    public boolean updateStudentMajor(String username, String major) {
+        requireAdmin();
+
+        User user = database.findUserByUsername(username);
+
+        if (!(user instanceof Student student)) {
+            return false;
+        }
+
+        student.setMajor(major);
+        database.save();
+        log("Updated student major for " + username);
+
+        return true;
+    }
+
+    public boolean updateStudentYearOfStudy(String username, int yearOfStudy) {
+        requireAdmin();
+
+        User user = database.findUserByUsername(username);
+
+        if (!(user instanceof Student student)) {
+            return false;
+        }
+
+        student.setYearOfStudy(yearOfStudy);
+        database.save();
+        log("Updated student year of study for " + username);
+
+        return true;
+    }
+
     public List<LogRecord> viewAllLogs() {
         requireAdmin();
         return new ArrayList<>(database.getLogs());
@@ -100,6 +149,7 @@ public class AdminService {
         requireAdmin();
         return userService.getAllUsers();
     }
+
 
     public void printAllUsers() {
         requireAdmin();

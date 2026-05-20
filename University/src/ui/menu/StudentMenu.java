@@ -7,6 +7,7 @@ import model.academic.StudentOrganization;
 import model.social.Journal;
 import model.users.Student;
 import model.users.Teacher;
+import model.users.User;
 import services.AuthService;
 import services.JournalService;
 import services.StudentService;
@@ -79,14 +80,24 @@ public class StudentMenu {
     }
 
     protected void rateTeacher() {
-        int teacherId = readInt(t("prompt.teacher_id"));
-        if (teacherId < 0) return;
+        String teacherUsername = promptRequired("Teacher username");
+        if (teacherUsername == null) return;
+
+        User user = userService.findByUsername(teacherUsername);
+
+        if (!(user instanceof Teacher teacher)) {
+            System.out.println(t("student.teacher_not_found"));
+            return;
+        }
+
         double rating = readDouble(t("prompt.rating"));
+
         if (rating < 0 || rating > 5) {
             System.out.println(t("student.rating_invalid"));
             return;
         }
-        if (studentService.rateTeacher(teacherId, rating)) {
+
+        if (studentService.rateTeacher(teacher.getId(), rating)) {
             System.out.println(t("student.teacher_rated"));
         }
     }
